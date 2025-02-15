@@ -1,26 +1,26 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import './App.css';
-
+import Navbar from './components/Navbar';
+import Banner from './components/Banner';
+import Reason from './components/Reason';
+import How from './components/How';
+import Footer from './components/Footer';
+import About from './components/About';
+import Form from './components/BetaForm';
+import FAQs from './components/FAQs';
+import BetaForm from './components/BetaForm';
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <div>
-        <a
-          href='https://www.linkedin.com/company/kulturexplora/'
-          target='_blank'
-        >
-          <img
-            src='/Logos/png/ColorLogo NoBackground.png'
-            className='logo'
-            alt='KulturExp
-            loraLogo'
-          />
-        </a>
-      </div>
-      <h1>KulturExplora Landing page is coming soon...</h1>
+      <Navbar />
+      <Banner />
+      <About />
+      <Reason />
+      <How />
+      <BetaForm />
+      <FAQs />
+      <Footer />
     </>
   );
 }

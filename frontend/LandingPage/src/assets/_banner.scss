@@ -1,0 +1,28 @@
+.banner {
+  background-image: url(/banner.png);
+  background-repeat: no-repeat;
+  background-position: top;
+  background-size: cover; /* 背景圖片自動縮放以填滿容器 */
+  height: 100vh;
+  width: 100%;
+  padding-top: 260px;
+  margin-bottom: 80px;
+
+  //   height: 513px;
+  // 讓滿版有高度可直接設定高 或是使用padding推出高度
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    h2 {
+      white-space: nowrap; /* 禁止換行 */
+    }
+  }
+}
+@media (max-width: 768px) {
+  .banner .container h2 {
+    white-space: normal; /* 小螢幕允許換行 */
+    font-size: medium;
+  }
+}

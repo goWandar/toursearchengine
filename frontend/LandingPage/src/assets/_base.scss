@@ -1,0 +1,134 @@
+/* 全域 border box */
+
+/* 星號 * 表示全部的HTML都可以吃到這個樣式 */
+
+/* ::before,::after是偽元素 */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+$primary-color: #ffc699; // 定義主要顏色
+$secondary-color: #d97706; // 定義次要顏色
+$btn-primary: #d97706; // 定義按鈕顏色
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  // background-color: $primary-color;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  line-height: 1.5;
+  /* font-family: */
+  // background-color: $primary-color;
+}
+/*需link/import google font*/
+
+/* rwd img css reset */
+/* 防止產生X軸 */
+/*建議外容器尺寸 置中*/
+.container {
+  max-width: 960px;
+  /*max-width:1200px;*/
+  margin: 0 auto;
+  padding-right: 16px;
+  padding-left: 16px;
+}
+img {
+  max-width: 100%;
+  /* (如果圖片不夠大張 無法撐滿容器就改用width:100%) */
+  height: auto;
+  /* (height: 100vh;如果佔滿整個視窗 可使用100vh) */
+  vertical-align: middle;
+  /* 防止照片下方有3px空白 */
+  object-fit: cover;
+  /* 做法：將img改成區塊元素 */
+  img {
+    display: block;
+  }
+  /*圖片可依造比例縮放*/
+}
+//使用小字體在下方
+sub {
+  vertical-align: sub;
+}
+
+a {
+  display: block;
+  text-decoration: none;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+//navbar
+.navbar {
+  background-color: $secondary-color;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1000;
+  padding: 1rem 2rem;
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
+    // box-shadow: 0 0 1em #00000011;
+    .logo {
+      height: 8em;
+      padding: 1.5em;
+      will-change: filter;
+      transition: filter 300ms;
+      transition: transform 0.3s ease;
+    }
+    .logo:hover {
+      filter: drop-shadow(0 0 2em #646cffaa);
+    }
+  }
+}
+nav {
+  ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    li {
+      margin: 0 1em;
+      a {
+        font-size: 20px;
+        // text-decoration: none;
+        color: #ffffff;
+        transition: color 0.3s ease;
+      }
+      a:hover {
+        color: darken($secondary-color, 15%); /* 深化次要顏色 */
+      }
+    }
+  }
+}
+/* Navbar 默認樣式 */
+/* 滾動後的樣式 */
+.navbar.scrolled {
+  background-color: rgba(242, 238, 238, 0.395); /* 半透明背景 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加陰影 */
+}
+
+.navbar.scrolled .logo {
+  transform: scale(0.9); /* 縮小 Logo */
+}
+
+.navbar.scrolled .nav-item a {
+  color: $secondary-color; /* 滾動後文字顏色 */
+}
