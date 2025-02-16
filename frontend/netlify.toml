@@ -1,3 +1,9 @@
+[build]
+  base = "frontend"       # Set the base directory where your React app resides
+  command = "npm run build"
+  publish = "frontend/dist"  # Path to the build output folder
+
+
 [[redirects]]
     from = "/*"
     to = "https://www.kulturexploraafrica.com"
