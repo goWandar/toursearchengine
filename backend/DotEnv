@@ -1,0 +1,20 @@
+# Environment Variables
+
+PROJECT_URL=
+API_KEY=
+SUPABASE_URL=
+SUPABASE_KEY=
+SUPABASE_USER=
+DB_PASSWORD=
+
+# Connect to Supabase via connection pooling with Supavisor.
+
+DATABASE_URL=
+
+# Direct connection to the database. Used for migrations.
+
+DIRECT_URL=
+
+# App variables
+
+PORT=
