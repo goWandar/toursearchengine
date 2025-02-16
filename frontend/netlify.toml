@@ -4,8 +4,8 @@
   publish = "dist"  # Path to the build output folder
 
 
-[[redirects]]
-  from = "/*"
-  to = "https://www.kulturexploraafrica.com/:splat"
-  status = 301
-  force = true
+#[[redirects]]
+#  from = "/*"
+#  to = "https://www.kulturexploraafrica.com/:splat"
+#  status = 301
+#  force = true
