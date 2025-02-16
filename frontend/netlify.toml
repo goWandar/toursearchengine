@@ -5,7 +5,7 @@
 
 
 [[redirects]]
-    from = "/*"
-    to = "https://www.kulturexploraafrica.com"
-    status = 301
-    force = true
+  from = "/*"
+  to = "https://www.kulturexploraafrica.com/:splat"
+  status = 301
+  force = true
