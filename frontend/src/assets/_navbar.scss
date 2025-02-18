@@ -146,7 +146,7 @@ main {
         padding: 0.5em 1em;
         text-decoration: none;
         &:hover {
-          color: #646cff; // 懸停時的顏色，你可以改成你想要的顏色
+          color: black;
         }
       }
     }
@@ -226,7 +226,7 @@ main {
     color: $secondary-color;
     text-decoration: none;
     &:hover {
-      color: #646cff; // 滾動後懸停時的顏色，你可以改成你想要的顏色
+      color: rgba(black, 0.8); // 滾動後懸停時的顏色，你可以改成你想要的顏色
     }
   }
 
