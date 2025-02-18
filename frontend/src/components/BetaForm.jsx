@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+
 const { VITE_BASE_URL: baseURL, VITE_API_PATH: apiPath } = import.meta.env;
+
 
 const BetaForm = () => {
   const [email, setEmail] = useState('');

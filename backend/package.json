@@ -1,24 +1,39 @@
 {
-  "name": "kulture-explora-api",
-  "version": "1.0.0",
-  "description": "api for kulture explora app",
-  "main": "server.js",
-  "scripts": {
-    "prebuild": "npm i",
-    "build": "npx tsc",
-    "start": "node dist/server.js",
-    "dev": "npm run build && concurrently \"npx tsc -w\" \"nodemon dist/server.js\""
-  },
-  "dependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.1",
-    "cors": "^2.8.5",
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2",
-    "nodemon": "^3.1.9",
-    "typescript": "^5.7.3"
-  }
+    "version": "1.0.0",
+    "description": "kulturExplora backend",
+    "main": "src/server.ts",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "concurrently \"npx tsc --watch\" \"nodemon dist/server.js\"",
+        "build": "tsc",
+        "start": "node dist/server.js"
+    },
+    "keywords": [],
+    "author": "Jacek Roszkowiak <jacekroszkowiakdev@gmail.com>",
+    "contributors": [],
+    "license": "ISC",
+    "dependencies": {
+        "@prisma/client": "^6.3.1",
+        "@supabase/supabase-js": "^2.48.1",
+        "chalk": "^5.4.1",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.2",
+        "pg": "^8.13.1"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.17",
+        "@types/express": "^5.0.0",
+        "@types/node": "^22.13.2",
+        "concurrently": "^9.1.2",
+        "nodemon": "^3.1.9",
+        "prisma": "^6.3.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.3"
+    },
+    "name": "backend",
+    "type": "commonjs"
 }

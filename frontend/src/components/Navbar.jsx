@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 const Navbar = () => {
   // State to track if the page is scrolled
   const [isScrolled, setIsScrolled] = useState(false);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
 
   // 當選單打開時防止背景滾動
   useEffect(() => {
@@ -45,6 +47,7 @@ const Navbar = () => {
             <a
               href='https://www.linkedin.com/company/kulturexplora/'
               target='_blank'
+
               rel='noopener noreferrer'
             >
               {/* 大螢幕 Logo */}
@@ -94,6 +97,7 @@ const Navbar = () => {
               <a href='#' onClick={() => setIsMobileMenuOpen(false)}>
                 FAQ’s
               </a>
+
             </li>
           </ul>
           {/* <h1>KulturExplora Landing page is coming soon...</h1> */}
