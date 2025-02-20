@@ -11,11 +11,7 @@ const Footer = () => {
       style={{ backgroundColor: 'var(--secondary-color)' }}
     >
       <div className='container p-4 d-flex  justify-content-between align-items-center flex-column flex-md-row'>
-<<<<<<< HEAD
-        <div className='d-flex align-items-center flex-column'>
-=======
         <div className='d-flex align-items-center flex-column flex-md-row'>
->>>>>>> 70ed6db (update weblayout-footer)
           <h1>
             <img
               src='/Logos/png/ColorLogoNoBackground.png'
@@ -28,11 +24,7 @@ const Footer = () => {
             <p className='m-0 fs-4 fw-bold'>
               Discover Africa. Book Smart. Travel Better.
             </p>
-<<<<<<< HEAD
-            <span className='fs-6'>
-=======
             <span className='fs-6 pb-2'>
->>>>>>> 70ed6db (update weblayout-footer)
               Try KultureXplora - The easiest way to find Africa's best safari
               operators.
             </span>

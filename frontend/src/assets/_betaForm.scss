@@ -170,3 +170,32 @@
     }
   }
 }
+.betaForm {
+  .feature-bullet {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; // 防止圖標縮小
+
+    i {
+      font-size: 1.25rem; // 統一圖標大小
+      color: var(--primary-color);
+    }
+  }
+}
+.feature-list {
+  li {
+    .feature-bullet {
+      background-color: var(--bs-warning-bg-subtle);
+      transition: transform 0.3s ease;
+    }
+
+    &:hover {
+      .feature-bullet {
+        transform: scale(1.1);
+      }
+    }
+  }
+}

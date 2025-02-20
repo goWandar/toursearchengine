@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-<<<<<<< HEAD
 
-=======
->>>>>>> 70ed6db (update weblayout-footer)
 const { VITE_API_PATH } = import.meta.env;
 
 const BetaForm = () => {
