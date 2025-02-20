@@ -22,3 +22,10 @@ enum Role {
   USER
   ADMIN
 }
+
+model BetaRegistration {
+  id    String @id @default(uuid())
+  email String @unique
+
+  @@map("beta_registration")
+}
