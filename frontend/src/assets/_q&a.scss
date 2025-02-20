@@ -5,7 +5,7 @@
 }
 
 .accordion-button:not(.collapsed) {
-  background-color: $secondary-color;
+  background-color: $secondary;
   color: #fff; /* 白色文字 */
 }
 /* 調整邊框顏色 */
@@ -14,6 +14,6 @@
 }
 /* 調整按鈕的 hover 狀態 */
 .accordion-button:hover {
-  background-color: $secondary-color; /* secondary 顏色的 hover 狀態 */
+  background-color: $secondary; /* secondary 顏色的 hover 狀態 */
   color: #fff;
 }
