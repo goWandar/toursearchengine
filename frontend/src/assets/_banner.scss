@@ -17,6 +17,7 @@
     h2 {
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // 添加文字陰影提高可讀性
       font-size: 2.5rem;
+      text-align: right;
       span {
         white-space: nowrap; // 確保每個 span 內的文字不會換行
       }
@@ -33,15 +34,17 @@
     padding: 150px;
     .container {
       padding-right: 3%;
-
+      align-items: center;
       h2 {
         max-width: 100%; /* 確保文字不會溢出容器 */
         line-height: 1.3; /* 手機版增加行高提高可讀性 */
         margin-bottom: 0.5rem;
+        text-align: end;
       }
       h3 {
         font-size: 1.4rem; // 調整手機版字體大小
         line-height: 1.2;
+        text-align: center;
       }
     }
   }
@@ -52,17 +55,17 @@
 
     .container {
       padding-right: 15px;
-      text-align: left;
+      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
-
+      align-items: center;
       h2 {
         font-size: 1rem; // 更小的字體
         line-height: 1.4;
-        margin-left: auto;
+
         max-width: 280px;
-        text-align: right;
+        text-align: center;
         span {
           display: inline-block;
           margin-bottom: 0.2rem; // 增加一點間距
@@ -71,9 +74,9 @@
 
       h3 {
         font-size: 0.8rem; // 更小的字體
-        // margin: 0 auto; // 容器置中
-        max-width: 280px; // 控制寬度
-        text-align: left !important;
+        margin: 0 auto; // 容器置中
+        max-width: 100%;
+        text-align: center;
       }
     }
   }
