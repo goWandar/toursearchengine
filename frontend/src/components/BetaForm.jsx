@@ -15,7 +15,7 @@ const BetaForm = () => {
 
     try {
       // 替換 API 端點
-      const response = await axios.post(VITE_API_PATH, {
+      const response = await axios.post(VITE_API_PATH / api / register, {
         email: data.email,
       });
       console.log(response.data); // 輸出伺服器回應

@@ -80,7 +80,7 @@ const FAQs = () => {
   ];
   return (
     <>
-      <section className='faqs container my-5'>
+      <section className='faqs container my-5' id='faqs'>
         <h2 className='text-center mb-4'>FAQs</h2>
         <div className='accordion' id='faqAccordion'>
           {Faqs.map((faq, index) => (
@@ -94,7 +94,7 @@ const FAQs = () => {
                   aria-expanded='false'
                   aria-controls={`collapse${index}`}
                 >
-                  <strong>{faq.id}.</strong> {faq.question}
+                  <strong>{faq.id}. </strong> {faq.question}
                 </button>
               </h2>
               <div
