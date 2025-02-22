@@ -2,7 +2,7 @@ import React from 'react';
 
 const Reason = () => {
   return (
-    <section className='reason py-5 bg-light' id='features'>
+    <section className='reason py-5' id='features'>
       <div className='container'>
         <h2 className='text-center display-5 fw-bold'>
           Why Choose KultureXplora?

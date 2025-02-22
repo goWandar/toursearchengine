@@ -6,7 +6,7 @@
   height: 100vh;
   width: 100%;
   padding-top: 260px;
-  margin-bottom: 80px;
+  // margin-bottom: 80px;
 
   // 讓滿版有高度可直接設定高 或是使用padding推出高度
   .container {
@@ -18,6 +18,8 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // 添加文字陰影提高可讀性
       font-size: 2.5rem;
       text-align: right;
+      padding-bottom: 1.5rem;
+      margin-bottom: 1rem;
       span {
         white-space: nowrap; // 確保每個 span 內的文字不會換行
       }
@@ -34,7 +36,6 @@
     padding: 150px;
     .container {
       padding-right: 3%;
-      align-items: center;
       h2 {
         max-width: 100%; /* 確保文字不會溢出容器 */
         line-height: 1.3; /* 手機版增加行高提高可讀性 */
@@ -73,7 +74,7 @@
       }
 
       h3 {
-        font-size: 0.8rem; // 更小的字體
+        font-size: 0.9rem; // 更小的字體
         margin: 0 auto; // 容器置中
         max-width: 100%;
         text-align: center;
