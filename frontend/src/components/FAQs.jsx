@@ -4,23 +4,22 @@ const FAQs = () => {
   const Faqs = [
     {
       id: '1',
-      question: 'How do I make a reservation on your website?',
+      question: 'What is KultureXplora?',
       answer:
-        'Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.',
+        ' KultureXplora is a platform designed to simplify your safari planning by gathering and organizing tour details from multiple safari operators and trusted review platforms. We provide you with easy access to prices, itineraries, and real traveler feedback, helping you find the best safari options without the hassle of endless research.',
     },
     {
       id: '2',
-      question:
-        'What documents do I need for my trip, and how do I obtain them?',
+      question: 'How does KultureXplora help me find the perfect safari?',
       answer:
-        'You will need valid identification, such as a passport or ID card, and any required visas for your destination. Check the official government website for the latest requirements and processes for obtaining these documents.',
+        'We collect details from various safari operators’ websites, such as prices, itineraries, and reviews, then aggregate and organize them in one place. This allows you to easily compare different options and find the safari that best suits your preferences and budget. Once you’ve made your choice, we connect you directly to the operator’s website to book.',
     },
     {
       id: '3',
       question:
         'What makes KultureXplora different from other safari booking platforms?',
       answer:
-        'KultureXplora simplifies the research process by gathering all relevant information, including prices, itineraries, and reviews, in one place. This allows you to compare safaris side by side and make an informed decision without any middlemen involved.',
+        'KultureXplora sets itself apart by simplifying the research process. Instead of browsing multiple websites, we gather all the relevant information, including prices, itineraries, and reviews, in one place. This way, you can compare safaris side by side and make an informed decision without any middlemen involved.',
     },
     {
       id: '4',
