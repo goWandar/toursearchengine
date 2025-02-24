@@ -31,11 +31,10 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: calc(100% - 16px);
+
     padding: 0 2rem;
     position: relative;
     max-width: 1200px;
-    margin: 0 auto;
 
     // Logo 樣式
     .logo {
