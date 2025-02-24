@@ -11,14 +11,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(
-    cors({
-        origin: [
-            `http://localhost:${port}`,
-            "https://kulturexploratest.onrender.com",
-        ],
-    })
-);
+app.use(cors({
+  origin: 'https://kulturexploratest.netlify.app'
+}));
 
 
 app.use(express.json());
