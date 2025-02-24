@@ -48,7 +48,9 @@ const BetaForm = () => {
     <>
       <section className='betaForm'>
         <div className='form-container'>
-          <h1 className='title fw-bold'>Early Beta Access</h1>
+          <h1 className='title fw-bold animate__animated animate__heartBeat'>
+            Early Beta Access
+          </h1>
           <p className='description'>
             Join our exclusive beta launch and get first access to Africa's
             best-ranked safari operators

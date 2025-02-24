@@ -10,6 +10,7 @@ import FAQs from './components/FAQs';
 import BetaForm from './components/BetaForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'animate.css';
 function App() {
   const [count, setCount] = useState(0);
 
