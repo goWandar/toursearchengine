@@ -18,8 +18,14 @@ const BetaForm = () => {
       const response = await axios.post(`${VITE_API_PATH}/api/subscribers`, {
         email: data.email,
       });
-      console.log(response.data);
-
+      // console.log(response.data);
+      if (response.status === 409) {
+        setMessage({
+          text: 'This email is already registered. Please use a different email.',
+          type: 'error',
+        });
+        return;
+      }
       if (response.status === 204) {
         setMessage({
           text: 'This email is already registered. Please use a different email.',
