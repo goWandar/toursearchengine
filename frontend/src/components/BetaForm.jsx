@@ -14,11 +14,19 @@ const BetaForm = () => {
     setMessage(null);
 
     try {
-      console.log('API URL:', `${VITE_API_PATH}/api/subscribers`); // 用於調試
+      // console.log('VITE_API_PATH :', `${VITE_API_PATH}/api/subscribers`); // 用於調試
       const response = await axios.post(`${VITE_API_PATH}/api/subscribers`, {
         email: data.email,
       });
-      console.log(response.data); // 輸出伺服器回應
+      console.log(response.data);
+
+      if (response.status === 204) {
+        setMessage({
+          text: 'This email is already registered. Please use a different email.',
+          type: 'error',
+        });
+        return;
+      }
       // 處理伺服器回應
       setMessage({
         text: 'Thank you for joining our waitlist!',
@@ -26,6 +34,32 @@ const BetaForm = () => {
       });
       reset();
     } catch (error) {
+      // console.log('Error details:', {
+      //   status: error.response?.status,
+      //   data: error.response?.data,
+      //   error: error.response?.data?.error,
+      // });
+      // let errorMessage = 'An error occurred. Please try again.';
+
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = error.response.data.error || 'Invalid request';
+            break;
+          case 204:
+            errorMessage =
+              'This email is already registered. Please use a different email.';
+            break;
+          default:
+            errorMessage =
+              error.response.data?.error || 'Server error occurred';
+        }
+      } else if (error.request) {
+        errorMessage =
+          'Unable to connect to the server. Please check your internet connection.';
+      } else {
+        errorMessage = 'Something went wrong. Please try again later.';
+      }
       setMessage({
         text:
           error.response?.data?.message ||
