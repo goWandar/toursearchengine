@@ -18,15 +18,15 @@ const BetaForm = () => {
       const response = await axios.post(`${VITE_API_PATH}/api/subscribers`, {
         email: data.email,
       });
-      console.log(response.data);
-
-      if (response.status === 204) {
+      // console.log(response.data);
+      if (response.status === 409 || response.status === 204) {
         setMessage({
           text: 'This email is already registered. Please use a different email.',
           type: 'error',
         });
         return;
       }
+
       // 處理伺服器回應
       setMessage({
         text: 'Thank you for joining our waitlist!',
@@ -39,13 +39,14 @@ const BetaForm = () => {
       //   data: error.response?.data,
       //   error: error.response?.data?.error,
       // });
-      // let errorMessage = 'An error occurred. Please try again.';
+      let errorMessage = 'An error occurred. Please try again.';
 
       if (error.response) {
         switch (error.response.status) {
           case 400:
             errorMessage = error.response.data.error || 'Invalid request';
             break;
+
           case 204:
             errorMessage =
               'This email is already registered. Please use a different email.';
