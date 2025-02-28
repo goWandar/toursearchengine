@@ -45,7 +45,7 @@ const BetaForm = () => {
       //   data: error.response?.data,
       //   error: error.response?.data?.error,
       // });
-      // let errorMessage = 'An error occurred. Please try again.';
+      let errorMessage = 'An error occurred. Please try again.';
 
       if (error.response) {
         switch (error.response.status) {
