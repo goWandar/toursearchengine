@@ -19,20 +19,14 @@ const BetaForm = () => {
         email: data.email,
       });
       // console.log(response.data);
-      if (response.status === 409) {
+      if (response.status === 409 || response.status === 204) {
         setMessage({
           text: 'This email is already registered. Please use a different email.',
           type: 'error',
         });
         return;
       }
-      if (response.status === 204) {
-        setMessage({
-          text: 'This email is already registered. Please use a different email.',
-          type: 'error',
-        });
-        return;
-      }
+
       // 處理伺服器回應
       setMessage({
         text: 'Thank you for joining our waitlist!',
@@ -52,6 +46,7 @@ const BetaForm = () => {
           case 400:
             errorMessage = error.response.data.error || 'Invalid request';
             break;
+
           case 204:
             errorMessage =
               'This email is already registered. Please use a different email.';
