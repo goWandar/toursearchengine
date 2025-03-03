@@ -4,7 +4,6 @@ import cors from 'cors';
 import userRoutes from './routes/user.routes';
 import subscribersRoutes from './routes/subscribers.routes';
 import adminRoutes from './routes/admin.routes';
-
 import logger from './utils/logger';
 
 const app = express();
@@ -13,7 +12,13 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(
   cors({
-    origin: 'https://kulturexploratest.netlify.app',
+    origin: [
+      'http://localhost:5173',
+      'https://kulturexploratest.netlify.app',
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -47,3 +52,4 @@ app.use((req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
