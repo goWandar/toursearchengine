@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Banner = () => {
   return (
     <>
@@ -11,7 +9,7 @@ const Banner = () => {
             <span className='d-inline-block'>Find, Compare, Explore</span>
           </h2>{' '}
           <h3 className='animate__animated animate__fadeInLeftBig'>
-            Africa's Best Safari Operators Curated For You!
+            Africa&apos;s Best Safari Operators Curated For You!
           </h3>
         </div>
       </section>

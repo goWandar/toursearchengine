@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const Loading = () => {
   const planeLoaderRef = useRef(null);
@@ -40,7 +40,9 @@ const Loading = () => {
 
   return (
     <div className='loading-container'>
-      <div className='plane-loader' ref={planeLoaderRef}>
+      <div
+        className='plane-loader'
+        ref={planeLoaderRef}>
         <div className='plane'>✈</div>
       </div>
     </div>
