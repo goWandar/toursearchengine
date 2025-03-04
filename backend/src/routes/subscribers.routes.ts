@@ -30,6 +30,7 @@ router.post("/subscribers", async (req: Request, res: Response) => {
         message: "Email registered successfully",
         data: result.data,
     });
+    console.log("res.json", res.json);
 });
 
 export default router;
