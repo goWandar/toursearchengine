@@ -39,7 +39,7 @@ export const UserService = {
 
             await logger.success(
                 `[UserService] User created successfully:`,
-                user
+                user.email
             );
             return { success: true, data: user };
         } catch (error) {

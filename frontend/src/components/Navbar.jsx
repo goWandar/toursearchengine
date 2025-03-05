@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -29,22 +30,63 @@ const Navbar = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  // Function to scroll to section
+  const scrollToSection = sectionId => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  // Array of navigation items with their corresponding paths
+  const navItems = [
+    { name: 'About', path: '/#about', sectionId: 'about' },
+    { name: 'Features', path: '/#features', sectionId: 'features' },
+    { name: 'Blog', path: '/#blog', sectionId: 'blog' },
+    { name: "FAQ's", path: '/#faqs', sectionId: 'faqs' },
+    { name: 'Search', path: '/tour-search' },
+  ];
+
+  // NavList component
+  const NavList = () => (
+    <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
+      {navItems.map(item => (
+        <li
+          key={item.name}
+          className={`nav-item ${isScrolled ? 'scrolled-link' : ''}`}>
+          {item.sectionId ? (
+            <a
+              href={item.path}
+              onClick={e => {
+                e.preventDefault();
+                scrollToSection(item.sectionId);
+              }}>
+              {item.name}
+            </a>
+          ) : (
+            <Link
+              to={item.path}
+              onClick={() => setIsMobileMenuOpen(false)}>
+              {item.name}
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
     <>
       <section>
         {' '}
-        <nav
-          className={`navbar ${isScrolled ? 'scrolled' : ''} ${
-            isMobileMenuOpen ? 'menu-open' : ''
-          }`}
-        >
+        <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isMobileMenuOpen ? 'menu-open' : ''}`}>
           <div className='container'>
             <h1>
               <a
                 href='https://www.linkedin.com/company/kulturexplora/'
                 target='_blank'
-                rel='noopener noreferrer'
-              >
+                rel='noopener noreferrer'>
                 {/* 大Logo */}
                 <img
                   src='/Logos/png/ColorLogoNoBackground.png'
@@ -57,36 +99,14 @@ const Navbar = () => {
             <button
               className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}
               onClick={toggleMobileMenu}
-              aria-label='Toggle menu'
-            >
+              aria-label='Toggle menu'>
               <span></span>
               <span></span>
               <span></span>
             </button>
 
             {/* 導航連結 */}
-            <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-              <li className='nav-item'>
-                <a href='#about' onClick={() => setIsMobileMenuOpen(false)}>
-                  About
-                </a>
-              </li>
-              <li className='nav-item'>
-                <a href='#features' onClick={() => setIsMobileMenuOpen(false)}>
-                  Features
-                </a>
-              </li>
-              <li className='nav-item'>
-                <a href='#blog' onClick={() => setIsMobileMenuOpen(false)}>
-                  Blog
-                </a>
-              </li>
-              <li className='nav-item'>
-                <a href='#faqs' onClick={() => setIsMobileMenuOpen(false)}>
-                  FAQ's
-                </a>
-              </li>
-            </ul>
+            <NavList />
           </div>
         </nav>
       </section>
