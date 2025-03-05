@@ -14,7 +14,7 @@ const BetaForm = () => {
     setMessage(null);
 
     try {
-      // console.log('VITE_API_PATH :', `${VITE_API_PATH}/api/subscribers`); // 用於調試
+      console.log('VITE_API_PATH :', `${VITE_API_PATH}/api/subscribers`); // 用於調試
       const response = await axios.post(`${VITE_API_PATH}/api/subscribers`, {
         email: data.email,
       });
@@ -31,7 +31,7 @@ const BetaForm = () => {
       //   data: error.response?.data,
       //   error: error.response?.data?.error,
       // });
-      console.log(error);
+      // console.log(error);
       if (
         error.response.data.statusCode === 409 ||
         error.response.data.statusCode === 204
