@@ -14,18 +14,10 @@ const BetaForm = () => {
     setMessage(null);
 
     try {
-      // console.log('VITE_API_PATH :', `${VITE_API_PATH}/api/subscribers`); // 用於調試
+      console.log('VITE_API_PATH :', `${VITE_API_PATH}/api/subscribers`); // 用於調試
       const response = await axios.post(`${VITE_API_PATH}/api/subscribers`, {
         email: data.email,
       });
-      // console.log(response.data);
-      if (response.status === 409 || response.status === 204) {
-        setMessage({
-          text: 'This email is already registered. Please use a different email.',
-          type: 'error',
-        });
-        return;
-      }
 
       // 處理伺服器回應
       setMessage({
@@ -39,10 +31,21 @@ const BetaForm = () => {
       //   data: error.response?.data,
       //   error: error.response?.data?.error,
       // });
+      // console.log(error);
+      if (
+        error.response.data.statusCode === 409 ||
+        error.response.data.statusCode === 204
+      ) {
+        setMessage({
+          text: 'This email is already registered. Please use a different email.',
+          type: 'error',
+        });
+        return;
+      }
       let errorMessage = 'An error occurred. Please try again.';
 
-      if (error.response) {
-        switch (error.response.status) {
+      if (error.response.data) {
+        switch (error.response.data.statusCode) {
           case 400:
             errorMessage = error.response.data.error || 'Invalid request';
             break;
