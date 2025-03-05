@@ -1,30 +1,48 @@
-import { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Banner from './components/Banner';
 import Reason from './components/Reason';
 import How from './components/How';
 import Footer from './components/Footer';
 import About from './components/About';
-import Form from './components/BetaForm';
 import FAQs from './components/FAQs';
 import BetaForm from './components/BetaForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'animate.css';
-function App() {
-  const [count, setCount] = useState(0);
 
+import TourSearch from './components/TourSearch/TourSearch';
+
+function App() {
   return (
-    <>
-      <Navbar />
-      <Banner />
-      <About />
-      <Reason />
-      <How />
-      <BetaForm />
-      <FAQs />
-      <Footer />
-    </>
+    <Router>
+      <Routes>
+        <Route
+          path='/'
+          element={
+            <>
+              <Navbar />
+              <Banner />
+              <About />
+              <Reason />
+              <How />
+              <BetaForm />
+              <FAQs />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path='/tour-search'
+          element={
+            <>
+              {/* <Navbar /> */}
+              <TourSearch />
+            </>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
