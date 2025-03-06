@@ -13,19 +13,54 @@ model User {
   id    String @id @default(uuid())
   name  String
   email String @unique
-  role  Role   @default(USER)
-
+  role  String @default("USER")
   @@map("users")
-}
-
-enum Role {
-  USER
-  ADMIN
 }
 
 model BetaSubscribers {
   id    String @id @default(uuid())
   email String @unique
-
   @@map("beta_subscribers")
+}
+
+model Tour {
+  id             String      @id @default(uuid())
+  uniqueid       Int         @unique
+  title          String
+  description    String?
+  location       String
+  country        String
+  durationInDays Int
+  itinerary      String?
+  siteURL        String?
+  rating         Float?
+  reviews        Int?
+  dateCreated    DateTime    @default(now())
+  dateModified   DateTime    @updatedAt
+  archived       Boolean     @default(false)
+  images         TourImage[]
+  prices         TourPrice[]
+  @@map("tours")
+}
+
+model TourImage {
+  id            String    @id @default(uuid())
+  image_urls    String
+  dateCreated   DateTime  @default(now())
+  dateModified  DateTime  @updatedAt
+  tour          Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourId        String
+  @@map("tour_images")
+}
+
+model TourPrice {
+  id             String    @id @default(uuid())
+  numOfPeople    Int
+  currency       String
+  pricePerPerson Float
+  dateCreated    DateTime  @default(now())
+  dateModified   DateTime  @updatedAt
+  tour           Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourId         String
+  @@map("tour_prices")
 }
