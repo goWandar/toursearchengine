@@ -39,7 +39,7 @@ export const AdminService = {
 
             await logger.success(
                 `[AdminService] User created successfully:`,
-                user
+                user.email
             );
             return { success: true, data: user };
         } catch (error) {

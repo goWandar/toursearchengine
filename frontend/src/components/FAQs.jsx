@@ -1,12 +1,14 @@
-import React from 'react';
+import { useState } from 'react';
 
 const FAQs = () => {
+  const [openIndices, setOpenIndices] = useState([]); // Track open indices
+
   const Faqs = [
     {
       id: '1',
       question: 'What is KultureXplora?',
       answer:
-        ' KultureXplora is a platform designed to simplify your safari planning by gathering and organizing tour details from multiple safari operators and trusted review platforms. We provide you with easy access to prices, itineraries, and real traveler feedback, helping you find the best safari options without the hassle of endless research.',
+        'KultureXplora is a platform designed to simplify your safari planning by gathering and organizing tour details from multiple safari operators and trusted review platforms. We provide you with easy access to prices, itineraries, and real traveler feedback, helping you find the best safari options without the hassle of endless research.',
     },
     {
       id: '2',
@@ -16,21 +18,19 @@ const FAQs = () => {
     },
     {
       id: '3',
-      question:
-        'What makes KultureXplora different from other safari booking platforms?',
+      question: 'What makes KultureXplora different from other safari booking platforms?',
       answer:
         'KultureXplora sets itself apart by simplifying the research process. Instead of browsing multiple websites, we gather all the relevant information, including prices, itineraries, and reviews, in one place. This way, you can compare safaris side by side and make an informed decision without any middlemen involved.',
     },
     {
       id: '4',
-      question:
-        'How do you gather the information for the safaris listed on the platform?',
+      question: 'How do you gather the information for the safaris listed on the platform?',
       answer:
-        'We scan multiple safari operator websites to gather real-time information on their safaris,including prices, itineraries, customer reviews, and experience types. We then standardize and organize the data for easy comparison.',
+        'We scan multiple safari operator websites to gather real-time information on their safaris, including prices, itineraries, customer reviews, and experience types. We then standardize and organize the data for easy comparison.',
     },
     {
       id: '5',
-      question: ' Do you handle the booking process for safaris?',
+      question: 'Do you handle the booking process for safaris?',
       answer:
         'No, we do not handle bookings directly on the platform. Once you have selected the safari you would like to book, we provide you with direct links to the operator’s website where you can complete the booking process.',
     },
@@ -60,48 +60,64 @@ const FAQs = () => {
     },
     {
       id: '10',
-      question: ' How do I leave a review after my safari?',
+      question: 'How do I leave a review after my safari?',
       answer:
-        'After completing your safari, you can share your experience on our platform to help other travelers. Your feedback will contribute to the overall ratings and recommendations for that safari',
+        'After completing your safari, you can share your experience on our platform to help other travelers. Your feedback will contribute to the overall ratings and recommendations for that safari.',
     },
     {
       id: '11',
       question: 'Is KultureXplora free to use?',
       answer:
-        'Yes, KultureXplora is free to use. You can browse, compare, and read reviews for safaris without any charge. When you are ready to book, we simply redirect you to the operator’s website to complete your booking',
+        'Yes, KultureXplora is free to use. You can browse, compare, and read reviews for safaris without any charge. When you are ready to book, we simply redirect you to the operator’s website to complete your booking.',
     },
     {
       id: '12',
-      question: ' Can I trust the safari recommendations on KultureXplora?',
+      question: 'Can I trust the safari recommendations on KultureXplora?',
       answer:
         'Yes! Our recommendations are based on real traveler feedback, ratings, and the popularity of each safari. This helps ensure that the safaris we highlight are trusted by others and have a solid track record of providing great experiences.',
     },
   ];
+
+  const toggleAccordion = index => {
+    if (openIndices.includes(index)) {
+      // If the index is already in the array, remove it (close the accordion)
+      setOpenIndices(openIndices.filter(i => i !== index));
+    } else {
+      // If the index is not in the array, add it (open the accordion)
+      setOpenIndices([...openIndices, index]);
+    }
+  };
+
   return (
     <>
-      <section className='faqs container my-5' id='faqs'>
+      <section
+        className='faqs container my-5'
+        id='faqs'>
         <h2 className='text-center mb-4'>FAQs</h2>
-        <div className='accordion' id='faqAccordion'>
+        <div
+          className='accordion'
+          id='faqAccordion'>
           {Faqs.map((faq, index) => (
-            <div className='accordion-item' key={faq.id}>
-              <h2 className='accordion-header' id={`heading${index}`}>
+            <div
+              className='accordion-item'
+              key={faq.id}>
+              <h2
+                className='accordion-header'
+                id={`heading${index}`}>
                 <button
-                  className='accordion-button collapsed'
+                  className={`accordion-button ${openIndices.includes(index) ? '' : 'collapsed'}`}
                   type='button'
-                  data-bs-toggle='collapse'
-                  data-bs-target={`#collapse${index}`}
-                  aria-expanded='false'
+                  onClick={() => toggleAccordion(index)}
+                  aria-expanded={openIndices.includes(index)}
                   aria-controls={`collapse${index}`}
-                >
+                  style={{ outline: 'none', boxShadow: 'none' }}>
                   <strong>{faq.id}. </strong> {faq.question}
                 </button>
               </h2>
               <div
                 id={`collapse${index}`}
-                className='accordion-collapse collapse'
-                aria-labelledby={`heading${index}`}
-                data-bs-parent='#faqAccordion'
-              >
+                className={`accordion-collapse collapse ${openIndices.includes(index) ? 'show' : ''}`}
+                aria-labelledby={`heading${index}`}>
                 <div className='accordion-body'>{faq.answer}</div>
               </div>
             </div>

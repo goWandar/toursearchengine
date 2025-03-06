@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 
@@ -9,7 +9,7 @@ const BetaForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     setIsLoading(true);
     setMessage(null);
 
@@ -51,23 +51,18 @@ const BetaForm = () => {
             break;
 
           case 204:
-            errorMessage =
-              'This email is already registered. Please use a different email.';
+            errorMessage = 'This email is already registered. Please use a different email.';
             break;
           default:
-            errorMessage =
-              error.response.data?.error || 'Server error occurred';
+            errorMessage = error.response.data?.error || 'Server error occurred';
         }
       } else if (error.request) {
-        errorMessage =
-          'Unable to connect to the server. Please check your internet connection.';
+        errorMessage = 'Unable to connect to the server. Please check your internet connection.';
       } else {
         errorMessage = 'Something went wrong. Please try again later.';
       }
       setMessage({
-        text:
-          error.response?.data?.message ||
-          'An error occurred. Please try again.',
+        text: error.response?.data?.message || 'An error occurred. Please try again.',
         type: 'error',
       });
     } finally {
@@ -86,15 +81,14 @@ const BetaForm = () => {
     <>
       <section className='betaForm'>
         <div className='form-container'>
-          <h1 className='title fw-bold animate__animated animate__heartBeat'>
-            Early Beta Access
-          </h1>
+          <h1 className='title fw-bold animate__animated animate__heartBeat'>Early Beta Access</h1>
           <p className='description'>
-            Join our exclusive beta launch and get first access to Africa's
-            best-ranked safari operators
+            Join our exclusive beta launch and get first access to Africa&apos;s best-ranked safari operators
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className='email-form'>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className='email-form'>
             <input
               {...register('email', {
                 required: 'Email is required',
@@ -107,18 +101,11 @@ const BetaForm = () => {
               placeholder='Enter your email'
               className='email-input'
             />
-            {errors.email && (
-              <div className='error-message invalid-feedback d-block'>
-                {errors.email.message}
-              </div>
-            )}
+            {errors.email && <div className='error-message invalid-feedback d-block'>{errors.email.message}</div>}
             <button
               type='submit'
               disabled={isLoading}
-              className={`submit-button ${
-                isLoading ? 'disabled opacity-50' : ''
-              }`}
-            >
+              className={`submit-button ${isLoading ? 'disabled opacity-50' : ''}`}>
               {isLoading ? 'Submitting...' : 'Join Waitlist'}
             </button>
           </form>
@@ -129,8 +116,7 @@ const BetaForm = () => {
                 message.type === 'success'
                   ? 'alert alert-success text-success border border-success-subtle'
                   : 'alert alert-danger  border border-danger-subtle'
-              }`}
-            >
+              }`}>
               {message.text}
             </div>
           )}
@@ -148,17 +134,15 @@ const BetaForm = () => {
                         <div className='feature-bullet bg-warning-subtle rounded-circle p-2 me-3'>
                           <i
                             className='bi bi-collection'
-                            style={{ color: 'var(--primary-color)' }}
-                          ></i>
+                            style={{
+                              color: 'var(--primary-color)',
+                            }}></i>
                         </div>
                         <div>
-                          <h4 className='h5 mb-2'>
-                            Collects Safari Information
-                          </h4>
+                          <h4 className='h5 mb-2'>Collects Safari Information</h4>
                           <p className='mb-0'>
-                            Gathers real-time details from safari operators,
-                            including location, pricing, itineraries, duration,
-                            and experience type.
+                            Gathers real-time details from safari operators, including location, pricing, itineraries,
+                            duration, and experience type.
                           </p>
                         </div>
                       </li>
@@ -170,8 +154,8 @@ const BetaForm = () => {
                         <div>
                           <h4 className='h5 mb-2'>Aggregates Reviews</h4>
                           <p className='mb-0'>
-                            Collects reviews from platforms like TripAdvisor and
-                            Google to provide a summary of ratings and feedback.
+                            Collects reviews from platforms like TripAdvisor and Google to provide a summary of ratings
+                            and feedback.
                           </p>
                         </div>
                       </li>
@@ -181,13 +165,10 @@ const BetaForm = () => {
                           <i className='bi bi-person-check '></i>
                         </div>
                         <div>
-                          <h4 className='h5 mb-2'>
-                            Personalized Recommendations
-                          </h4>
+                          <h4 className='h5 mb-2'>Personalized Recommendations</h4>
                           <p className='mb-0'>
-                            Suggests safaris based on your preferences, like
-                            location, pricing, itineraries, duration, and
-                            experience type.
+                            Suggests safaris based on your preferences, like location, pricing, itineraries, duration,
+                            and experience type.
                           </p>
                         </div>
                       </li>
@@ -199,8 +180,8 @@ const BetaForm = () => {
                         <div>
                           <h4 className='h5 mb-2'>Direct Booking Links</h4>
                           <p className='mb-0'>
-                            Offers direct links to safari operators for booking,
-                            without handling the transactions on the platform.
+                            Offers direct links to safari operators for booking, without handling the transactions on
+                            the platform.
                           </p>
                         </div>
                       </li>

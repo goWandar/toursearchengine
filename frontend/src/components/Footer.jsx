@@ -1,4 +1,3 @@
-import React from 'react';
 import { IoLogoTiktok } from 'react-icons/io5';
 import { FaFacebookSquare } from 'react-icons/fa';
 import { FaInstagram } from 'react-icons/fa';
@@ -8,8 +7,7 @@ const Footer = () => {
   return (
     <footer
       className='py-8'
-      style={{ backgroundColor: 'var(--secondary-color)' }}
-    >
+      style={{ backgroundColor: 'var(--secondary-color)' }}>
       <div className='container p-4 d-flex  justify-content-between align-items-center flex-column flex-md-row'>
         <div className='d-flex align-items-center flex-column flex-md-row'>
           <h1>
@@ -21,12 +19,9 @@ const Footer = () => {
             <a href='#'></a>
           </h1>
           <div className='d-flex flex-column ms-3'>
-            <p className='m-0 fs-4 fw-bold'>
-              Discover Africa. Book Smart. Travel Better.
-            </p>
+            <p className='m-0 fs-4 fw-bold'>Discover Africa. Book Smart. Travel Better.</p>
             <span className='fs-6 pb-2'>
-              Try KultureXplora - The easiest way to find Africa's best safari
-              operators.
+              Try KultureXplora - The easiest way to find Africa&apos;s best safari operators.
             </span>
           </div>
         </div>
@@ -35,7 +30,10 @@ const Footer = () => {
           <li>
             <a href='https://www.linkedin.com/company/kulturexplora/posts/?feedView=all'>
               {' '}
-              <FaLinkedin size={48} style={{ color: 'var(--primary-color)' }} />
+              <FaLinkedin
+                size={48}
+                style={{ color: 'var(--primary-color)' }}
+              />
             </a>
           </li>
 
