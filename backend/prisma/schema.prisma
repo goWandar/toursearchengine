@@ -1,3 +1,4 @@
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
@@ -24,43 +25,47 @@ model BetaSubscribers {
 }
 
 model Tour {
-  id             String      @id @default(uuid())
-  uniqueid       Int         @unique
-  title          String
-  description    String?
-  location       String
-  country        String
-  durationInDays Int
-  itinerary      String?
-  siteURL        String?
-  rating         Float?
-  reviews        Int?
-  dateCreated    DateTime    @default(now())
-  dateModified   DateTime    @updatedAt
-  archived       Boolean     @default(false)
-  images         TourImage[]
-  prices         TourPrice[]
+  id                Int    @id @default(autoincrement())
+  uniqueid          String         @unique
+  title             String
+  description       String?
+  location          String
+  country           String
+  durationInDays    Int
+  itinerary         String?
+  safariType        String?
+  accomodationType  String?
+  siteURL           String?
+  rating            Float?
+  reviews           Int?
+  dateCreated       DateTime    @default(now())
+  dateModified      DateTime    @updatedAt
+  archived          Boolean     @default(false)
+  images            TourImage[]
+  prices            TourPrice[]
   @@map("tours")
 }
 
 model TourImage {
-  id            String    @id @default(uuid())
+  id            Int    @id @default(autoincrement())
   image_urls    String
   dateCreated   DateTime  @default(now())
   dateModified  DateTime  @updatedAt
-  tour          Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour          Tour      @relation(fields: [tourId], references: [uniqueid], onDelete: Cascade)
   tourId        String
   @@map("tour_images")
 }
 
 model TourPrice {
-  id             String    @id @default(uuid())
+  id             Int    @id @default(autoincrement())
   numOfPeople    Int
   currency       String
   pricePerPerson Float
+  seasonName     String
+  seasonPeriod   String
   dateCreated    DateTime  @default(now())
   dateModified   DateTime  @updatedAt
-  tour           Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour           Tour      @relation(fields: [tourId], references: [uniqueid], onDelete: Cascade)
   tourId         String
   @@map("tour_prices")
 }
