@@ -54,7 +54,7 @@ model TourImage {
   tour          Tour      @relation(fields: [tourId], references: [uniqueid], onDelete: Cascade)
   tourId        String
   @@map("tour_images")
-}
+} 
 
 model TourPrice {
   id             Int    @id @default(autoincrement())
