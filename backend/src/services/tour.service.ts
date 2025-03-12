@@ -6,7 +6,7 @@ import { handlePrismaRequestError } from "../utils/errorHandler";
 export const TourService = {
   async getAllTours(): Promise<ServiceResponse<Tour[]>> {
     try {
-      const tours = await prisma.tour.findMany({
+      const tours: Tour[] = await prisma.tour.findMany({
         include: {
           images: true,
           prices: true,
