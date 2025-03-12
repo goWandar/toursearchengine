@@ -28,6 +28,7 @@ model BetaSubscribers {
 
 model Tour {
   id               Int         @id @default(autoincrement())
+  uniqueId         Int         @unique
   title            String
   description      String?
   location         String
@@ -53,7 +54,7 @@ model TourImage {
   image_urls   String
   dateCreated  DateTime @default(now())
   dateModified DateTime @updatedAt
-  tour         Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour         Tour     @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
   tourId       Int
 
   @@map("tour_images")
@@ -68,7 +69,7 @@ model TourPrice {
   seasonPeriod   String
   dateCreated    DateTime @default(now())
   dateModified   DateTime @updatedAt
-  tour           Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour           Tour     @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
   tourId         Int
 
   @@map("tour_prices")
