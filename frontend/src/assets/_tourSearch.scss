@@ -1,8 +1,8 @@
 .tour-search-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  // min-height: 100vh;
+  // background-color: #f5f5f5;
 }
 
 .tour-search-navbar {
@@ -133,11 +133,12 @@
       color: #333;
       cursor: pointer;
 
-      input[type='checkbox'] {
+      input[type="checkbox"] {
         appearance: none;
         background-color: #fafafa;
         border: 1px solid #cacece;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05),
+          inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
         padding: 10px;
         border-radius: 3px;
         display: inline-block;
@@ -151,7 +152,7 @@
           background-color: #007bff;
 
           &:after {
-            content: '';
+            content: "";
             position: absolute;
             top: 3px;
             left: 7px;
