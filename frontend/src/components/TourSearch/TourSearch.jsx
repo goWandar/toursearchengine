@@ -29,16 +29,6 @@ const TourSearch = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchTours = async () => {
-      const result: GetToursResponse<Tour[]> = await getTours();
-      //FIXME the data for some reason is nesting into Tour[][] so I'm using flat to get the data
-      const tours = result.data.flat();
-      setTours(tours);
-    };
-    fetchTours();
-  }, []);
-
   const handleSearch = () => {
     console.log({
       location,
@@ -146,10 +136,7 @@ const TourSearch = () => {
           </label>
         </div>
       </div>
-      <div>
-        {/* TODO must add spinner for loading */}
-        {tours && tours?.map((tour) => <div key={tour.id}>{tour.title}</div>)}
-      </div>
+      <div></div>
     </div>
   );
 };
