@@ -1,0 +1,89 @@
+.tour-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 200px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .card-content {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    .card-title {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .card-details {
+      flex-grow: 1;
+
+      .card-price {
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 0.5rem;
+      }
+
+      .card-country {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .card-places {
+        font-size: 0.85rem;
+        color: #666;
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0.5rem 0 0 0;
+
+          li {
+            margin-bottom: 0.25rem;
+            &:before {
+              content: '•';
+              color: #007bff;
+              margin-right: 0.5rem;
+            }
+          }
+        }
+      }
+    }
+
+    .card-button {
+      align-self: flex-end;
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+}
