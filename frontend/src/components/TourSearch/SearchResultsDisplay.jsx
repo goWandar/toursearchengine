@@ -2,9 +2,30 @@ import PropTypes from "prop-types";
 import TourCard from "./TourCard";
 import NoResults from "./NoResults";
 import "../../assets/_searchResultsDisplay.scss";
+import { GiConsoleController } from "react-icons/gi";
+
+// Function to get a random image from the images array and provide a default image if the array is empty
+function getRandomImage(images) {
+  const randomImage =
+    "https://moafrikatours.com/wp-content/uploads/2022/02/4202426-1316341_150_5_1450_893_650_400-1.jpg";
+  if (images.length != 0) {
+    return images[Math.floor(Math.random() * images.length)].image_urls;
+  } else {
+    return randomImage;
+  }
+}
+
+function getPrice(prices) {
+  if (prices.length === 0) return " NO PRICES";
+  const amountInfo = prices.find((info) => info.numOfPeople === 1);
+
+  if (amountInfo === undefined) {
+    return " PRICE UNDEFINED";
+  }
+  return amountInfo.pricePerPerson;
+}
 
 const SearchResultsDisplay = ({ results, onBookNow, hasSearched }) => {
-  console.log("results", results);
   return (
     <div
       className={`search-results ${
@@ -16,10 +37,9 @@ const SearchResultsDisplay = ({ results, onBookNow, hasSearched }) => {
           results.map((tour) => (
             <TourCard
               key={tour.id}
-              //FIXME this is a hack to get the first image
-              image={tour.images[0].image_urls}
+              image={getRandomImage(tour.images)}
               title={tour.title}
-              price={tour.price}
+              price={getPrice(tour.prices)}
               country={tour.country}
               places={tour.location.split(",")}
               onBookNow={() => onBookNow(tour.id)}
