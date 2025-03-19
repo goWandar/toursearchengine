@@ -13,12 +13,14 @@ export interface Tour {
   durationInDays: number;
   itinerary: string | null;
   safariType: string | null;
+  included: string | null;
+  excluded: string | null;
   accomodationType: string | null;
   siteURL: string | null;
   rating: number | null;
-  reviews: number | null;
+  reviews: String | null;
   dateCreated: Date;
-  dateModified: Date;
+  dateModified: Date | null;
   archived: boolean;
   images: Image[];
   prices: Price[];
@@ -28,7 +30,7 @@ export interface Image {
   id: number;
   image_urls: string;
   dateCreated: Date;
-  dateModified: Date;
+  dateModified: Date| null;
   tourId: number;
 }
 
@@ -40,7 +42,7 @@ export interface Price {
   seasonName: string;
   seasonPeriod: string;
   dateCreated: Date;
-  dateModified: Date;
+  dateModified: Date | null;
   tourId: number;
 }
 

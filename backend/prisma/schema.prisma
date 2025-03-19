@@ -33,15 +33,17 @@ model Tour {
   description      String?
   location         String
   country          String
-  durationInDays   Int
+  durationInDays   Int        @default(0)
   itinerary        String?
   safariType       String?
   accomodationType String?
   siteURL          String?
-  rating           Float?
-  reviews          Int?
+  included         String?
+  excluded         String?
+  rating           Float?      @default(0)
+  reviews          String?
   dateCreated      DateTime    @default(now())
-  dateModified     DateTime    @updatedAt
+  dateModified     DateTime?     @updatedAt
   archived         Boolean     @default(false)
   images           TourImage[]
   prices           TourPrice[]
@@ -53,7 +55,7 @@ model TourImage {
   id           Int      @id @default(autoincrement())
   image_urls   String
   dateCreated  DateTime @default(now())
-  dateModified DateTime @updatedAt
+  dateModified DateTime? @updatedAt
   tour         Tour     @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
   tourId       Int
 
@@ -62,15 +64,15 @@ model TourImage {
 
 model TourPrice {
   id             Int      @id @default(autoincrement())
-  numOfPeople    Int
+  numOfPeople    Int      @default(0)
   currency       String
-  pricePerPerson Float
+  pricePerPerson Float    @default(0)
   seasonName     String
   seasonPeriod   String
   dateCreated    DateTime @default(now())
-  dateModified   DateTime @updatedAt
+  dateModified   DateTime? @updatedAt
   tour           Tour     @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
-  tourId         Int
+  tourId         Int      @default(0)
 
   @@map("tour_prices")
 }
