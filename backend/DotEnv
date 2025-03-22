@@ -6,6 +6,7 @@ SUPABASE_URL=
 SUPABASE_KEY=
 SUPABASE_USER=
 DB_PASSWORD=
+SUPABASE_JWT_SECRET=
 
 # Connect to Supabase via connection pooling with Supavisor.
 
