@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { IoClose } from 'react-icons/io5';
 
 /**
  * Search input component with dropdown options
@@ -23,6 +24,16 @@ const SearchInput = ({ placeholder, options, onSelect, isOpen, setIsOpen }) => {
     setIsOpen(false); // Close dropdown after selection
   };
 
+  /**
+   * Clears the selected option
+   * @param {Event} e - Click event
+   */
+  const handleClear = e => {
+    e.stopPropagation(); // Prevent dropdown from opening
+    setSelectedOption('');
+    onSelect('');
+  };
+
   return (
     <div className='search-input'>
       <div
@@ -30,6 +41,13 @@ const SearchInput = ({ placeholder, options, onSelect, isOpen, setIsOpen }) => {
         onClick={() => setIsOpen(!isOpen)} // Toggle dropdown
       >
         {selectedOption || placeholder}
+        {selectedOption && (
+          <IoClose
+            className='clear-icon'
+            onClick={handleClear}
+            aria-label='Clear selection'
+          />
+        )}
       </div>
       {isOpen && (
         <ul className='options-list'>
