@@ -8,6 +8,7 @@ const TourCard = ({ image, title, price, country, places, onBookNow }) => {
         <img
           src={image}
           alt={title}
+          loading='lazy'
         />
       </div>
       <div className='card-content'>
@@ -37,7 +38,7 @@ const TourCard = ({ image, title, price, country, places, onBookNow }) => {
 TourCard.propTypes = {
   image: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   country: PropTypes.string.isRequired,
   places: PropTypes.arrayOf(PropTypes.string).isRequired,
   onBookNow: PropTypes.func.isRequired,
