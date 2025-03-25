@@ -1,210 +1,184 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import SearchInput from "./SearchInput";
-import SearchResultsDisplay from "./SearchResultsDisplay";
-import "../../assets/_tourSearch.scss";
-import { getTours } from "../../api/api";
-import { set } from "react-hook-form";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import SearchInput from './SearchInput';
+import SearchResultsDisplay from './SearchResultsDisplay';
+import useTourService from '../../services/useTourService';
+import '../../assets/_tourSearch.scss';
 
+/**
+ * Main tour search component with filters and results display
+ */
 const TourSearch = () => {
-  const [location, setLocation] = useState("");
-  const [type, setType] = useState("");
-  const [days, setDays] = useState("");
-  const [budget, setBudget] = useState("");
-  const [selectedOption, setSelectedOption] = useState(null);
+  // State for search filters
+  const [filters, setFilters] = useState({
+    location: '',
+    type: '',
+    days: '',
+    budget: '',
+    accommodationType: null,
+  });
+
+  // State for tracking which input dropdown is open
   const [openInput, setOpenInput] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
+
+  // Flag to indicate if search has been performed
   const [hasSearched, setHasSearched] = useState(false);
-  const [isSearchDisabled, setIsSearchDisabled] = useState(true);
-  const [tours, setTours] = useState([]);
 
-  useEffect(() => {
-    const fetchTours = async () => {
-      const result = await getTours();
-      //FIXME the data for some reason is nesting into Tour[][] so I'm using flat to get the data
-      const tours = result.data.flat();
-      setTours(tours);
-      setIsSearchDisabled(false);
-    };
-    fetchTours();
-  }, []);
+  // State for search results
+  const [searchResults, setSearchResults] = useState([]);
 
+  // Initialize tour service hook
+  const { tours, loading, fetchTours, filterTours, getRandomImage, getPrice } = useTourService();
+
+  // Effect for handling clicks outside of open dropdowns
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".search-input")) {
+    const handleClickOutside = event => {
+      if (!event.target.closest('.search-input')) {
         setOpenInput(null);
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const parseDaysFilter = (daysFilter) => {
-    if (!daysFilter || daysFilter === "Any") return { min: 0, max: Infinity };
-    const [min, max] = daysFilter.split("-").map((s) => {
-      const num = parseInt(s.replace(/\D/g, ""));
-      return isNaN(num) ? Infinity : num;
-    });
-    return { min, max: max || Infinity };
-  };
-
-  const parseBudgetFilter = (budgetFilter) => {
-    if (!budgetFilter) return { min: 0, max: Infinity };
-    const numbers = budgetFilter.match(/\d+/g).map(Number);
-    const min = numbers[0] || 0;
-    const max = numbers[1] || Infinity;
-    return { min, max };
-  };
-
-  const handleSearch = () => {
+  /**
+   * Handles search button click
+   * Fetches data if not already loaded, then filters results
+   */
+  const handleSearch = async () => {
     setHasSearched(true);
-    const daysFilter = parseDaysFilter(days);
-    const budgetFilter = parseBudgetFilter(budget);
 
-    const filteredResults = tours.filter((tour) => {
-      // console.log(tour);
-      const matchesLocation =
-        location === "Anywhere" ||
-        !location ||
-        tour.country.toLowerCase() === location.toLowerCase();
-      const matchesType =
-        !type || tour.type.toLowerCase() === type.toLowerCase();
-      const matchesDays =
-        days === "Any" ||
-        (tour.durationInDays >= daysFilter.min &&
-          tour.durationInDays <= daysFilter.max);
-      const matchesBudget =
-        tour.price >= budgetFilter.min && tour.price <= budgetFilter.max;
-      const matchesAccommodation =
-        !selectedOption || tour.accommodationType === selectedOption;
-      //FIXME This currently only filters by location and days
-      return matchesLocation && matchesDays;
-      // matchesLocation &&
-      // matchesType &&
-      // matchesDays
-      // matchesBudget &&
-      // matchesAccommodation
-    });
-    setSearchResults(filteredResults);
+    try {
+      let toursToFilter = tours;
+
+      // Only fetch data if not already loaded
+      if (tours.length === 0) {
+        toursToFilter = await fetchTours();
+      }
+
+      // Filter and process results
+      const filtered = filterTours(toursToFilter, filters);
+      const processedResults = filtered.map(tour => ({
+        ...tour,
+        displayImage: getRandomImage(tour.images),
+        displayPrice: getPrice(tour.prices),
+        places: tour.location?.split(',') || [],
+      }));
+
+      setSearchResults(processedResults);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([]);
+    }
   };
 
-  const daysOptions = ["Any", "1 - 5", "6 - 10", "10 - 15", "15+"];
-
-  const handleDaysSelect = (selectedDays) => {
-    setDays(selectedDays);
+  /**
+   * Updates filter state when inputs change
+   * @param {String} name - Filter name
+   * @param {*} value - New filter value
+   */
+  const handleFilterChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
+    // NEW: Close dropdown after selecting an option
     setOpenInput(null);
   };
 
-  const handleOptionChange = (option) => {
-    setSelectedOption(selectedOption === option ? null : option);
+  // Handler for book now button clicks
+  const handleBookNow = tourId => {
+    console.log('Booking tour:', tourId);
+    // TODO: Implement booking logic
   };
 
-  const handleBookNow = (tourId) => {
-    console.log("Booking tour:", tourId);
-    // Add booking logic here
-  };
-
-  const handleLocationSelect = (selectedLocation) => {
-    setLocation(selectedLocation);
-  };
+  // Options for days filter dropdown
+  const daysOptions = ['Any', '1 - 5', '6 - 10', '10 - 15', '15+'];
 
   return (
-    <div className="tour-search-container">
-      <nav className="tour-search-navbar">
-        <Link to="/" className="home-button">
+    <div className='tour-search-container'>
+      <nav className='tour-search-navbar'>
+        <Link
+          to='/'
+          className='home-button'>
           Back to Home
         </Link>
       </nav>
-      <div className="tour-search-content">
+
+      <div className='tour-search-content'>
         <h1>Tour Search</h1>
-        <div className="search-inputs-row">
+
+        {/* Search filters row */}
+        <div className='search-inputs-row'>
           <SearchInput
-            placeholder="Where to"
-            options={[
-              "Anywhere",
-              "Kenya",
-              "Tanzania",
-              "South Africa",
-              "Botswana",
-            ]}
-            onSelect={handleLocationSelect}
-            isOpen={openInput === "location"}
-            setIsOpen={setOpenInput}
-            inputName="location"
+            placeholder='Where to'
+            options={['Anywhere', 'Kenya', 'Tanzania', 'South Africa', 'Botswana']}
+            onSelect={value => handleFilterChange('location', value)}
+            isOpen={openInput === 'location'}
+            setIsOpen={shouldOpen => setOpenInput(shouldOpen ? 'location' : null)}
           />
+
           <SearchInput
-            placeholder="Type"
-            options={["Luxury", "Mid-range", "Budget"]}
-            onSelect={setType}
-            isOpen={openInput === "type"}
-            setIsOpen={setOpenInput}
-            inputName="type"
+            placeholder='Type'
+            options={['Luxury', 'Mid-range', 'Budget']}
+            onSelect={value => handleFilterChange('type', value)}
+            isOpen={openInput === 'type'}
+            setIsOpen={shouldOpen => setOpenInput(shouldOpen ? 'type' : null)}
           />
-          <div className={`days-input-container search-input`}>
-            <div
-              className={`input-container ${!days ? "placeholder" : ""}`}
-              onClick={() => setOpenInput("days")}
-            >
-              {days || "Days"}
-            </div>
-            {openInput === "days" && (
-              <ul className="options-list">
-                {daysOptions.map((option) => (
-                  <li key={option} onClick={() => handleDaysSelect(option)}>
-                    {option}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+
           <SearchInput
-            placeholder="Budget"
-            options={[
-              "0 - $499",
-              "$500 - $1499",
-              "$1500 - $2999",
-              "$3000 - $4999",
-              "$5000+",
-            ]}
-            onSelect={setBudget}
-            isOpen={openInput === "budget"}
-            setIsOpen={setOpenInput}
-            inputName="budget"
+            placeholder='Days'
+            options={daysOptions}
+            onSelect={value => handleFilterChange('days', value)}
+            isOpen={openInput === 'days'}
+            setIsOpen={shouldOpen => setOpenInput(shouldOpen ? 'days' : null)}
           />
+
+          <SearchInput
+            placeholder='Budget'
+            options={['0 - $499', '$500 - $1499', '$1500 - $2999', '$3000 - $4999', '$5000+']}
+            onSelect={value => handleFilterChange('budget', value)}
+            isOpen={openInput === 'budget'}
+            setIsOpen={shouldOpen => setOpenInput(shouldOpen ? 'budget' : null)}
+          />
+
           <button
-            className="search-button"
+            className='search-button'
             onClick={handleSearch}
-            disabled={isSearchDisabled}
-          >
-            {tours.length > 0 ? "Search" : "Loading..."}
+            disabled={loading}>
+            {loading ? 'Searching...' : 'Search'}
           </button>
         </div>
-        <div className="checkboxes-row">
-          <label className="checkbox-label">
+
+        {/* Accommodation type checkboxes */}
+        <div className='checkboxes-row'>
+          <label className='checkbox-label'>
             <input
-              type="checkbox"
-              checked={selectedOption === "lodge"}
-              onChange={() => handleOptionChange("lodge")}
+              type='checkbox'
+              checked={filters.accommodationType === 'lodge'}
+              onChange={() =>
+                handleFilterChange('accommodationType', filters.accommodationType === 'lodge' ? null : 'lodge')
+              }
             />
             Lodge
           </label>
-          <label className="checkbox-label">
+          <label className='checkbox-label'>
             <input
-              type="checkbox"
-              checked={selectedOption === "camp"}
-              onChange={() => handleOptionChange("camp")}
+              type='checkbox'
+              checked={filters.accommodationType === 'camp'}
+              onChange={() =>
+                handleFilterChange('accommodationType', filters.accommodationType === 'camp' ? null : 'camp')
+              }
             />
             Camp
           </label>
         </div>
 
+        {/* Results display area */}
         <SearchResultsDisplay
           results={searchResults}
           onBookNow={handleBookNow}
           hasSearched={hasSearched}
+          loading={loading}
+          loadingMessage='Finding tours...'
         />
       </div>
     </div>
