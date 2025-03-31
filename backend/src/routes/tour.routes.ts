@@ -1,24 +1,31 @@
 import { Request, Response, Router } from "express";
 import { TourService } from "../services/tour.service";
 import { responseHandler } from "../utils/responseHandler";
-import { ServiceResponse } from "../types/types";
 import { Tour } from "@prisma/client";
 
 const router: Router = Router();
 
 type Filters = {
-  location: string | undefined;
-  days: number | undefined;
+  location: string | null;
+  daysMin: number | null;
+  daysMax: number | null;
 };
 
 function applyFilters(filters: Filters, tours: Tour[]): Tour[] {
   let filteredTours: Tour[] = tours;
-  const { location, days } = filters;
 
-  if (location !== undefined) {
-    filteredTours = tours.filter((tour) => {
+  const { location, daysMax, daysMin } = filters;
+
+  if (location !== null) {
+    filteredTours = filteredTours.filter((tour) => {
       const locationArray = tour.location.toLowerCase().split(", ");
-      return locationArray.includes(location);
+      return locationArray.includes(location.toLowerCase());
+    });
+  }
+
+  if (daysMin !== null && daysMax !== null) {
+    filteredTours = filteredTours.filter((tours) => {
+      return tours.durationInDays >= daysMin && tours.durationInDays <= daysMax;
     });
   }
 
@@ -29,11 +36,14 @@ router.get("/tours", async (req: Request, res: Response) => {
   let tours!: Tour[];
   let filteredTours!: Tour[];
 
-  const { location, days } = req.query;
+  const { location, daysMin, daysMax } = req.query;
+
+  console.log(location, daysMax, daysMin);
 
   let filters: Filters = {
-    location: location as string,
-    days: Number(days),
+    location: location === undefined ? null : (location as string),
+    daysMin: daysMin === undefined ? null : Number(daysMin),
+    daysMax: daysMax === undefined ? null : Number(daysMax),
   };
 
   const result = await TourService.getAllTours();
@@ -42,8 +52,6 @@ router.get("/tours", async (req: Request, res: Response) => {
     tours = result.data;
 
     filteredTours = applyFilters(filters, tours);
-
-    console.log(filteredTours.length);
 
     let response = { success: true, data: filteredTours };
 
