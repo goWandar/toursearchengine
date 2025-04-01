@@ -2,18 +2,60 @@ import { prisma } from "../db/prisma";
 import { ServiceResponse } from "../types/types";
 import { Tour } from "../types/types";
 import { handlePrismaRequestError } from "../utils/errorHandler";
+import { Request, Response } from "express";
+
+type GetAllToursResponse = {
+  tours: Tour[];
+  cursor: number | null;
+};
 
 export const TourService = {
-  async getAllTours(): Promise<ServiceResponse<Tour[]>> {
+  async getAllTours(
+    req: Request,
+    res: Response
+  ): Promise<ServiceResponse<GetAllToursResponse>> {
+    const { location, daysMin, daysMax, cursor = 0, limit = 50 } = req.query;
+    console.log({
+      location,
+      daysMax,
+      daysMin,
+      cursor,
+      limit,
+      debug: "debugging req.query",
+    });
+
     try {
-      const tours: Tour[] = await prisma.tour.findMany({
+      const tours = await prisma.tour.findMany({
+        take: Number(limit),
+        cursor: cursor ? { id: Number(cursor) } : undefined,
+        where: {
+          location: location
+            ? {
+                contains: String(location),
+                mode: "insensitive",
+              }
+            : undefined,
+          durationInDays: {
+            gte: daysMin ? Number(daysMin) : undefined,
+            lte: daysMax ? Number(daysMax) : undefined,
+          },
+        },
         include: {
           images: true,
           prices: true,
         },
+        orderBy: {
+          id: "asc",
+        },
       });
 
-      return { success: true, data: tours };
+      return {
+        success: true,
+        data: {
+          tours,
+          cursor: tours.length ? tours[tours.length - 1].id : null,
+        },
+      };
     } catch (error) {
       return handlePrismaRequestError(error, "getting tours");
     }
