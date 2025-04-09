@@ -1,9 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
 
-export function authenticateToken(
+if (!supabaseJwtSecret)
+    throw new Error("SUPABASE_JWT_SECRET is not set. Check your .env file.");
+
+const verifyJwt = (token: string, secret: string): Promise<JwtPayload> => {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, secret, (err, decoded) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(decoded as JwtPayload);
+        });
+    });
+};
+
+export async function authenticateToken(
     req: Request,
     res: Response,
     next: NextFunction
@@ -12,17 +26,21 @@ export function authenticateToken(
     const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
 
     if (!token) {
-        res.status(401).json({ error: "Access denied: no token provide" });
+        res.status(401).json({ error: "Access denied: no token provided" });
         return;
     }
 
     try {
-        jwt.verify(token, supabaseJwtSecret, (err, user) => {
-            if (err) return res.status(403).json({ error: "Invalid token" });
-            req.user = user;
-            next();
-        });
+        const decoded = (await verifyJwt(
+            token,
+            supabaseJwtSecret
+        )) as JwtPayload;
+
+        req.user = decoded as JwtPayload;
+        console.log("User authenticated:", decoded);
+        next();
     } catch (err) {
-        res.status(403).json({ error: "Invalid token" });
+        console.error("Token verification failed:", err);
+        return res.status(403).json({ error: "Invalid token" });
     }
 }
