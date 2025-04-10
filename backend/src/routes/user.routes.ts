@@ -13,16 +13,16 @@ router.post("/user", async (req: Request, res: Response) => {
     responseHandler(res, result, "POST");
 });
 
-// router.get(
-//     "/user-auth-test",
-//     authenticateToken,
-//     async (req: Request, res: Response) => {
-//         const user = req.user;
-//         res.json({
-//             message: "Authenticated route hit successfully!",
-//             user,
-//         });
-//     }
-// );
+router.get(
+    "/user-auth-test",
+    authenticateToken,
+    async (req: Request, res: Response) => {
+        const user = req.user;
+        res.json({
+            message: "Authenticated route hit successfully!",
+            user,
+        });
+    }
+);
 
 export default router;

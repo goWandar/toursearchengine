@@ -21,8 +21,10 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Auth logic
 (async () => {
-    const email = process.env.SUPABASE_EMAIL;
-    const password = process.env.SUPABASE_PASSWORD;
+    const email = process.env.SUPABASE_USER;
+    const password = process.env.SUPABASE_PASSWORD; //TODO: fix schema and add password
+    console.log("SUPABASE_USER:", process.env.SUPABASE_USER);
+    console.log("SUPABASE_PASSWORD:", process.env.SUPABASE_PASSWORD);
 
     if (!email || !password) {
         console.error("Missing SUPABASE_EMAIL or SUPABASE_PASSWORD in .env");
