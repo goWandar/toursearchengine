@@ -7,10 +7,9 @@ import {
     emailFormattingCheck,
 } from "../utils/inputValidation";
 
-//TODO: user.routes: add authentication then create login, updating user information, etc.
-
 export const UserService = {
     async createUser(
+        id: string,
         name: string,
         email: string
     ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
@@ -34,7 +33,7 @@ export const UserService = {
 
         try {
             const user = await prisma.user.create({
-                data: { name, email },
+                data: { id, name, email },
             });
 
             await logger.success(

@@ -11,6 +11,7 @@ import {
 
 export const AdminService = {
     async adminCreateUser(
+        id: string,
         name: string,
         email: string
     ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
@@ -34,7 +35,7 @@ export const AdminService = {
 
         try {
             const user = await prisma.user.create({
-                data: { name, email },
+                data: { id, name, email },
             });
 
             await logger.success(

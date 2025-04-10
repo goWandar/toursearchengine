@@ -41,6 +41,7 @@ export async function authenticateToken(
         next();
     } catch (err) {
         console.error("Token verification failed:", err);
-        return res.status(403).json({ error: "Invalid token" });
+        res.status(403).json({ error: "Invalid token" });
+        return;
     }
 }
