@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import { UserService } from "../services/user.service";
 import { responseHandler } from "../utils/responseHandler";
 import { SupabaseProvider } from "../providers/supabase.provider";
-import { authenticateToken } from "../middleware/auth";
 
 const router = Router();
 
@@ -31,16 +30,36 @@ router.post("/user/signup", async (req: Request, res: Response) => {
     responseHandler(res, result, "POST");
 });
 
-// router.get(
-//     "/user-auth-test",
-//     authenticateToken,
-//     async (req: Request, res: Response) => {
-//         const user = req.user;
-//         res.json({
-//             message: "Authenticated route hit successfully!",
-//             user,
-//         });
-//     }
-// );
+// POST User Sign In
+router.post("/user/signin", async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.status(400).json({ error: "Email and password are required" });
+        return;
+    }
+
+    // Sign in via Supabase Auth
+    const { data, error } = await SupabaseProvider.signIn(email, password);
+
+    if (error || !data?.session?.access_token) {
+        res.status(400).json({ error: error?.message || "Signin failed" });
+        return;
+    }
+
+    const user = data.user;
+    const accessToken = data.session.access_token;
+
+    const result = {
+        success: true,
+        data: {
+            id: user.id,
+            email: user.email,
+            accessToken,
+        },
+    };
+
+    responseHandler(res, result, "POST");
+});
 
 export default router;

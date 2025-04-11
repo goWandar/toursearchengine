@@ -1,12 +1,11 @@
 import { Request, Response, Router } from "express";
 import { AdminService } from "../services/admin.service";
-import { SupabaseProvider } from "../providers/supabase.provider";
 import { responseHandler } from "../utils/responseHandler";
 import { authenticateToken } from "../middleware/auth";
 
 const router = Router();
 
-// POST: Admin creates a user (requires token)
+// POST: Admin creates a user
 router.post(
     "/admin/user",
     authenticateToken,
@@ -18,7 +17,7 @@ router.post(
     }
 );
 
-// GET: Fetch single user by ID (admin only)
+// GET: Fetch single user by ID
 router.get(
     "/admin/user/:id",
     authenticateToken,
@@ -30,7 +29,7 @@ router.get(
     }
 );
 
-// GET: Fetch all users (admin only)
+// GET: Fetch all users
 router.get(
     "/admin/users",
     authenticateToken,
