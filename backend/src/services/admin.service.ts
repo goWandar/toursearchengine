@@ -8,13 +8,14 @@ import {
     emailFormattingCheck,
     checkIfValidUUID,
 } from "../utils/inputValidation";
+import { User } from "../types/types";
 
 export const AdminService = {
     async adminCreateUser(
         id: string,
         name: string,
         email: string
-    ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
+    ): Promise<ServiceResponse<User>> {
         const requiredCheck = checkRequiredFields(
             { key: "name", value: name },
             { key: "email", value: email }
@@ -35,14 +36,14 @@ export const AdminService = {
 
         try {
             const user = await prisma.user.create({
-                data: { id, name, email },
+                data: { id, name, email, role: "ADMIN" },
             });
 
             await logger.success(
                 `[AdminService] User created successfully:`,
                 user.email
             );
-            return { success: true, data: user };
+            return { success: true, data: user as User };
         } catch (error) {
             return handlePrismaRequestError(error, "creating user");
         }
