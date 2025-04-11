@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { ServiceResponse } from "../types/types";
 import { Tour } from "../types/types";
@@ -14,27 +15,54 @@ export const TourService = {
     req: Request,
     res: Response
   ): Promise<ServiceResponse<GetAllToursResponse>> {
-    const { location, daysMin, daysMax, cursor = 0, limit } = req.query;
+    const {
+      location,
+      daysMin,
+      daysMax,
+      cursor = 0,
+      limit = 10,
+      priceMin,
+      priceMax,
+      safariType,
+      accomodationType,
+    } = req.query;
 
-    try {
-      const tours = await prisma.tour.findMany({
-        take: Number(limit) || 10,
-        cursor: cursor ? { id: Number(cursor) } : undefined,
-        where: {
-          location: location
-            ? {
-                contains: String(location),
-                mode: "insensitive",
-              }
-            : undefined,
-          durationInDays: {
-            gte: daysMin ? Number(daysMin) : undefined,
-            lte: daysMax ? Number(daysMax) : undefined,
+    //generation filters
+    const filters: Prisma.TourWhereInput = {
+      location: location
+        ? {
+            contains: String(location),
+            mode: "insensitive",
+          }
+        : undefined,
+      durationInDays: {
+        gte: daysMin ? Number(daysMin) : undefined,
+        lte: daysMax ? Number(daysMax) : undefined,
+      },
+      prices: {
+        some: {
+          pricePerPerson: {
+            gte: priceMin ? Number(priceMin) : undefined,
+            lte: priceMax ? Number(priceMax) : undefined,
           },
         },
+      },
+      safariType: safariType
+        ? { contains: String(safariType), mode: "insensitive" }
+        : undefined,
+      accomodationType: accomodationType
+        ? { contains: String(accomodationType), mode: "insensitive" }
+        : undefined,
+    };
+
+    try {
+      const tours: Tour[] = await prisma.tour.findMany({
+        take: Number(limit),
+        cursor: cursor ? { id: Number(cursor) } : undefined,
+        where: filters,
         include: {
-          images: true,
           prices: true,
+          images: true,
         },
         orderBy: {
           id: "asc",
