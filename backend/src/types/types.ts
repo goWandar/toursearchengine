@@ -1,5 +1,12 @@
 export interface User {
+    id: string;
     name: string;
+    email: string;
+    role: "USER" | "ADMIN";
+}
+
+export interface AuthUser {
+    id: string;
     email: string;
 }
 
@@ -15,7 +22,7 @@ export interface Tour {
     safariType: string | null;
     included: string | null;
     excluded: string | null;
-    accomodationType: string | null;
+    accommodationType: string | null;
     siteURL: string | null;
     rating: number | null;
     reviews: String | null;

@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { UserService } from "../services/user.service";
 import { responseHandler } from "../utils/responseHandler";
 import { SupabaseProvider } from "../providers/supabase.provider";
+import { AuthUser } from "../types/types";
 
 const router = Router();
 
@@ -47,14 +48,13 @@ router.post("/user/signin", async (req: Request, res: Response) => {
         return;
     }
 
-    const user = data.user;
+    const user = data.user as AuthUser;
     const accessToken = data.session.access_token;
 
     const result = {
         success: true,
         data: {
-            id: user.id,
-            email: user.email,
+            ...user,
             accessToken,
         },
     };

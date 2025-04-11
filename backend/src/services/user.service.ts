@@ -6,13 +6,14 @@ import {
     checkRequiredFields,
     emailFormattingCheck,
 } from "../utils/inputValidation";
+import { User } from "../types/types";
 
 export const UserService = {
     async createUser(
         id: string,
         name: string,
         email: string
-    ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
+    ): Promise<ServiceResponse<User>> {
         const requiredCheck = checkRequiredFields(
             { key: "name", value: name },
             { key: "email", value: email }
@@ -33,14 +34,15 @@ export const UserService = {
 
         try {
             const user = await prisma.user.create({
-                data: { id, name, email },
+                data: { id, name, email, role: "USER" },
             });
 
             await logger.success(
                 `[UserService] User created successfully:`,
                 user.email
             );
-            return { success: true, data: user };
+
+            return { success: true, data: user as User };
         } catch (error) {
             return handlePrismaRequestError(error, "creating user");
         }
