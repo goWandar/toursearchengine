@@ -14,19 +14,11 @@ export const TourService = {
     req: Request,
     res: Response
   ): Promise<ServiceResponse<GetAllToursResponse>> {
-    const { location, daysMin, daysMax, cursor = 0, limit = 50 } = req.query;
-    console.log({
-      location,
-      daysMax,
-      daysMin,
-      cursor,
-      limit,
-      debug: "debugging req.query",
-    });
+    const { location, daysMin, daysMax, cursor = 0, limit } = req.query;
 
     try {
       const tours = await prisma.tour.findMany({
-        take: Number(limit),
+        take: Number(limit) || 10,
         cursor: cursor ? { id: Number(cursor) } : undefined,
         where: {
           location: location
