@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { getTours } from './api';
+import { useState, useCallback } from "react";
+import { getTours } from "./api";
 
 /**
  * Custom hook for managing tour data and related operations
@@ -21,9 +21,11 @@ const useTourService = () => {
   const fetchTours = useCallback(async () => {
     try {
       setLoading(true);
+      //TODO add proper type here
       const result = await getTours();
-      // Flatten nested array structure and store tours
-      const flattenedTours = result.data.flat(); //arun to fix
+
+      // No need to flatten the trips anymore but error handing must be done properly here
+      const flattenedTours = result.data.tours; //a
       setTours(flattenedTours);
       setHasLoaded(true);
       setError(null);
@@ -43,8 +45,13 @@ const useTourService = () => {
    * @param {String} fallbackImage - Default image if no images available
    * @returns {String} Image URL
    */
-  const getRandomImage = (images, fallbackImage = 'https://moafrikatours.com/default.jpg') => {
-    return images?.length > 0 ? images[Math.floor(Math.random() * images.length)].image_urls : fallbackImage;
+  const getRandomImage = (
+    images,
+    fallbackImage = "https://moafrikatours.com/default.jpg"
+  ) => {
+    return images?.length > 0
+      ? images[Math.floor(Math.random() * images.length)].image_urls
+      : fallbackImage;
   };
 
   /**
@@ -52,10 +59,10 @@ const useTourService = () => {
    * @param {Array} prices - Array of price objects
    * @returns {String|Number} Formatted price or message
    */
-  const getPrice = prices => {
-    if (!prices?.length) return 'Price not available';
-    const amountInfo = prices.find(info => info.numOfPeople === 1);
-    return amountInfo?.pricePerPerson ?? 'Price not available';
+  const getPrice = (prices) => {
+    if (!prices?.length) return "Price not available";
+    const amountInfo = prices.find((info) => info.numOfPeople === 1);
+    return amountInfo?.pricePerPerson ?? "Price not available";
   };
 
   /**
@@ -70,31 +77,38 @@ const useTourService = () => {
     const daysFilter = parseDaysFilter(days);
     const budgetFilter = parseBudgetFilter(budget);
 
-    return tours.filter(tour => {
+    return tours.filter((tour) => {
       const matchesLocation =
-        !location || location === 'Anywhere' || tour.country.toLowerCase() === location.toLowerCase();
-      const matchesType = !type || tour.type.toLowerCase() === type.toLowerCase();
+        !location ||
+        location === "Anywhere" ||
+        tour.country.toLowerCase() === location.toLowerCase();
+      const matchesType =
+        !type || tour.type.toLowerCase() === type.toLowerCase();
       const matchesDays =
-        days === 'Any' || (tour.durationInDays >= daysFilter.min && tour.durationInDays <= daysFilter.max);
-      const matchesBudget = tour.price >= budgetFilter.min && tour.price <= budgetFilter.max;
-      const matchesAccommodation = !accommodationType || tour.accommodationType === accommodationType;
+        days === "Any" ||
+        (tour.durationInDays >= daysFilter.min &&
+          tour.durationInDays <= daysFilter.max);
+      const matchesBudget =
+        tour.price >= budgetFilter.min && tour.price <= budgetFilter.max;
+      const matchesAccommodation =
+        !accommodationType || tour.accommodationType === accommodationType;
 
       return matchesLocation && matchesDays;
     });
   };
 
   // Helper function to parse days filter string into min/max values
-  const parseDaysFilter = daysFilter => {
-    if (!daysFilter || daysFilter === 'Any') return { min: 0, max: Infinity };
-    const [min, max] = daysFilter.split('-').map(s => {
-      const num = parseInt(s.replace(/\D/g, ''));
+  const parseDaysFilter = (daysFilter) => {
+    if (!daysFilter || daysFilter === "Any") return { min: 0, max: Infinity };
+    const [min, max] = daysFilter.split("-").map((s) => {
+      const num = parseInt(s.replace(/\D/g, ""));
       return isNaN(num) ? Infinity : num;
     });
     return { min, max: max || Infinity };
   };
 
   // Helper function to parse budget filter string into min/max values
-  const parseBudgetFilter = budgetFilter => {
+  const parseBudgetFilter = (budgetFilter) => {
     if (!budgetFilter) return { min: 0, max: Infinity };
     const numbers = budgetFilter.match(/\d+/g).map(Number);
     const min = numbers[0] || 0;
