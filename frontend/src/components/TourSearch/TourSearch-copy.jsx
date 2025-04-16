@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SearchInput from "./SearchInput";
 import SearchResultsDisplay from "./SearchResultsDisplay";
-// import useTourService from "../../services/useTourService";
+import useTourService from "../../services/useTourService";
 import "../../assets/_tourSearch.scss";
-import { useToursWithFilter } from "../../hooks/useToursWithFilter";
-import { createUrlwithFilter } from "../../utils/tourService/tourUtils";
 
 /**
  * Main tour search component with filters and results display
@@ -18,7 +16,6 @@ const TourSearch = () => {
     days: "",
     budget: "",
     accommodationType: "",
-    safariType: "",
   });
 
   // State for tracking which input dropdown is open
@@ -30,9 +27,9 @@ const TourSearch = () => {
   // State for search results
   const [searchResults, setSearchResults] = useState([]);
 
-  //Initialize tour service hook
-  //   const { tours, loading, fetchTours, filterTours, getRandomImage, getPrice } =
-  //     useTourService();
+  // Initialize tour service hook
+  const { tours, loading, fetchTours, filterTours, getRandomImage, getPrice } =
+    useTourService();
 
   // Effect for handling clicks outside of open dropdowns
   useEffect(() => {
@@ -51,29 +48,26 @@ const TourSearch = () => {
    * Fetches data if not already loaded, then filters results
    */
   const handleSearch = async () => {
-    console.log("testing");
-    // setHasSearched(true);
-    console.log(filters);
+    setHasSearched(true);
 
     try {
-      //   let toursToFilter = tours;
-      //   // Only fetch data if not already loaded
-      //   if (tours.length === 0) {
-      //     toursToFilter = await fetchTours();
-      //   }
-      //   // Filter and process results
-      //   const filtered = filterTours(toursToFilter, filters);
-      //   const processedResults = filtered.map((tour) => ({
-      //     ...tour,
-      //     displayImage: getRandomImage(tour.images),
-      //     displayPrice: getPrice(tour.prices),
-      //     places: tour.location?.split(",") || [],
-      //   }));
-      const url = createUrlwithFilter(filters, 0);
-      console.log(url);
-      const { isPending, data } = useToursWithFilter(url);
+      let toursToFilter = tours;
 
-      setSearchResults(data.tours);
+      // Only fetch data if not already loaded
+      if (tours.length === 0) {
+        toursToFilter = await fetchTours();
+      }
+
+      // Filter and process results
+      const filtered = filterTours(toursToFilter, filters);
+      const processedResults = filtered.map((tour) => ({
+        ...tour,
+        displayImage: getRandomImage(tour.images),
+        displayPrice: getPrice(tour.prices),
+        places: tour.location?.split(",") || [],
+      }));
+
+      setSearchResults(processedResults);
     } catch (error) {
       console.error("Search failed:", error);
       setSearchResults([]);
@@ -164,9 +158,9 @@ const TourSearch = () => {
           <button
             className="search-button"
             onClick={handleSearch}
-            // disabled={loading}
+            disabled={loading}
           >
-            Search
+            {loading ? "Searching..." : "Search"}
           </button>
         </div>
 
@@ -205,7 +199,7 @@ const TourSearch = () => {
           results={searchResults}
           onBookNow={handleBookNow}
           hasSearched={hasSearched}
-          // loading={loading}
+          loading={loading}
           loadingMessage="Finding tours..."
         />
       </div>
