@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SearchInput from "./SearchInput";
 import SearchResultsDisplay from "./SearchResultsDisplay";
-// import useTourService from "../../services/useTourService";
+import useSearchToursAPI from "../../hooks/useSearchToursAPI";
 import "../../assets/_tourSearch.scss";
-import { useToursWithFilter } from "../../hooks/useToursWithFilter";
 import { createUrlwithFilter } from "../../utils/tourService/tourUtils";
 
 /**
  * Main tour search component with filters and results display
  */
 const TourSearch = () => {
+  let searchURL;
   // State for search filters
   const [filters, setFilters] = useState({
     location: "",
@@ -30,9 +30,25 @@ const TourSearch = () => {
   // State for search results
   const [searchResults, setSearchResults] = useState([]);
 
+  //State for fetching more results
+  const [fetchMoreResult, setFetchMoreResult] = useState([]);
+
+  searchURL = createUrlwithFilter(filters, 0);
+  console.log(searchURL);
+
   //Initialize tour service hook
-  //   const { tours, loading, fetchTours, filterTours, getRandomImage, getPrice } =
-  //     useTourService();
+  const {
+    data: result,
+    refetch,
+    isPending,
+    error,
+  } = useSearchToursAPI(searchURL);
+
+  console.log({ data: result, error: error, isPending });
+
+  if (result) {
+    setSearchResults(result.data);
+  }
 
   // Effect for handling clicks outside of open dropdowns
   useEffect(() => {
@@ -51,8 +67,8 @@ const TourSearch = () => {
    * Fetches data if not already loaded, then filters results
    */
   const handleSearch = async () => {
-    console.log("testing");
-    // setHasSearched(true);
+    console.log("clicked");
+    setHasSearched(true);
     console.log(filters);
 
     try {
@@ -69,11 +85,8 @@ const TourSearch = () => {
       //     displayPrice: getPrice(tour.prices),
       //     places: tour.location?.split(",") || [],
       //   }));
-      const url = createUrlwithFilter(filters, 0);
-      console.log(url);
-      const { isPending, data } = useToursWithFilter(url);
 
-      setSearchResults(data.tours);
+      refetch();
     } catch (error) {
       console.error("Search failed:", error);
       setSearchResults([]);
@@ -110,7 +123,6 @@ const TourSearch = () => {
 
       <div className="tour-search-content">
         <h1>Tour Search</h1>
-
         {/* Search filters row */}
         <div className="search-inputs-row">
           <SearchInput
@@ -169,7 +181,6 @@ const TourSearch = () => {
             Search
           </button>
         </div>
-
         {/* Accommodation type checkboxes */}
         <div className="checkboxes-row">
           <label className="checkbox-label">
@@ -199,10 +210,10 @@ const TourSearch = () => {
             Camp
           </label>
         </div>
-
         {/* Results display area */}
+        result.data &&
         <SearchResultsDisplay
-          results={searchResults}
+          results={result.data}
           onBookNow={handleBookNow}
           hasSearched={hasSearched}
           // loading={loading}

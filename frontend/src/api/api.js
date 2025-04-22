@@ -7,7 +7,9 @@ export async function getTours() {
   return response.data;
 }
 
-export async function searchTours(url: string) {
+export async function searchToursAPI(url) {
   const response = await axios.get(url);
+
+  //TODO manage error here ?
   return response.data;
 }

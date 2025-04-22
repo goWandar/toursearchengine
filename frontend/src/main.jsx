@@ -6,6 +6,10 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import App from "./App.jsx";
 
+//TODO remove if this doesn't make the error go away
+
+// import "./lal-vite-env.js";
+
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(

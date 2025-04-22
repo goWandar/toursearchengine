@@ -1,10 +1,8 @@
-import { Filters } from "../../types/types";
-
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-export function createUrlwithFilter(filters: Filters, cursor: string) {
+export function createUrlwithFilter(filters, cursor) {
   let url = `${baseUrl}/api/tours/?`;
-  let daysMin!: string, daysMax!: string, priceMin!: string, priceMax!: string;
+  let daysMin, daysMax, priceMin, priceMax;
 
   const { location, accommodationType, days, budget, safariType } = filters;
   if (days !== "") {
