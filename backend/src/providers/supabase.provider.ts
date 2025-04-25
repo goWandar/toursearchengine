@@ -1,10 +1,11 @@
 // SupabaseProvider.signUp; DONE
 // SupabaseProvider.signIn; DONE
 // SupabaseProvider.signOut; DONE
+// SupabaseProvider.getUser; DONE
+
 // SupabaseProvider.changePassword;
 // SupabaseProvider.oneTimePassword;
 // SupabaseProvider.updateUser;
-// SupabaseProvider.getUser; DONE
 // SupabaseProvider.refreshToken;
 // SupabaseProvider.verifyToken;
 // SupabaseProvider.deleteUser;

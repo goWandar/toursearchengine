@@ -10,19 +10,33 @@ const router = Router();
 router.post("/user/signup", async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
 
+    if (!name || !email || !password) {
+        return responseHandler(
+            res,
+            { success: false, error: "Name, email, and password are required" },
+            "POST"
+        );
+    }
+
     // Create user via Supabase Auth
     const { data, error } = await SupabaseProvider.signUp(email, password);
 
-    if (error || !data?.user?.id) {
-        res.status(400).json({ error: error?.message || "Signup failed" });
-        return;
+    if (!name || !email || !password) {
+        return responseHandler(
+            res,
+            { success: false, error: "Name, email, and password are required" },
+            "POST"
+        );
     }
 
     const supabaseUserId = data.user?.id;
 
     if (!supabaseUserId) {
-        res.status(400).json({ error: "Signup failed: User ID is null" });
-        return;
+        return responseHandler(
+            res,
+            { success: false, error: "Signup failed: User ID is null" },
+            "POST"
+        );
     }
 
     // Store userdata
@@ -36,20 +50,25 @@ router.post("/user/signin", async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        res.status(400).json({ error: "Email and password are required" });
-        return;
+        return responseHandler(
+            res,
+            { success: false, error: "Email and password are required" },
+            "POST"
+        );
     }
 
     // Sign in via Supabase Auth
     const { data, error } = await SupabaseProvider.signIn(email, password);
 
     if (error || !data?.session?.access_token) {
-        res.status(400).json({ error: error?.message || "Signin failed" });
-        return;
+        return responseHandler(
+            res,
+            { success: false, error: error?.message || "Signin failed" },
+            "POST"
+        );
     }
 
     const user = data.user as AuthUser;
-    const accessToken = data.session.access_token;
 
     const result = {
         success: true,
@@ -66,11 +85,12 @@ router.post("/user/signout", async (_req: Request, res: Response) => {
     const { error } = await SupabaseProvider.signOut();
 
     if (error) {
-        res.status(400).json({ error: error.message });
-        return;
+        return responseHandler(
+            res,
+            { success: false, error: error.message },
+            "POST"
+        );
     }
-
-    res.status(200).json({ message: "Sign out successful" });
 
     const result = {
         success: true,
