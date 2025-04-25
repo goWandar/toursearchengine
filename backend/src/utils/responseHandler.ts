@@ -1,4 +1,5 @@
 import { Response } from "express";
+import logger from "./logger";
 
 export const responseHandler = (
     res: Response,
@@ -16,6 +17,13 @@ export const responseHandler = (
         : result.error === "Error fetching users."
         ? 500
         : 400; // Default to 400 Bad Request for other failures
+
+    // Log the response
+    if (result.success) {
+        logger.success(`[${method}] ${statusCode} - Success`, result.data);
+    } else {
+        logger.error(`[${method}] ${statusCode} - Error: ${result.error}`);
+    }
 
     res.status(statusCode).json({
         statusCode,
