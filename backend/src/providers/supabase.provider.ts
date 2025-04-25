@@ -42,4 +42,10 @@ export const SupabaseProvider = {
         } = await supabase.auth.getUser();
         return { user };
     },
+
+    async resetPassword(email: string) {
+        return await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: process.env.SUPABASE_REDIRECT_URL,
+        });
+    },
 };

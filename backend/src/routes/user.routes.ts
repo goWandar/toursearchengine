@@ -40,7 +40,11 @@ router.post("/user/signup", async (req: Request, res: Response) => {
     }
 
     // Store userdata
-    const result = await UserService.createUser(supabaseUserId, name, email);
+    const result = await UserService.userCreateUser(
+        supabaseUserId,
+        name,
+        email
+    );
 
     responseHandler(res, result, "POST");
 });

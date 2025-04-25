@@ -3,7 +3,8 @@ import logger from "../utils/logger";
 
 export const handlePrismaRequestError = (
     error: unknown,
-    action: string
+    action: string,
+    serviceName: string
 ): { success: false; error: string } => {
     if (error instanceof Prisma.PrismaClientInitializationError) {
         logger.error(`Database connection failed during ${action}.`);
@@ -17,19 +18,19 @@ export const handlePrismaRequestError = (
         switch (error.code) {
             case "P2002":
                 logger.error(
-                    `[UserService] Error: Unique constraint violated (${action})`
+                    `[${serviceName}] Error: Unique constraint violated (${action})`
                 );
                 return { success: false, error: "Email already exists." };
 
             case "P2025":
                 logger.error(
-                    `[UserService] Error: Record not found (${action}).`
+                    `[${serviceName}] Error: Record not found (${action}).`
                 );
                 return { success: false, error: "Record not found." };
 
             case "P2003":
                 logger.error(
-                    `[UserService] Error: Foreign key constraint failed (${action}).`
+                    `[${serviceName}] Error: Foreign key constraint failed (${action}).`
                 );
                 return {
                     success: false,
@@ -38,13 +39,13 @@ export const handlePrismaRequestError = (
 
             case "P2000":
                 logger.error(
-                    `[UserService] Error: Value too long for column (${action}).`
+                    `[${serviceName}] Error: Value too long for column (${action}).`
                 );
                 return { success: false, error: "Input value is too long." };
 
             case "P2011":
                 logger.error(
-                    `[UserService] Error: Null constraint violation (${action}).`
+                    `[${serviceName}] Error: Null constraint violation (${action}).`
                 );
                 return {
                     success: false,
@@ -55,7 +56,7 @@ export const handlePrismaRequestError = (
             case "P1001":
             case "P1008":
                 logger.error(
-                    `[UserService] Error: Database connection issue (${action}).`
+                    `[${serviceName}] Error: Database connection issue (${action}).`
                 );
                 return {
                     success: false,
@@ -64,7 +65,7 @@ export const handlePrismaRequestError = (
 
             default:
                 logger.error(
-                    `[UserService] Prisma error (${action}): `,
+                    `[${serviceName}] Prisma error (${action}): `,
                     error.message
                 );
                 return {
@@ -74,6 +75,6 @@ export const handlePrismaRequestError = (
         }
     }
 
-    logger.error(`[UserService] Unexpected error (${action}):`, error);
+    logger.error(`[${serviceName}] Unexpected error (${action}):`, error);
     return { success: false, error: "An unexpected error occurred." };
 };

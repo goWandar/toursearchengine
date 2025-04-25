@@ -2,33 +2,20 @@ import { prisma } from "../db/prisma";
 import { ServiceResponse } from "../types/types";
 import { handlePrismaRequestError } from "../utils/errorHandler";
 import logger from "../utils/logger";
-import {
-    checkRequiredFields,
-    emailFormattingCheck,
-} from "../utils/inputValidation";
+import { validateUserInput } from "../utils/inputValidation";
 import { User } from "../types/types";
 
 export const UserService = {
-    async createUser(
+    async userCreateUser(
         id: string,
         name: string,
         email: string
     ): Promise<ServiceResponse<User>> {
-        const requiredCheck = checkRequiredFields(
-            { key: "name", value: name },
-            { key: "email", value: email }
-        );
-        if (!requiredCheck.success)
+        const validationResult = validateUserInput(name, email);
+        if (!validationResult.success) {
             return {
                 success: false,
-                error: requiredCheck.error || "Missing required fields",
-            };
-
-        const emailCheck = emailFormattingCheck(email);
-        if (!emailCheck.success) {
-            return {
-                success: false,
-                error: emailCheck.error || "Invalid email format.",
+                error: validationResult.error ?? "",
             };
         }
 
@@ -44,7 +31,11 @@ export const UserService = {
 
             return { success: true, data: user as User };
         } catch (error) {
-            return handlePrismaRequestError(error, "creating user");
+            return handlePrismaRequestError(
+                error,
+                "creating user",
+                "UserService"
+            );
         }
     },
 };
