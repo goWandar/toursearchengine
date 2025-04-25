@@ -1,6 +1,10 @@
-// SupabaseProvider.signUp;
-// SupabaseProvider.signIn;
-// SupabaseProvider.getUser;
+// SupabaseProvider.signUp; DONE
+// SupabaseProvider.signIn; DONE
+// SupabaseProvider.signOut; DONE
+// SupabaseProvider.changePassword;
+// SupabaseProvider.oneTimePassword;
+// SupabaseProvider.updateUser;
+// SupabaseProvider.getUser; DONE
 // SupabaseProvider.refreshToken;
 // SupabaseProvider.verifyToken;
 // SupabaseProvider.deleteUser;
@@ -26,7 +30,15 @@ export const SupabaseProvider = {
         return { data, error };
     },
 
+    async signOut() {
+        const { error } = await supabase.auth.signOut();
+        return { error };
+    },
+
     async getUser(token: string) {
-        return await supabase.auth.getUser(token);
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        return { user };
     },
 };

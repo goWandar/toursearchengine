@@ -1,4 +1,5 @@
 // admin.routes: This could include GET a Single User by ID, GET All Users, etc.
+
 import { prisma } from "../db/prisma";
 import { ServiceResponse } from "../types/types";
 import { handlePrismaRequestError } from "../utils/errorHandler";
