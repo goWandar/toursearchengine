@@ -1,52 +1,42 @@
-import { prisma } from "../db/prisma";
+import { prisma } from '../db/prisma';
 
-import { handlePrismaRequestError } from "../utils/errorHandler";
-import {
-    checkRequiredFields,
-    emailFormattingCheck,
-} from "../utils/inputValidation";
-import logger from "../utils/logger";
+import { handlePrismaRequestError } from '../utils/errorHandler';
+import { checkRequiredFields, emailFormattingCheck } from '../utils/inputValidation';
+import logger from '../utils/logger';
 
-import { ServiceResponse } from "../types/types";
+import { ServiceResponse } from '../types/types';
 
 export const SubscribersService = {
-    async registerEmailForBeta(
-        email: string
-    ): Promise<ServiceResponse<{ id: string; email: string }>> {
-        const requiredCheck = checkRequiredFields({
-            key: "email",
-            value: email,
-        });
-        if (!requiredCheck.success)
-            return {
-                success: false,
-                error: requiredCheck.error || "Missing required fields",
-            };
+  async registerEmailForBeta(
+    email: string,
+  ): Promise<ServiceResponse<{ id: string; email: string }>> {
+    const requiredCheck = checkRequiredFields({
+      key: 'email',
+      value: email,
+    });
+    if (!requiredCheck.success)
+      return {
+        success: false,
+        error: requiredCheck.error || 'Missing required fields',
+      };
 
-        const emailCheck = emailFormattingCheck(email);
-        if (!emailCheck.success) {
-            return {
-                success: false,
-                error: emailCheck.error || "Invalid email format.",
-            };
-        }
+    const emailCheck = emailFormattingCheck(email);
+    if (!emailCheck.success) {
+      return {
+        success: false,
+        error: emailCheck.error || 'Invalid email format.',
+      };
+    }
 
-        try {
-            const newEmail = await prisma.betaSubscribers.create({
-                data: { email },
-            });
+    try {
+      const newEmail = await prisma.betaSubscribers.create({
+        data: { email },
+      });
 
-            await logger.success(
-                `[Subscribers Service] Email registered successfully:`,
-                email
-            );
-            return { success: true, data: newEmail };
-        } catch (error) {
-            return handlePrismaRequestError(
-                error,
-                "registering email",
-                "SubscribersService"
-            );
-        }
-    },
+      await logger.success(`[Subscribers Service] Email registered successfully:`, email);
+      return { success: true, data: newEmail };
+    } catch (error) {
+      return handlePrismaRequestError(error, 'registering email', 'SubscribersService');
+    }
+  },
 };

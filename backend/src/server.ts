@@ -1,15 +1,15 @@
-import "dotenv/config";
-import express, { Request, Response, NextFunction } from "express";
-import cors from "cors";
+import 'dotenv/config';
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 
-import corsConfig from "./config/cors";
+import corsConfig from './config/cors';
 
-import userRoutes from "./routes/user.routes";
-import subscribersRoutes from "./routes/subscribers.routes";
-import adminRoutes from "./routes/admin.routes";
-import tourRoutes from "./routes/tour.routes";
+import userRoutes from './routes/user.routes';
+import subscribersRoutes from './routes/subscribers.routes';
+import adminRoutes from './routes/admin.routes';
+import tourRoutes from './routes/tour.routes';
 
-import logger from "./utils/logger";
+import logger from './utils/logger';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,32 +19,29 @@ app.use(cors(corsConfig));
 app.use(express.json());
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-    if (error instanceof SyntaxError && "body" in error) {
-        logger.error(
-            "\x1b[31m[Server] Invalid JSON received:\x1b[0m",
-            error.message
-        );
-        res.status(400).json({ error: "Invalid JSON format" });
-        return;
-    }
-    next();
+  if (error instanceof SyntaxError && 'body' in error) {
+    logger.error('\x1b[31m[Server] Invalid JSON received:\x1b[0m', error.message);
+    res.status(400).json({ error: 'Invalid JSON format' });
+    return;
+  }
+  next();
 });
 
 // Routes
-app.get("/", (req, res) => {
-    res.send("Hello, world!");
+app.get('/', (req, res) => {
+  res.send('Hello, world!');
 });
 
-app.use("/api", adminRoutes);
-app.use("/api", userRoutes);
-app.use("/api", subscribersRoutes);
-app.use("/api", tourRoutes);
+app.use('/api', adminRoutes);
+app.use('/api', userRoutes);
+app.use('/api', subscribersRoutes);
+app.use('/api', tourRoutes);
 
 app.use((req, res) => {
-    logger.error(` Route not found: ${req.method} ${req.originalUrl}`);
-    res.status(404).json({ error: "404 Not Found" });
+  logger.error(` Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ error: '404 Not Found' });
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
