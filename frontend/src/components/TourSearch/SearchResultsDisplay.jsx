@@ -22,6 +22,7 @@ const SearchResultsDisplay = ({
   loading = false,
   loadingMessage = "Loading tours...",
 }) => {
+  console.log({ results, hasSearched, loading, loadingMessage });
   return (
     <div
       className={`search-results ${
@@ -38,11 +39,11 @@ const SearchResultsDisplay = ({
             {results.map((tour) => (
               <TourCard
                 key={tour.id}
-                image={tour.displayImage}
+                image={tour.images[1]}
                 title={tour.title}
                 price={tour.displayPrice}
                 country={tour.country}
-                places={tour.places}
+                places={tour.location.split(", ").map((tour) => tour.trim())}
                 onBookNow={() => onBookNow(tour.id)}
               />
             ))}

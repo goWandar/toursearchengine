@@ -5,6 +5,7 @@ import SearchResultsDisplay from "./SearchResultsDisplay";
 import useSearchToursAPI from "../../hooks/useSearchToursAPI";
 import "../../assets/_tourSearch.scss";
 import { createUrlwithFilter } from "../../utils/tourService/tourUtils";
+import useStore from "../../store/store";
 
 /**
  * Main tour search component with filters and results display
@@ -21,6 +22,11 @@ const TourSearch = () => {
     safariType: "",
   });
 
+  const tours = useStore((state) => state.tours);
+
+  //State for cursor
+  const [cursor, setCursor] = useState(0);
+
   // State for tracking which input dropdown is open
   const [openInput, setOpenInput] = useState(null);
 
@@ -33,22 +39,10 @@ const TourSearch = () => {
   //State for fetching more results
   const [fetchMoreResult, setFetchMoreResult] = useState([]);
 
-  searchURL = createUrlwithFilter(filters, 0);
-  console.log(searchURL);
+  searchURL = createUrlwithFilter(filters, cursor);
 
   //Initialize tour service hook
-  const {
-    data: result,
-    refetch,
-    isPending,
-    error,
-  } = useSearchToursAPI(searchURL);
-
-  console.log({ data: result, error: error, isPending });
-
-  if (result) {
-    setSearchResults(result.data);
-  }
+  const { refetch, isLoading } = useSearchToursAPI(searchURL);
 
   // Effect for handling clicks outside of open dropdowns
   useEffect(() => {
@@ -67,29 +61,12 @@ const TourSearch = () => {
    * Fetches data if not already loaded, then filters results
    */
   const handleSearch = async () => {
-    console.log("clicked");
-    setHasSearched(true);
-    console.log(filters);
+    const { data, isSuccess } = await refetch();
 
-    try {
-      //   let toursToFilter = tours;
-      //   // Only fetch data if not already loaded
-      //   if (tours.length === 0) {
-      //     toursToFilter = await fetchTours();
-      //   }
-      //   // Filter and process results
-      //   const filtered = filterTours(toursToFilter, filters);
-      //   const processedResults = filtered.map((tour) => ({
-      //     ...tour,
-      //     displayImage: getRandomImage(tour.images),
-      //     displayPrice: getPrice(tour.prices),
-      //     places: tour.location?.split(",") || [],
-      //   }));
-
-      refetch();
-    } catch (error) {
-      console.error("Search failed:", error);
-      setSearchResults([]);
+    if (isSuccess) {
+      console.log(data);
+      useStore.setState({ tours: data.data.tours });
+      setHasSearched(true);
     }
   };
 
@@ -176,7 +153,7 @@ const TourSearch = () => {
           <button
             className="search-button"
             onClick={handleSearch}
-            // disabled={loading}
+            disabled={isLoading}
           >
             Search
           </button>
@@ -211,12 +188,11 @@ const TourSearch = () => {
           </label>
         </div>
         {/* Results display area */}
-        result.data &&
         <SearchResultsDisplay
-          results={result.data}
+          results={tours}
           onBookNow={handleBookNow}
           hasSearched={hasSearched}
-          // loading={loading}
+          loading={isLoading}
           loadingMessage="Finding tours..."
         />
       </div>
