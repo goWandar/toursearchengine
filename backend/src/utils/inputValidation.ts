@@ -1,6 +1,6 @@
 import logger from "./logger";
 
-// kiFunction to check any number of required fields dynamically
+// Function to check any number of required fields dynamically
 export const checkRequiredFields = (...args: { key: string; value: any }[]) => {
     const missingInputFields = args
         .filter(
@@ -32,6 +32,34 @@ export const emailFormattingCheck = (email: string) => {
         );
         return { success: false, error: "Invalid email format." };
     }
+    return { success: true };
+};
+
+export const validateUserInput = (
+    name: string,
+    email: string
+): { success: boolean; error?: string } => {
+    const requiredCheck = checkRequiredFields(
+        { key: "name", value: name },
+        { key: "email", value: email }
+    );
+
+    if (!requiredCheck.success) {
+        return {
+            success: false,
+            error: requiredCheck.error || "Missing required fields",
+        };
+    }
+
+    const emailCheck = emailFormattingCheck(email);
+
+    if (!emailCheck.success) {
+        return {
+            success: false,
+            error: emailCheck.error || "Invalid email format.",
+        };
+    }
+
     return { success: true };
 };
 

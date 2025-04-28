@@ -1,4 +1,3 @@
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
@@ -11,7 +10,7 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
+  id    String @id
   name  String
   email String @unique
   role  String @default("USER")
@@ -33,17 +32,17 @@ model Tour {
   description      String?
   location         String
   country          String
-  durationInDays   Int        @default(0)
+  durationInDays   Int         @default(0)
   itinerary        String?
   safariType       String?
-  accomodationType String?
+  accommodationType String?
   siteURL          String?
   included         String?
   excluded         String?
   rating           Float?      @default(0)
   reviews          String?
   dateCreated      DateTime    @default(now())
-  dateModified     DateTime?     @updatedAt
+  dateModified     DateTime?   @updatedAt
   archived         Boolean     @default(false)
   images           TourImage[]
   prices           TourPrice[]
@@ -52,27 +51,27 @@ model Tour {
 }
 
 model TourImage {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   image_urls   String
-  dateCreated  DateTime @default(now())
+  dateCreated  DateTime  @default(now())
   dateModified DateTime? @updatedAt
-  tour         Tour     @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
   tourId       Int
+  tour         Tour      @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
 
   @@map("tour_images")
-} 
+}
 
 model TourPrice {
-  id             Int      @id @default(autoincrement())
-  numOfPeople    Int      @default(0)
+  id             Int       @id @default(autoincrement())
+  numOfPeople    Int       @default(0)
   currency       String
-  pricePerPerson Float    @default(0)
+  pricePerPerson Float     @default(0)
   seasonName     String
   seasonPeriod   String
-  dateCreated    DateTime @default(now())
+  dateCreated    DateTime  @default(now())
   dateModified   DateTime? @updatedAt
-  tour           Tour     @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
-  tourId         Int      @default(0)
+  tourId         Int       @default(0)
+  tour           Tour      @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
 
   @@map("tour_prices")
 }

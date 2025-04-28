@@ -4,18 +4,27 @@ import { Tour } from "../types/types";
 import { handlePrismaRequestError } from "../utils/errorHandler";
 
 export const TourService = {
-  async getAllTours(): Promise<ServiceResponse<Tour[]>> {
-    try {
-      const tours: Tour[] = await prisma.tour.findMany({
-        include: {
-          images: true,
-          prices: true,
-        },
-      });
+    async getAllTours(): Promise<ServiceResponse<Tour[]>> {
+        try {
+            const rawTours = await prisma.tour.findMany({
+                include: {
+                    images: true,
+                    prices: true,
+                },
+            });
 
-      return { success: true, data: tours };
-    } catch (error) {
-      return handlePrismaRequestError(error, "getting tours");
-    }
-  },
+            const tours: Tour[] = rawTours.map((tour) => ({
+                ...tour,
+                accommodationType: tour.accommodationType || null,
+            }));
+
+            return { success: true, data: tours };
+        } catch (error) {
+            return handlePrismaRequestError(
+                error,
+                "getting tours",
+                "TourService"
+            );
+        }
+    },
 };
