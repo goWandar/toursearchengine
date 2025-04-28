@@ -1,7 +1,9 @@
 import { prisma } from "../db/prisma";
-import { ServiceResponse } from "../types/types";
-import { Tour } from "../types/types";
+
 import { handlePrismaRequestError } from "../utils/errorHandler";
+import { ServiceResponse } from "../types/types";
+
+import { Tour } from "../types/types";
 
 export const TourService = {
     async getAllTours(): Promise<ServiceResponse<Tour[]>> {

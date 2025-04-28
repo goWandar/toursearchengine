@@ -1,6 +1,8 @@
 import { Request, Response, Router } from "express";
-import { SubscribersService } from "../services/subscribers.service";
+
 import { responseHandler } from "../utils/responseHandler";
+import { SubscribersService } from "../services/subscribers.service";
+
 const router = Router();
 
 // POST register

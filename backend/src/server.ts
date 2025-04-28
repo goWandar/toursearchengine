@@ -1,11 +1,14 @@
 import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
+
 import corsConfig from "./config/cors";
+
 import userRoutes from "./routes/user.routes";
 import subscribersRoutes from "./routes/subscribers.routes";
 import adminRoutes from "./routes/admin.routes";
 import tourRoutes from "./routes/tour.routes";
+
 import logger from "./utils/logger";
 
 const app = express();

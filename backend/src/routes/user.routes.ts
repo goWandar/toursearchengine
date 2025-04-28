@@ -1,7 +1,10 @@
 import { Request, Response, Router } from "express";
-import { UserService } from "../services/user.service";
-import { responseHandler } from "../utils/responseHandler";
+
 import { SupabaseProvider } from "../providers/supabase.provider";
+
+import { responseHandler } from "../utils/responseHandler";
+import { UserService } from "../services/user.service";
+
 import { AuthUser } from "../types/types";
 
 const router = Router();

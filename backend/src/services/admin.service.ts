@@ -1,11 +1,12 @@
 // admin.routes: This could include GET a Single User by ID, GET All Users, etc.
 
 import { prisma } from "../db/prisma";
-import { ServiceResponse } from "../types/types";
+
 import { handlePrismaRequestError } from "../utils/errorHandler";
-import logger from "../utils/logger";
 import { validateUserInput, checkIfValidUUID } from "../utils/inputValidation";
-import { User } from "../types/types";
+import logger from "../utils/logger";
+
+import { User, ServiceResponse } from "../types/types";
 
 export const AdminService = {
     async adminCreateUser(

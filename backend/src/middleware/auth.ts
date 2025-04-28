@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
