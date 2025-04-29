@@ -3,6 +3,7 @@ import TourCard from "./TourCard";
 import NoResults from "./NoResults";
 import "../../assets/_searchResultsDisplay.scss";
 import Spinner from "../Spinner/Spinner";
+import { useMemo } from "react";
 
 /**
  * Displays tour search results with loading states and empty results handling
@@ -15,6 +16,27 @@ import Spinner from "../Spinner/Spinner";
  * @param {String} [props.loadingMessage='Loading tours...'] - Loading message
  * @returns {JSX.Element} The search results display component
  */
+
+function getRandomImage(images) {
+  const randomImage =
+    "https://moafrikatours.com/wp-content/uploads/2022/02/4202426-1316341_150_5_1450_893_650_400-1.jpg";
+  if (images.length != 0) {
+    return images[Math.floor(Math.random() * images.length)].image_urls;
+  } else {
+    return randomImage;
+  }
+}
+
+function getPrice(prices) {
+  if (prices.length === 0) return " NO PRICES";
+  const amountInfo = prices.find((info) => info.numOfPeople === 1);
+
+  if (amountInfo === undefined) {
+    return " PRICE UNDEFINED";
+  }
+  return amountInfo.pricePerPerson;
+}
+
 const SearchResultsDisplay = ({
   results,
   onBookNow,
@@ -22,7 +44,6 @@ const SearchResultsDisplay = ({
   loading = false,
   loadingMessage = "Loading tours...",
 }) => {
-  console.log({ results, hasSearched, loading, loadingMessage });
   return (
     <div
       className={`search-results ${
@@ -36,17 +57,23 @@ const SearchResultsDisplay = ({
       ) : hasSearched ? (
         results.length > 0 ? (
           <div className="results-grid">
-            {results.map((tour) => (
-              <TourCard
-                key={tour.id}
-                image={tour.images[1]}
-                title={tour.title}
-                price={tour.displayPrice}
-                country={tour.country}
-                places={tour.location.split(", ").map((tour) => tour.trim())}
-                onBookNow={() => onBookNow(tour.id)}
-              />
-            ))}
+            {results.map((tour) => {
+              const image = useMemo(
+                () => getRandomImage(tour.images),
+                [tour.images]
+              );
+              return (
+                <TourCard
+                  key={tour.id}
+                  image={image}
+                  title={tour.title}
+                  price={getPrice(tour.prices)}
+                  country={tour.country}
+                  places={tour.location.split(",")}
+                  onBookNow={() => onBookNow(tour.id)}
+                />
+              );
+            })}
           </div>
         ) : (
           <NoResults message="No tours match your search criteria. Please try a different criteria." />

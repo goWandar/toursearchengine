@@ -33,9 +33,6 @@ const TourSearch = () => {
   // Flag to indicate if search has been performed
   const [hasSearched, setHasSearched] = useState(false);
 
-  // State for search results
-  const [searchResults, setSearchResults] = useState([]);
-
   //State for fetching more results
   const [fetchMoreResult, setFetchMoreResult] = useState([]);
 
@@ -61,11 +58,13 @@ const TourSearch = () => {
    * Fetches data if not already loaded, then filters results
    */
   const handleSearch = async () => {
-    const { data, isSuccess } = await refetch();
+    const { data: response, isSuccess } = await refetch();
 
     if (isSuccess) {
-      console.log(data);
-      useStore.setState({ tours: data.data.tours });
+      useStore.setState({ tours: response.data.tours });
+
+      if (response.data.cursor > 0) [setCursor(response.data.cursor)];
+
       setHasSearched(true);
     }
   };
@@ -88,6 +87,7 @@ const TourSearch = () => {
   };
 
   // Options for days filter dropdown
+  //TODO must address the 15+ this as the server doesnt accept it
   const daysOptions = ["Any", "1 - 5", "6 - 10", "10 - 15", "15+"];
 
   return (
@@ -141,7 +141,7 @@ const TourSearch = () => {
               "$500 - $1499",
               "$1500 - $2999",
               "$3000 - $4999",
-              "$5000+",
+              "$5000+", //TODO must address this as the server doesnt accept it
             ]}
             onSelect={(value) => handleFilterChange("budget", value)}
             isOpen={openInput === "budget"}

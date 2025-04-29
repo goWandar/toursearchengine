@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import "../../assets/_tourCard.scss";
 
 const TourCard = ({ image, title, price, country, places, onBookNow }) => {
-  console.log(places);
   return (
     <div className="tour-card">
       <div className="card-image">
