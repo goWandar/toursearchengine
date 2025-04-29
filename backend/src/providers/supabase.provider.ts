@@ -10,6 +10,7 @@
 // SupabaseProvider.verifyToken;
 // SupabaseProvider.deleteUser;
 
+import { createClient } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
 
 export const SupabaseProvider = {
@@ -36,16 +37,37 @@ export const SupabaseProvider = {
     return { error };
   },
 
-  async getUser(token: string) {
+  async getUserData(token: string) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     return { user };
   },
 
-  async resetPassword(email: string) {
+  async userChangePassword(token: string, newPassword: string) {
+    const supabaseWithToken = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+
+    return await supabaseWithToken.auth.updateUser({ password: newPassword });
+  },
+
+  async userResetPassword(email: string) {
     return await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: process.env.SUPABASE_REDIRECT_URL,
+    });
+  },
+
+  async singInInWithOtp(email: string) {
+    return await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: process.env.SUPABASE_REDIRECT_URL,
+      },
     });
   },
 };

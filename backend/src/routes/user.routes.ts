@@ -6,6 +6,7 @@ import { responseHandler } from '../utils/responseHandler';
 import { UserService } from '../services/user.service';
 
 import { AuthUser } from '../types/types';
+import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -60,6 +61,14 @@ router.post('/user/signin', async (req: Request, res: Response) => {
     );
   }
 
+  if (password.length < 8) {
+    return responseHandler(
+      res,
+      { success: false, error: 'Password must be at least 8 characters long.' },
+      'POST',
+    );
+  }
+
   // Sign in via Supabase Auth
   const { data, error } = await SupabaseProvider.signIn(email, password);
 
@@ -95,6 +104,42 @@ router.post('/user/signout', async (_req: Request, res: Response) => {
     success: true,
     data: {
       message: 'User signed out successfully',
+    },
+  };
+
+  responseHandler(res, result, 'POST');
+});
+
+// POST user change password
+
+router.post('/user/change-password', authenticateToken, async (req: Request, res: Response) => {
+  const { newPassword } = req.body;
+
+  if (!newPassword || newPassword.length < 8) {
+    return responseHandler(
+      res,
+      { success: false, error: 'New must be at least 8 characters long.' },
+      'POST',
+    );
+  }
+
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
+
+  if (!token) {
+    return responseHandler(res, { success: false, error: 'Missing or invalid token.' }, 'POST');
+  }
+
+  const { error } = await SupabaseProvider.userChangePassword(token, newPassword);
+
+  if (error) {
+    return responseHandler(res, { success: false, error: error.message }, 'POST');
+  }
+
+  const result = {
+    success: true,
+    data: {
+      message: 'Password changed successfully',
     },
   };
 
