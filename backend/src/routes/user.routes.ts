@@ -28,7 +28,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
   if (!name || !email || !password) {
     return responseHandler(
       res,
-      { success: false, error: 'Name, email, and password are required' },
+      { success: false, error: error?.message || 'Name, email, and password are required' },
       'POST',
     );
   }
@@ -140,6 +140,31 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
     success: true,
     data: {
       message: 'Password changed successfully',
+    },
+  };
+
+  responseHandler(res, result, 'POST');
+});
+
+// POST user forgot password
+router.post('/user/forgot-password', async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return responseHandler(res, { success: false, error: 'Email is required' }, 'POST');
+  }
+
+  const { error } = await SupabaseProvider.sendMagicLink(email);
+
+  if (error) {
+    return responseHandler(res, { success: false, error: error.message }, 'POST');
+  }
+
+  const result = {
+    success: true,
+    data: {
+      message: 'Magic Link sent to email.',
+      email,
     },
   };
 

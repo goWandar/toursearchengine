@@ -3,7 +3,7 @@
 // SupabaseProvider.signOut; DONE
 // SupabaseProvider.getUser; DONE
 
-// SupabaseProvider.changePassword;
+// SupabaseProvider.changePassword; DONE
 // SupabaseProvider.oneTimePassword;
 // SupabaseProvider.updateUser;
 // SupabaseProvider.refreshToken;
@@ -62,7 +62,7 @@ export const SupabaseProvider = {
     });
   },
 
-  async singInInWithOtp(email: string) {
+  async sendMagicLink(email: string) {
     return await supabase.auth.signInWithOtp({
       email,
       options: {
