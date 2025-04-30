@@ -2,13 +2,12 @@
 // SupabaseProvider.signIn; DONE
 // SupabaseProvider.signOut; DONE
 // SupabaseProvider.getUser; DONE
-
 // SupabaseProvider.changePassword; DONE
-// SupabaseProvider.oneTimePassword;
+// SupabaseProvider.oneTimePassword; DONE
+
 // SupabaseProvider.updateUser;
-// SupabaseProvider.refreshToken;
-// SupabaseProvider.verifyToken;
 // SupabaseProvider.deleteUser;
+// SupabaseProvider.refreshToken;
 
 import { createClient } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
@@ -56,12 +55,6 @@ export const SupabaseProvider = {
     return await supabaseWithToken.auth.updateUser({ password: newPassword });
   },
 
-  async userResetPassword(email: string) {
-    return await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: process.env.SUPABASE_REDIRECT_URL,
-    });
-  },
-
   async sendMagicLink(email: string) {
     return await supabase.auth.signInWithOtp({
       email,
@@ -69,5 +62,13 @@ export const SupabaseProvider = {
         emailRedirectTo: process.env.SUPABASE_REDIRECT_URL,
       },
     });
+  },
+
+  async userDeleteOwnProfile(userId: string) {
+    console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
+
+    const adminClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+
+    return await adminClient.auth.admin.deleteUser(userId);
   },
 };

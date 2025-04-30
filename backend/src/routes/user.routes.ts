@@ -171,4 +171,40 @@ router.post('/user/forgot-password', async (req: Request, res: Response) => {
   responseHandler(res, result, 'POST');
 });
 
+// DELETE user account
+router.delete('/user/delete-account', authenticateToken, async (req: Request, res: Response) => {
+  const userId = typeof req.user?.sub === 'string' ? req.user.sub : undefined; //`sub` is the Supabase user ID from the JWT token
+
+  if (!userId) {
+    return responseHandler(
+      res,
+      { success: false, error: 'Unauthorized: User ID not found.' },
+      'DELETE',
+    );
+  }
+
+  if (!userId) {
+    return responseHandler(
+      res,
+      { success: false, error: 'Unauthorized: Invalid User ID.' },
+      'DELETE',
+    );
+  }
+
+  const { error } = await SupabaseProvider.userDeleteOwnProfile(userId);
+
+  if (error) {
+    responseHandler(res, { success: false, error: error.message }, 'DELETE');
+  }
+
+  const result = {
+    success: true,
+    data: {
+      message: 'User profile deleted successfully.',
+    },
+  };
+
+  responseHandler(res, result, 'DELETE');
+});
+
 export default router;
