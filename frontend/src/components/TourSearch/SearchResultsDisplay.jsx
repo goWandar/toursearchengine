@@ -21,7 +21,8 @@ function getRandomImage(images) {
   const randomImage =
     "https://moafrikatours.com/wp-content/uploads/2022/02/4202426-1316341_150_5_1450_893_650_400-1.jpg";
   if (images.length != 0) {
-    return images[Math.floor(Math.random() * images.length)].image_urls;
+    //TODO this no longer randomizes but take the first picture from the array
+    return images[0].image_urls;
   } else {
     return randomImage;
   }
@@ -56,25 +57,23 @@ const SearchResultsDisplay = ({
         <Spinner size={60} color="#2c3e50" loadingMessage={loadingMessage} />
       ) : hasSearched ? (
         results.length > 0 ? (
-          <div className="results-grid">
-            {results.map((tour) => {
-              const image = useMemo(
-                () => getRandomImage(tour.images),
-                [tour.images]
-              );
-              return (
-                <TourCard
-                  key={tour.id}
-                  image={image}
-                  title={tour.title}
-                  price={getPrice(tour.prices)}
-                  country={tour.country}
-                  places={tour.location.split(",")}
-                  onBookNow={() => onBookNow(tour.id)}
-                />
-              );
-            })}
-          </div>
+          <>
+            <div className="results-grid">
+              {results.map((tour) => {
+                return (
+                  <TourCard
+                    key={tour.id}
+                    image={getRandomImage(tour.images)}
+                    title={tour.title}
+                    price={getPrice(tour.prices)}
+                    country={tour.country}
+                    places={tour.location.split(",")}
+                    onBookNow={() => onBookNow(tour.id)}
+                  />
+                );
+              })}
+            </div>
+          </>
         ) : (
           <NoResults message="No tours match your search criteria. Please try a different criteria." />
         )

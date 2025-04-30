@@ -7,6 +7,7 @@ import subscribersRoutes from "./routes/subscribers.routes";
 import adminRoutes from "./routes/admin.routes";
 import tourRoutes from "./routes/tour.routes";
 import logger from "./utils/logger";
+import morgan from "morgan";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,11 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(cors(corsConfig));
 app.use(express.json());
+
+//Morgan Middleware to assist with logging in Development Environment
+if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+  app.use(morgan("dev"));
+}
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof SyntaxError && "body" in error) {

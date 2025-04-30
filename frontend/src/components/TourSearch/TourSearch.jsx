@@ -6,12 +6,13 @@ import useSearchToursAPI from "../../hooks/useSearchToursAPI";
 import "../../assets/_tourSearch.scss";
 import { createUrlwithFilter } from "../../utils/tourService/tourUtils";
 import useStore from "../../store/store";
+import { useMemo } from "react";
+import { FaLeaf } from "react-icons/fa";
 
 /**
  * Main tour search component with filters and results display
  */
 const TourSearch = () => {
-  let searchURL;
   // State for search filters
   const [filters, setFilters] = useState({
     location: "",
@@ -22,7 +23,7 @@ const TourSearch = () => {
     safariType: "",
   });
 
-  const tours = useStore((state) => state.tours);
+  const { tours, addTours, setTours } = useStore();
 
   //State for cursor
   const [cursor, setCursor] = useState(0);
@@ -36,7 +37,7 @@ const TourSearch = () => {
   //State for fetching more results
   const [fetchMoreResult, setFetchMoreResult] = useState([]);
 
-  searchURL = createUrlwithFilter(filters, cursor);
+  let searchURL = createUrlwithFilter(filters, cursor);
 
   //Initialize tour service hook
   const { refetch, isLoading } = useSearchToursAPI(searchURL);
@@ -58,13 +59,26 @@ const TourSearch = () => {
    * Fetches data if not already loaded, then filters results
    */
   const handleSearch = async () => {
-    const { data: response, isSuccess } = await refetch();
+    const updatedCursor = 0;
+    setCursor(updatedCursor);
+
+    const url = createUrlwithFilter(filters, updatedCursor);
+    const { data: response, isSuccess } = await refetch(url);
 
     if (isSuccess) {
-      useStore.setState({ tours: response.data.tours });
+      setTours(response.data.tours);
+      if (response.data.cursor > 0) setCursor(response.data.cursor);
+      setHasSearched(true);
+    }
+  };
 
-      if (response.data.cursor > 0) [setCursor(response.data.cursor)];
+  const handleShowMore = async () => {
+    const url = createUrlwithFilter(filters, cursor);
+    const { data: response, isSuccess } = await refetch(url);
 
+    if (isSuccess) {
+      addTours(response.data.tours);
+      if (response.data.cursor > 0) setCursor(response.data.cursor);
       setHasSearched(true);
     }
   };
@@ -195,6 +209,15 @@ const TourSearch = () => {
           loading={isLoading}
           loadingMessage="Finding tours..."
         />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          margin: "2rem",
+        }}
+      >
+        <button onClick={handleShowMore}>Show More</button>
       </div>
     </div>
   );

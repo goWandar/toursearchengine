@@ -26,7 +26,7 @@ export function createUrlwithFilter(filters, cursor) {
     url += `&accomodationType=${encodeURIComponent(accommodationType)}`;
   if (safariType !== "") url += `&safariType=${encodeURIComponent(safariType)}`;
 
-  if (cursor) url += `&cursor=${cursor}`;
+  if (cursor > 0) url += `&cursor=${cursor}`;
 
   return url;
 }

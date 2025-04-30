@@ -20,7 +20,7 @@ export const TourService = {
       daysMin,
       daysMax,
       cursor = 0,
-      limit = 10,
+      limit = 8,
       priceMin,
       priceMax,
       safariType,
@@ -57,6 +57,7 @@ export const TourService = {
 
     try {
       const tours: Tour[] = await prisma.tour.findMany({
+        skip: 1,
         take: Number(limit),
         cursor: cursor ? { id: Number(cursor) } : undefined,
         where: filters,

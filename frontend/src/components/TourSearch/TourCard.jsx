@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import "../../assets/_tourCard.scss";
+import { v4 as uuidv4 } from "uuid";
 
 const TourCard = ({ image, title, price, country, places, onBookNow }) => {
   return (
@@ -16,7 +17,7 @@ const TourCard = ({ image, title, price, country, places, onBookNow }) => {
             <span>Visits:</span>
             <ul>
               {places.map((place, index) => (
-                <li key={index}>{place}</li>
+                <li key={uuidv4()}>{place}</li>
               ))}
             </ul>
           </div>
