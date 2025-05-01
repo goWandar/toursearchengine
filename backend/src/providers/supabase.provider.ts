@@ -65,9 +65,10 @@ export const SupabaseProvider = {
   },
 
   async userDeleteOwnProfile(userId: string) {
-    console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
-
-    const adminClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+    const adminClient = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
 
     return await adminClient.auth.admin.deleteUser(userId);
   },
