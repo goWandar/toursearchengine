@@ -210,15 +210,19 @@ const TourSearch = () => {
           loadingMessage="Finding tours..."
         />
       </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          margin: "2rem",
-        }}
-      >
-        <button onClick={handleShowMore}>Show More</button>
-      </div>
+      {tours && tours.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          <button className="search-button" onClick={handleShowMore}>
+            Show More
+          </button>
+        </div>
+      )}
     </div>
   );
 };
