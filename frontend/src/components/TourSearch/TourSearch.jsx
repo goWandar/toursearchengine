@@ -89,7 +89,12 @@ const TourSearch = () => {
    * @param {*} value - New filter value
    */
   const handleFilterChange = (name, value) => {
-    setFilters((prev) => ({ ...prev, [name]: value }));
+    if (value === "Anywhere" || value === "Any") {
+      return;
+    } else {
+      console.log("value changed");
+      setFilters((prev) => ({ ...prev, [name]: value }));
+    }
     // NEW: Close dropdown after selecting an option
     setOpenInput(null);
   };
@@ -134,7 +139,7 @@ const TourSearch = () => {
 
           <SearchInput
             placeholder="Type"
-            options={["Luxury", "Mid-range", "Budget"]}
+            options={["Any", "Luxury", "Mid-range", "Budget"]}
             onSelect={(value) => handleFilterChange("type", value)}
             isOpen={openInput === "type"}
             setIsOpen={(shouldOpen) => setOpenInput(shouldOpen ? "type" : null)}

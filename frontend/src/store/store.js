@@ -1,4 +1,3 @@
-import { BiAddToQueue } from "react-icons/bi";
 import { create } from "zustand";
 
 const useStore = create((set) => ({
