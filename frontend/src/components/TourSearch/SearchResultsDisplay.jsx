@@ -3,7 +3,7 @@ import TourCard from "./TourCard";
 import NoResults from "./NoResults";
 import "../../assets/_searchResultsDisplay.scss";
 import Spinner from "../Spinner/Spinner";
-import { useMemo } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Displays tour search results with loading states and empty results handling
@@ -62,7 +62,7 @@ const SearchResultsDisplay = ({
               {results.map((tour) => {
                 return (
                   <TourCard
-                    key={tour.id}
+                    key={uuidv4() + tour.uniqueId}
                     image={getRandomImage(tour.images)}
                     title={tour.title}
                     price={getPrice(tour.prices)}

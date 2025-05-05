@@ -23,10 +23,11 @@ const TourSearch = () => {
     safariType: "",
   });
 
-  const { tours, addTours, setTours } = useStore();
+  const { tours, addTours, setTours, cursor, setCursor, resetCursor } =
+    useStore();
 
-  //State for cursor
-  const [cursor, setCursor] = useState(0);
+  //keeping cursor as local variable to allow for updated to be instant inside the handle functions
+  // let cursor = 0;
 
   // State for tracking which input dropdown is open
   const [openInput, setOpenInput] = useState(null);
@@ -59,10 +60,8 @@ const TourSearch = () => {
    * Fetches data if not already loaded, then filters results
    */
   const handleSearch = async () => {
-    const updatedCursor = 0;
-    setCursor(updatedCursor);
+    const url = createUrlwithFilter(filters, 0);
 
-    const url = createUrlwithFilter(filters, updatedCursor);
     const { data: response, isSuccess } = await refetch(url);
 
     if (isSuccess) {
@@ -73,7 +72,10 @@ const TourSearch = () => {
   };
 
   const handleShowMore = async () => {
+    const cursor = useStore.getState().cursor;
+
     const url = createUrlwithFilter(filters, cursor);
+
     const { data: response, isSuccess } = await refetch(url);
 
     if (isSuccess) {
@@ -92,11 +94,12 @@ const TourSearch = () => {
     if (value === "Anywhere" || value === "Any") {
       return;
     } else {
-      console.log("value changed");
       setFilters((prev) => ({ ...prev, [name]: value }));
     }
     // NEW: Close dropdown after selecting an option
     setOpenInput(null);
+    //reseting the cursor of pagination
+    resetCursor();
   };
 
   // Handler for book now button clicks

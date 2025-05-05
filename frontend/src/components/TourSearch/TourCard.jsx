@@ -16,9 +16,9 @@ const TourCard = ({ image, title, price, country, places, onBookNow }) => {
           <div className="card-places">
             <span>Visits:</span>
             <ul>
-              {places.map((place, index) => (
-                <li key={uuidv4()}>{place}</li>
-              ))}
+              {places.map((place, index) => {
+                return <li key={index}>{place}</li>;
+              })}
             </ul>
           </div>
         </div>
