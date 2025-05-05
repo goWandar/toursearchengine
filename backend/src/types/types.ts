@@ -1,6 +1,13 @@
 export interface User {
-  name: string;
-  email: string;
+    id: string;
+    name: string;
+    email: string;
+    role: "USER" | "ADMIN";
+}
+
+export interface AuthUser {
+    id: string;
+    email: string;
 }
 
 export interface Tour {
@@ -35,17 +42,17 @@ export interface Image {
 }
 
 export interface Price {
-  id: number;
-  numOfPeople: number;
-  currency: string;
-  pricePerPerson: number;
-  seasonName: string;
-  seasonPeriod: string;
-  dateCreated: Date;
-  dateModified: Date | null;
-  tourId: number;
+    id: number;
+    numOfPeople: number;
+    currency: string;
+    pricePerPerson: number;
+    seasonName: string;
+    seasonPeriod: string;
+    dateCreated: Date;
+    dateModified: Date | null;
+    tourId: number;
 }
 
 export type ServiceResponse<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+    | { success: true; data: T }
+    | { success: false; error: string };

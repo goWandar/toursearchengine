@@ -30,7 +30,7 @@ lerna-debug.log*
 *.sqlite
 *.sqlite-journal
 pgdata/
-migrations/
+!/prisma/migrations/
 seeds/
 
 # TypeScript cache

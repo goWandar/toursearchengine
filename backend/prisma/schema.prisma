@@ -10,7 +10,7 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
+  id    String @id
   name  String
   email String @unique
   role  String @default("USER")
@@ -35,7 +35,7 @@ model Tour {
   durationInDays   Int         @default(0)
   itinerary        String?
   safariType       String?
-  accomodationType String?
+  accommodationType String?
   siteURL          String?
   included         String?
   excluded         String?

@@ -40,7 +40,11 @@ export const SubscribersService = {
             );
             return { success: true, data: newEmail };
         } catch (error) {
-            return handlePrismaRequestError(error, "registering email");
+            return handlePrismaRequestError(
+                error,
+                "registering email",
+                "SubscribersService"
+            );
         }
     },
 };
