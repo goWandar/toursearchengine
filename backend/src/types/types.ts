@@ -11,34 +11,34 @@ export interface AuthUser {
 }
 
 export interface Tour {
-    id: number;
-    uniqueId: number;
-    title: string;
-    description: string | null;
-    location: string;
-    country: string;
-    durationInDays: number;
-    itinerary: string | null;
-    safariType: string | null;
-    included: string | null;
-    excluded: string | null;
-    accommodationType: string | null;
-    siteURL: string | null;
-    rating: number | null;
-    reviews: String | null;
-    dateCreated: Date;
-    dateModified: Date | null;
-    archived: boolean;
-    images: Image[];
-    prices: Price[];
+  id: number;
+  uniqueId: number;
+  title: string;
+  description: string | null;
+  location: string;
+  country: string;
+  durationInDays: number;
+  itinerary: string | null;
+  safariType: string | null;
+  included: string | null;
+  excluded: string | null;
+  accomodationType: string | null;
+  siteURL: string | null;
+  rating: number | null;
+  reviews: string | null;
+  dateCreated: Date;
+  dateModified: Date | null;
+  archived: boolean;
+  images: Image[];
+  prices: Price[];
 }
 
 export interface Image {
-    id: number;
-    image_urls: string;
-    dateCreated: Date;
-    dateModified: Date | null;
-    tourId: number;
+  id: number;
+  image_urls: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tourId: number;
 }
 
 export interface Price {
