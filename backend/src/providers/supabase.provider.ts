@@ -4,9 +4,9 @@
 // SupabaseProvider.getUser; DONE
 // SupabaseProvider.changePassword; DONE
 // SupabaseProvider.oneTimePassword; DONE
+// SupabaseProvider.deleteUser; DONE
 
 // SupabaseProvider.updateUser;
-// SupabaseProvider.deleteUser;
 // SupabaseProvider.refreshToken;
 
 import { createClient } from '@supabase/supabase-js';
