@@ -22,13 +22,21 @@ router.post('/user/signup', async (req: Request, res: Response) => {
     );
   }
 
+  if (password.length < 8) {
+    return responseHandler(
+      res,
+      { success: false, error: 'Password must be at least 8 characters long.' },
+      'POST',
+    );
+  }
+
   // Create user via Supabase Auth
   const { data, error } = await SupabaseProvider.signUp(email, password);
 
-  if (!name || !email || !password) {
+  if (error) {
     return responseHandler(
       res,
-      { success: false, error: error?.message || 'Name, email, and password are required' },
+      { success: false, error: error?.message || 'Signup failed' },
       'POST',
     );
   }
@@ -46,7 +54,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
   // Store userdata
   const result = await UserService.userCreateUser(supabaseUserId, name, email);
 
-  responseHandler(res, result, 'POST');
+  return responseHandler(res, result, 'POST');
 });
 
 // POST User Sign In
@@ -75,7 +83,7 @@ router.post('/user/signin', async (req: Request, res: Response) => {
   if (error || !data?.session?.access_token) {
     return responseHandler(
       res,
-      { success: false, error: error?.message || 'Signin failed' },
+      { success: false, error: error?.message || 'Authentication failed' },
       'POST',
     );
   }
@@ -89,7 +97,7 @@ router.post('/user/signin', async (req: Request, res: Response) => {
     },
   };
 
-  responseHandler(res, result, 'POST');
+  return responseHandler(res, result, 'POST');
 });
 
 // POST user sign out
@@ -107,23 +115,27 @@ router.post('/user/signout', async (_req: Request, res: Response) => {
     },
   };
 
-  responseHandler(res, result, 'POST');
+  return responseHandler(res, result, 'POST');
 });
 
 // POST user change password
 router.post('/user/change-password', authenticateToken, async (req: Request, res: Response) => {
   const { newPassword } = req.body;
+  const userId = req.user?.sub;
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
 
   if (!newPassword || newPassword.length < 8) {
     return responseHandler(
       res,
-      { success: false, error: 'New must be at least 8 characters long.' },
+      { success: false, error: 'New password must be at least 8 characters long.' },
       'POST',
     );
   }
 
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1];
+  if (!userId) {
+    return responseHandler(res, { success: false, error: 'User not authenticated.' }, 'POST');
+  }
 
   if (!token) {
     return responseHandler(res, { success: false, error: 'Missing or invalid token.' }, 'POST');
@@ -142,11 +154,11 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
     },
   };
 
-  responseHandler(res, result, 'POST');
+  return responseHandler(res, result, 'POST');
 });
 
-// POST user forgot password
-router.post('/user/forgot-password', async (req: Request, res: Response) => {
+// POST user password reset
+router.post('/user/send-password-reset', async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
@@ -162,12 +174,12 @@ router.post('/user/forgot-password', async (req: Request, res: Response) => {
   const result = {
     success: true,
     data: {
-      message: 'Magic Link sent to email.',
+      message: 'Password reset link sent to email.',
       email,
     },
   };
 
-  responseHandler(res, result, 'POST');
+  return responseHandler(res, result, 'POST');
 });
 
 // POST refresh session token
@@ -175,13 +187,25 @@ router.post('/user/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.headers.authorization?.split(' ')[1]; // Bearer <refresh_token>
 
   if (!refreshToken) {
-    return responseHandler(res, { success: false, error: 'Missing refresh token' });
+    return responseHandler(res, { success: false, error: 'Missing refresh token' }, 'POST');
   }
 
   const { data, error } = await SupabaseProvider.refreshToken(refreshToken);
 
-  if (error || !data.session?.access_token) {
-    return responseHandler(res, { success: false, error: 'Missing refresh token' });
+  if (error) {
+    return responseHandler(
+      res,
+      { success: false, error: error.message || 'Invalid refresh token' },
+      'POST',
+    );
+  }
+
+  if (!data.session?.access_token) {
+    return responseHandler(
+      res,
+      { success: false, error: 'Failed to generate new access token' },
+      'POST',
+    );
   }
 
   const result = {
@@ -193,7 +217,7 @@ router.post('/user/refresh-token', async (req: Request, res: Response) => {
     },
   };
 
-  responseHandler(res, result, 'POST');
+  return responseHandler(res, result, 'POST');
 });
 
 // DELETE user account
@@ -208,18 +232,10 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
     );
   }
 
-  if (!userId) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Unauthorized: Invalid User ID.' },
-      'DELETE',
-    );
-  }
-
   const { error } = await SupabaseProvider.userDeleteOwnProfile(userId);
 
   if (error) {
-    responseHandler(res, { success: false, error: error.message }, 'DELETE');
+    return responseHandler(res, { success: false, error: error.message }, 'DELETE');
   }
 
   const result = {
@@ -229,7 +245,7 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
     },
   };
 
-  responseHandler(res, result, 'DELETE');
+  return responseHandler(res, result, 'DELETE');
 });
 
 export default router;
