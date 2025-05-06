@@ -111,7 +111,6 @@ router.post('/user/signout', async (_req: Request, res: Response) => {
 });
 
 // POST user change password
-
 router.post('/user/change-password', authenticateToken, async (req: Request, res: Response) => {
   const { newPassword } = req.body;
 
@@ -165,6 +164,32 @@ router.post('/user/forgot-password', async (req: Request, res: Response) => {
     data: {
       message: 'Magic Link sent to email.',
       email,
+    },
+  };
+
+  responseHandler(res, result, 'POST');
+});
+
+// POST refresh session token
+router.post('/user/refresh-token', async (req: Request, res: Response) => {
+  const refreshToken = req.headers.authorization?.split(' ')[1]; // Bearer <refresh_token>
+
+  if (!refreshToken) {
+    return responseHandler(res, { success: false, error: 'Missing refresh token' });
+  }
+
+  const { data, error } = await SupabaseProvider.refreshToken(refreshToken);
+
+  if (error || !data.session?.access_token) {
+    return responseHandler(res, { success: false, error: 'Missing refresh token' });
+  }
+
+  const result = {
+    success: true,
+    data: {
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+      expiresIn: data.session.expires_in,
     },
   };
 

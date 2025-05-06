@@ -1,14 +1,3 @@
-// SupabaseProvider.signUp; DONE
-// SupabaseProvider.signIn; DONE
-// SupabaseProvider.signOut; DONE
-// SupabaseProvider.getUser; DONE
-// SupabaseProvider.changePassword; DONE
-// SupabaseProvider.oneTimePassword; DONE
-// SupabaseProvider.deleteUser; DONE
-
-// SupabaseProvider.updateUser;
-// SupabaseProvider.refreshToken;
-
 import { createClient } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
 
@@ -71,5 +60,9 @@ export const SupabaseProvider = {
     );
 
     return await adminClient.auth.admin.deleteUser(userId);
+  },
+
+  async refreshToken(refreshToken: string) {
+    return await supabase.auth.refreshSession({ refresh_token: refreshToken });
   },
 };
