@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 
 import corsConfig from './config/cors';
 
@@ -18,6 +19,12 @@ const port = process.env.PORT || 3000;
 app.use(cors(corsConfig));
 app.use(express.json());
 
+// Morgan middleware for logging in development
+if (process.env.ENVIRONMENT === 'DEVELOPMENT') {
+  app.use(morgan('dev'));
+}
+
+// Handle malformed JSON errors
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof SyntaxError && 'body' in error) {
     logger.error('\x1b[31m[Server] Invalid JSON received:\x1b[0m', error.message);
@@ -37,6 +44,7 @@ app.use('/api', userRoutes);
 app.use('/api', subscribersRoutes);
 app.use('/api', tourRoutes);
 
+// 404 handler
 app.use((req, res) => {
   logger.error(` Route not found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ error: '404 Not Found' });

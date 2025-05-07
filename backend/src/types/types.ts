@@ -25,7 +25,7 @@ export interface Tour {
   accommodationType: string | null;
   siteURL: string | null;
   rating: number | null;
-  reviews: String | null;
+  reviews: string | null;
   dateCreated: Date;
   dateModified: Date | null;
   archived: boolean;
