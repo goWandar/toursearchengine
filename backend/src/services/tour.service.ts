@@ -1,9 +1,10 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "../db/prisma";
-import { ServiceResponse } from "../types/types";
-import { Tour } from "../types/types";
-import { handlePrismaRequestError } from "../utils/errorHandler";
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
+
+import { Prisma } from '@prisma/client';
+import { prisma } from '../db/prisma';
+
+import { handlePrismaRequestError } from '../utils/errorHandler';
+import { ServiceResponse, Tour } from '../types/types';
 
 type GetAllToursResponse = {
   tours: Tour[];
@@ -24,15 +25,14 @@ export const TourService = {
       priceMin,
       priceMax,
       safariType,
-      accomodationType,
+      accommodationType,
     } = req.query;
 
-    //generation filters
     const filters: Prisma.TourWhereInput = {
       location: location
         ? {
             contains: String(location),
-            mode: "insensitive",
+            mode: 'insensitive',
           }
         : undefined,
       durationInDays: {
@@ -48,10 +48,10 @@ export const TourService = {
         },
       },
       safariType: safariType
-        ? { contains: String(safariType), mode: "insensitive" }
+        ? { contains: String(safariType), mode: 'insensitive' }
         : undefined,
-      accomodationType: accomodationType
-        ? { contains: String(accomodationType), mode: "insensitive" }
+      accommodationType: accommodationType
+        ? { contains: String(accommodationType), mode: 'insensitive' }
         : undefined,
     };
 
@@ -66,7 +66,7 @@ export const TourService = {
           images: true,
         },
         orderBy: {
-          id: "asc",
+          id: 'asc',
         },
       });
 
@@ -78,7 +78,7 @@ export const TourService = {
         },
       };
     } catch (error) {
-      return handlePrismaRequestError(error, "getting tours");
+      return handlePrismaRequestError(error, 'getting tours', 'TourService');
     }
   },
 };

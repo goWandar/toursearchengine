@@ -4,20 +4,20 @@ This is the backend for the kulturExplora Tour Search Engine project, built with
 
 ## Tech Stack
 
--   Node.js & Express.js – Backend framework
--   TypeScript – Strongly typed JavaScript
--   Prisma ORM – Database management
--   PostgreSQL
+- Node.js & Express.js – Backend framework
+- TypeScript – Strongly typed JavaScript
+- Prisma ORM – Database management
+- PostgreSQL
 
 ## Setup & Installation
 
 1. Clone the repository:
 
-    ```sh
-     https://github.com/KulturExplora/toursearchengine.git
-    cd toursearchengine/backend
+   ```sh
+    https://github.com/KulturExplora/toursearchengine.git
+   cd toursearchengine/backend
 
-    ```
+   ```
 
 2. Install dependencies:
 
@@ -52,9 +52,9 @@ PORT=
 
 **Important Notes**:
 
--   The values required for testing and development environments are available on the KulturExplora Confluence page.
--   Ensure you have the correct access permissions to retrieve these credentials.
--   Never commit your .env file to version control to keep sensitive data secure.
+- The values required for testing and development environments are available on the KulturExplora Confluence page.
+- Ensure you have the correct access permissions to retrieve these credentials.
+- Never commit your .env file to version control to keep sensitive data secure.
 
 4. Migrate the database:
 
@@ -70,9 +70,9 @@ npm run dev
 
 ## Available Scripts
 
--   npm run dev – Start the server in development mode with ts-node
--   npm run build – Compile TypeScript to JavaScript
--   npm start – Run the production server using the compiled JavaScript
+- npm run dev – Start the server in development mode with ts-node
+- npm run build – Compile TypeScript to JavaScript
+- npm start – Run the production server using the compiled JavaScript
 
 ## API Documentation
 

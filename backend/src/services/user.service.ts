@@ -1,41 +1,31 @@
-import { prisma } from "../db/prisma";
-import { ServiceResponse } from "../types/types";
-import { handlePrismaRequestError } from "../utils/errorHandler";
-import logger from "../utils/logger";
-import { validateUserInput } from "../utils/inputValidation";
-import { User } from "../types/types";
+import { prisma } from '../db/prisma';
+
+import { handlePrismaRequestError } from '../utils/errorHandler';
+import { validateUserInput } from '../utils/inputValidation';
+import logger from '../utils/logger';
+
+import { User, ServiceResponse } from '../types/types';
 
 export const UserService = {
-    async userCreateUser(
-        id: string,
-        name: string,
-        email: string
-    ): Promise<ServiceResponse<User>> {
-        const validationResult = validateUserInput(name, email);
-        if (!validationResult.success) {
-            return {
-                success: false,
-                error: validationResult.error ?? "",
-            };
-        }
+  async userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
+    const validationResult = validateUserInput(name, email);
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: validationResult.error ?? '',
+      };
+    }
 
-        try {
-            const user = await prisma.user.create({
-                data: { id, name, email, role: "USER" },
-            });
+    try {
+      const user = await prisma.user.create({
+        data: { id, name, email, role: 'USER' },
+      });
 
-            await logger.success(
-                `[UserService] User created successfully:`,
-                user.email
-            );
+      await logger.success(`[UserService] User created successfully:`, user.email);
 
-            return { success: true, data: user as User };
-        } catch (error) {
-            return handlePrismaRequestError(
-                error,
-                "creating user",
-                "UserService"
-            );
-        }
-    },
+      return { success: true, data: user as User };
+    } catch (error) {
+      return handlePrismaRequestError(error, 'creating user', 'UserService');
+    }
+  },
 };

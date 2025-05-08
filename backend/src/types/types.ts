@@ -1,13 +1,13 @@
 export interface User {
-    id: string;
-    name: string;
-    email: string;
-    role: "USER" | "ADMIN";
+  id: string;
+  name: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
 }
 
 export interface AuthUser {
-    id: string;
-    email: string;
+  id: string;
+  email: string;
 }
 
 export interface Tour {
@@ -22,7 +22,7 @@ export interface Tour {
   safariType: string | null;
   included: string | null;
   excluded: string | null;
-  accomodationType: string | null;
+  accommodationType: string | null;
   siteURL: string | null;
   rating: number | null;
   reviews: string | null;
@@ -42,17 +42,15 @@ export interface Image {
 }
 
 export interface Price {
-    id: number;
-    numOfPeople: number;
-    currency: string;
-    pricePerPerson: number;
-    seasonName: string;
-    seasonPeriod: string;
-    dateCreated: Date;
-    dateModified: Date | null;
-    tourId: number;
+  id: number;
+  numOfPeople: number;
+  currency: string;
+  pricePerPerson: number;
+  seasonName: string;
+  seasonPeriod: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tourId: number;
 }
 
-export type ServiceResponse<T> =
-    | { success: true; data: T }
-    | { success: false; error: string };
+export type ServiceResponse<T> = { success: true; data: T } | { success: false; error: string };
