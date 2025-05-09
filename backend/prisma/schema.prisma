@@ -34,7 +34,6 @@ model Tour {
   country          String
   durationInDays   Int         @default(0)
   itinerary        String?
-  safariType       String?
   accommodationType String?
   siteURL          String?
   included         String?
@@ -46,7 +45,7 @@ model Tour {
   archived         Boolean     @default(false)
   images           TourImage[]
   prices           TourPrice[]
-
+  operatorId       Int
   @@map("tours")
 }
 
@@ -75,3 +74,22 @@ model TourPrice {
 
   @@map("tour_prices")
 }
+
+model Operator {
+  id             Int       @id @default(autoincrement())
+  name           String     
+  archived       Boolean
+
+   @@map("operator")
+}
+
+model Parks {
+  id             Int       @id @default(autoincrement())
+  name           String     
+  type           String
+  country        String
+  countrycode    String
+
+   @@map("parks")
+}
+
