@@ -8,7 +8,8 @@ export const authorizeRoles = (...roles: string[]) => {
     const user = req.user as User;
 
     if (!user) {
-      return res.status(403).json({ error: 'Access denied: no role provided' });
+      res.status(403).json({ error: 'Access denied: no role provided' });
+      return;
     }
 
     if (!roles.includes(user.role)) {

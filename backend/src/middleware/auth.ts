@@ -28,7 +28,6 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
 
   try {
     const decoded = (await verifyJwt(token, supabaseJwtSecret)) as JwtPayload;
-
     req.user = decoded as JwtPayload;
     console.log('User authenticated:', decoded);
     next();
