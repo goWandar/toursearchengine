@@ -35,6 +35,7 @@ model Tour {
   durationInDays   Int         @default(0)
   itinerary        String?
   accommodationType String?
+  safariType       String?
   siteURL          String?
   included         String?
   excluded         String?
