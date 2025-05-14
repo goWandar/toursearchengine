@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { getTours } from "./api";
+import { useState, useCallback } from 'react';
+import { getTours } from './api';
 
 /**
  * Custom hook for managing tour data and related operations
@@ -45,13 +45,8 @@ const useTourService = () => {
    * @param {String} fallbackImage - Default image if no images available
    * @returns {String} Image URL
    */
-  const getRandomImage = (
-    images,
-    fallbackImage = "https://moafrikatours.com/default.jpg"
-  ) => {
-    return images?.length > 0
-      ? images[Math.floor(Math.random() * images.length)].image_urls
-      : fallbackImage;
+  const getRandomImage = (images, fallbackImage = 'https://moafrikatours.com/default.jpg') => {
+    return images?.length > 0 ? images[Math.floor(Math.random() * images.length)].image_urls : fallbackImage;
   };
 
   /**
@@ -60,9 +55,9 @@ const useTourService = () => {
    * @returns {String|Number} Formatted price or message
    */
   const getPrice = (prices) => {
-    if (!prices?.length) return "Price not available";
+    if (!prices?.length) return 'Price not available';
     const amountInfo = prices.find((info) => info.numOfPeople === 1);
-    return amountInfo?.pricePerPerson ?? "Price not available";
+    return amountInfo?.pricePerPerson ?? 'Price not available';
   };
 
   /**
@@ -79,29 +74,22 @@ const useTourService = () => {
 
     return tours.filter((tour) => {
       const matchesLocation =
-        !location ||
-        location === "Anywhere" ||
-        tour.country.toLowerCase() === location.toLowerCase();
-      const matchesType =
-        !type || tour.type.toLowerCase() === type.toLowerCase();
+        !location || location === 'Anywhere' || tour.country.toLowerCase() === location.toLowerCase();
+      const matchesType = !type || tour.type.toLowerCase() === type.toLowerCase();
       const matchesDays =
-        days === "Any" ||
-        (tour.durationInDays >= daysFilter.min &&
-          tour.durationInDays <= daysFilter.max);
-      const matchesBudget =
-        tour.price >= budgetFilter.min && tour.price <= budgetFilter.max;
-      const matchesAccommodation =
-        !accommodationType || tour.accommodationType === accommodationType;
+        days === 'Any' || (tour.durationInDays >= daysFilter.min && tour.durationInDays <= daysFilter.max);
+      const matchesBudget = tour.price >= budgetFilter.min && tour.price <= budgetFilter.max;
+      const matchesAccommodation = !accommodationType || tour.accommodationType === accommodationType;
 
-      return matchesLocation && matchesDays;
+      return matchesLocation && matchesType && matchesDays && matchesBudget && matchesAccommodation;
     });
   };
 
   // Helper function to parse days filter string into min/max values
   const parseDaysFilter = (daysFilter) => {
-    if (!daysFilter || daysFilter === "Any") return { min: 0, max: Infinity };
-    const [min, max] = daysFilter.split("-").map((s) => {
-      const num = parseInt(s.replace(/\D/g, ""));
+    if (!daysFilter || daysFilter === 'Any') return { min: 0, max: Infinity };
+    const [min, max] = daysFilter.split('-').map((s) => {
+      const num = parseInt(s.replace(/\D/g, ''));
       return isNaN(num) ? Infinity : num;
     });
     return { min, max: max || Infinity };

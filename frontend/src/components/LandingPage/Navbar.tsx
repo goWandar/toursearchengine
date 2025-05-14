@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+interface NavItem {
+  name: string;
+  path: string;
+  sectionId?: string;
+}
+
+const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -31,7 +37,7 @@ const Navbar = () => {
   };
 
   // Function to scroll to section
-  const scrollToSection = sectionId => {
+  const scrollToSection = (sectionId: string): void => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -40,7 +46,7 @@ const Navbar = () => {
   };
 
   // Array of navigation items with their corresponding paths
-  const navItems = [
+  const navItems: NavItem[] = [
     { name: 'About', path: '/#about', sectionId: 'about' },
     { name: 'Features', path: '/#features', sectionId: 'features' },
     { name: 'Blog', path: '/#blog', sectionId: 'blog' },
@@ -49,25 +55,24 @@ const Navbar = () => {
   ];
 
   // NavList component
-  const NavList = () => (
+  const NavList: React.FC = () => (
     <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-      {navItems.map(item => (
-        <li
-          key={item.name}
-          className={`nav-item ${isScrolled ? 'scrolled-link' : ''}`}>
+      {navItems.map((item) => (
+        <li key={item.name} className={`nav-item ${isScrolled ? 'scrolled-link' : ''}`}>
           {item.sectionId ? (
             <a
               href={item.path}
-              onClick={e => {
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.preventDefault();
-                scrollToSection(item.sectionId);
-              }}>
+                if (item.sectionId) {
+                  scrollToSection(item.sectionId);
+                }
+              }}
+            >
               {item.name}
             </a>
           ) : (
-            <Link
-              to={item.path}
-              onClick={() => setIsMobileMenuOpen(false)}>
+            <Link to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
               {item.name}
             </Link>
           )}
@@ -80,13 +85,16 @@ const Navbar = () => {
     <>
       <section>
         {' '}
-        <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isMobileMenuOpen ? 'menu-open' : ''}`}>
+        <nav
+          className={`navbar ${isScrolled ? 'scrolled' : ''} ${isMobileMenuOpen ? 'menu-open' : ''}`}
+        >
           <div className='container'>
             <h1>
               <a
                 href='https://www.linkedin.com/company/kulturexplora/'
                 target='_blank'
-                rel='noopener noreferrer'>
+                rel='noopener noreferrer'
+              >
                 {/* 大Logo */}
                 <img
                   src='/Logos/png/ColorLogoNoBackground.png'
@@ -99,10 +107,11 @@ const Navbar = () => {
             <button
               className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}
               onClick={toggleMobileMenu}
-              aria-label='Toggle menu'>
-              <span></span>
-              <span></span>
-              <span></span>
+              aria-label='Toggle menu'
+            >
+              <span />
+              <span />
+              <span />
             </button>
 
             {/* 導航連結 */}

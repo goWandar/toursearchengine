@@ -1,21 +1,34 @@
 import { useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
+
+interface FormData {
+  email: string;
+}
+
+interface Message {
+  text: string;
+  type: 'success' | 'error';
+}
+
+interface ApiError {
+  statusCode: number;
+  error?: string;
+  message?: string;
+}
 
 const { VITE_API_PATH } = import.meta.env;
 
-const BetaForm = () => {
-  // const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+const BetaForm: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<Message | null>(null);
 
-  const onSubmit = async data => {
+  const onSubmit = async (data: FormData): Promise<void> => {
     setIsLoading(true);
     setMessage(null);
 
     try {
-      console.log('VITE_API_PATH :', `${VITE_API_PATH}/api/subscribers`); // 用於調試
-      const response = await axios.post(`${VITE_API_PATH}/api/subscribers`, {
+      await axios.post(`${VITE_API_PATH}/api/subscribers`, {
         email: data.email,
       });
 
@@ -25,7 +38,8 @@ const BetaForm = () => {
         type: 'success',
       });
       reset();
-    } catch (error) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiError>;
       // console.log('Error details:', {
       //   status: error.response?.status,
       //   data: error.response?.data,
@@ -33,8 +47,8 @@ const BetaForm = () => {
       // });
       // console.log(error);
       if (
-        error.response.data.statusCode === 409 ||
-        error.response.data.statusCode === 204
+        axiosError.response?.data?.statusCode === 409 ||
+        axiosError.response?.data?.statusCode === 204
       ) {
         setMessage({
           text: 'This email is already registered. Please use a different email.',
@@ -42,27 +56,28 @@ const BetaForm = () => {
         });
         return;
       }
-      let errorMessage = 'An error occurred. Please try again.';
+      let messageText = 'An error occurred. Please try again.';
 
-      if (error.response.data) {
-        switch (error.response.data.statusCode) {
+      if (axiosError.response?.data) {
+        const { statusCode, error: apiError } = axiosError.response.data;
+        switch (statusCode) {
           case 400:
-            errorMessage = error.response.data.error || 'Invalid request';
+            messageText = apiError || 'Invalid request';
             break;
 
           case 204:
-            errorMessage = 'This email is already registered. Please use a different email.';
+            messageText = 'This email is already registered. Please use a different email.';
             break;
           default:
-            errorMessage = error.response.data?.error || 'Server error occurred';
+            messageText = apiError || 'Server error occurred';
         }
-      } else if (error.request) {
-        errorMessage = 'Unable to connect to the server. Please check your internet connection.';
+      } else if (axiosError.request) {
+        messageText = 'Unable to connect to the server. Please check your internet connection.';
       } else {
-        errorMessage = 'Something went wrong. Please try again later.';
+        messageText = 'Something went wrong. Please try again later.';
       }
       setMessage({
-        text: error.response?.data?.message || 'An error occurred. Please try again.',
+        text: messageText,
         type: 'error',
       });
     } finally {
@@ -71,11 +86,11 @@ const BetaForm = () => {
   };
 
   const {
-    register, // 註冊表單欄位
-    handleSubmit, // 處理表單提交
-    formState: { errors }, // 表單錯誤狀態
-    reset, // 重置表單
-  } = useForm();
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>();
 
   return (
     <>
@@ -83,12 +98,11 @@ const BetaForm = () => {
         <div className='form-container'>
           <h1 className='title fw-bold animate__animated animate__heartBeat'>Early Beta Access</h1>
           <p className='description'>
-            Join our exclusive beta launch and get first access to Africa&apos;s best-ranked safari operators
+            Join our exclusive beta launch and get first access to Africa&apos;s best-ranked safari
+            operators
           </p>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className='email-form'>
+          <form onSubmit={handleSubmit(onSubmit)} className='email-form'>
             <input
               {...register('email', {
                 required: 'Email is required',
@@ -101,11 +115,14 @@ const BetaForm = () => {
               placeholder='Enter your email'
               className='email-input'
             />
-            {errors.email && <div className='error-message invalid-feedback d-block'>{errors.email.message}</div>}
+            {errors.email && (
+              <div className='error-message invalid-feedback d-block'>{errors.email.message}</div>
+            )}
             <button
               type='submit'
               disabled={isLoading}
-              className={`submit-button ${isLoading ? 'disabled opacity-50' : ''}`}>
+              className={`submit-button ${isLoading ? 'disabled opacity-50' : ''}`}
+            >
               {isLoading ? 'Submitting...' : 'Join Waitlist'}
             </button>
           </form>
@@ -116,7 +133,8 @@ const BetaForm = () => {
                 message.type === 'success'
                   ? 'alert alert-success text-success border border-success-subtle'
                   : 'alert alert-danger  border border-danger-subtle'
-              }`}>
+              }`}
+            >
               {message.text}
             </div>
           )}
@@ -136,52 +154,53 @@ const BetaForm = () => {
                             className='bi bi-collection'
                             style={{
                               color: 'var(--primary-color)',
-                            }}></i>
+                            }}
+                          />
                         </div>
                         <div>
                           <h4 className='h5 mb-2'>Collects Safari Information</h4>
                           <p className='mb-0'>
-                            Gathers real-time details from safari operators, including location, pricing, itineraries,
-                            duration, and experience type.
+                            Gathers real-time details from safari operators, including location,
+                            pricing, itineraries, duration, and experience type.
                           </p>
                         </div>
                       </li>
 
                       <li className='d-flex align-items-start mb-4'>
                         <div className='feature-bullet bg-warning-subtle rounded-circle p-2 me-3'>
-                          <i className='bi bi-star-fill '></i>
+                          <i className='bi bi-star-fill ' />
                         </div>
                         <div>
                           <h4 className='h5 mb-2'>Aggregates Reviews</h4>
                           <p className='mb-0'>
-                            Collects reviews from platforms like TripAdvisor and Google to provide a summary of ratings
-                            and feedback.
+                            Collects reviews from platforms like TripAdvisor and Google to provide a
+                            summary of ratings and feedback.
                           </p>
                         </div>
                       </li>
 
                       <li className='d-flex align-items-start mb-4'>
                         <div className='feature-bullet bg-warning-subtle rounded-circle p-2 me-3'>
-                          <i className='bi bi-person-check '></i>
+                          <i className='bi bi-person-check ' />
                         </div>
                         <div>
                           <h4 className='h5 mb-2'>Personalized Recommendations</h4>
                           <p className='mb-0'>
-                            Suggests safaris based on your preferences, like location, pricing, itineraries, duration,
-                            and experience type.
+                            Suggests safaris based on your preferences, like location, pricing,
+                            itineraries, duration, and experience type.
                           </p>
                         </div>
                       </li>
 
                       <li className='d-flex align-items-start'>
                         <div className='feature-bullet bg-warning-subtle rounded-circle p-2 me-3'>
-                          <i className='bi bi-link-45deg '></i>
+                          <i className='bi bi-link-45deg ' />
                         </div>
                         <div>
                           <h4 className='h5 mb-2'>Direct Booking Links</h4>
                           <p className='mb-0'>
-                            Offers direct links to safari operators for booking, without handling the transactions on
-                            the platform.
+                            Offers direct links to safari operators for booking, without handling
+                            the transactions on the platform.
                           </p>
                         </div>
                       </li>

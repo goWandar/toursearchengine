@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Updated from ES2021
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"], // Updated
+    "module": "NodeNext", // Updated to match moduleResolution
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext", // Updated from bundler
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowJs": true,
+    "esModuleInterop": true, // Added for better CJS/ESM interop
+    "allowSyntheticDefaultImports": true, // Added for convenience
+    "forceConsistentCasingInFileNames": true, // Added for consistency
+    "baseUrl": "src", // Changed from "."
+    "paths": {
+      "@/*": ["./*"] // Kept your existing simple alias, relative to baseUrl "src"
+    },
+    "types": ["vite/client"] // Added vite/client types
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"], // More specific include
+  "exclude": ["node_modules", "dist"] // Basic exclude
+}
