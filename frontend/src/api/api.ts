@@ -1,5 +1,5 @@
+import type { Tour } from '@/types/index';
 import axios from 'axios';
-import type { Tour } from '@/types/index.js';
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 

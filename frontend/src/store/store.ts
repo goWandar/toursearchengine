@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Tour } from '@/types/index.js';
+import type { Tour } from '@/types/index';
 
 interface StoreState {
   tours: Tour[];

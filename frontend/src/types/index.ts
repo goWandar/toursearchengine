@@ -1,5 +1,5 @@
-export * from './types.js';
-import type { Tour } from './types.js';
+export * from './types';
+import type { Tour } from './types';
 
 export interface TourDetails extends Tour {
   itinerary: TourItinerary[];

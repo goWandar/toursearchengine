@@ -3,9 +3,9 @@
     "target": "ESNext", // Updated from ES2021
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"], // Updated
-    "module": "NodeNext", // Updated to match moduleResolution
+    "module": "ESNext", // Updated to match moduleResolution
     "skipLibCheck": true,
-    "moduleResolution": "NodeNext", // Updated from bundler
+    "moduleResolution": "Bundler", // Updated from bundler
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

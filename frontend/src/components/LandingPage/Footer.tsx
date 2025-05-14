@@ -1,7 +1,5 @@
+import { FaFacebookSquare, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { IoLogoTiktok } from 'react-icons/io5';
-import { FaFacebookSquare } from 'react-icons/fa';
-import { FaInstagram } from 'react-icons/fa';
-import { FaLinkedin } from 'react-icons/fa';
 
 interface SocialLink {
   url: string;

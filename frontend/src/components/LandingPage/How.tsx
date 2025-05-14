@@ -1,8 +1,8 @@
-import { FaGlobeAmericas } from 'react-icons/fa';
+import { IconType } from 'react-icons';
 import { AiFillStar } from 'react-icons/ai';
 import { BsCheckCircleFill } from 'react-icons/bs';
+import { FaGlobeAmericas } from 'react-icons/fa';
 import { FaRegPenToSquare } from 'react-icons/fa6';
-import { IconType } from 'react-icons';
 
 interface ProcessCardProps {
   number: string;

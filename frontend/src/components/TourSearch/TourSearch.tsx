@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import useSearchToursAPI from '@/hooks/useSearchToursAPI';
+import useStore from '@/store/store';
+import { createUrlwithFilter } from '@/utils/tourService/tourUtils';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../assets/_tourSearch.scss';
-import useStore from '@/store/store.js';
-import useSearchToursAPI from '@/hooks/useSearchToursAPI.js';
-import SearchResultsDisplay from './SearchResultsDisplay.js';
-import SearchInput from './SearchInput.js';
-import { createUrlwithFilter } from '@/utils/tourService/tourUtils.js';
+import SearchInput from './SearchInput';
+import SearchResultsDisplay from './SearchResultsDisplay';
 
 /**
  * Main tour search component with filters and results display

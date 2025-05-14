@@ -1,5 +1,9 @@
+import { Tour } from '@/types/types';
+import { v4 as uuidv4 } from 'uuid';
 import '../../assets/_searchResultsDisplay.scss';
-import type { Tour } from '@/types/index.js';
+import Spinner from '../Spinner/Spinner';
+import NoResults from './NoResults';
+import TourCard from './TourCard';
 
 interface SearchResultsDisplayProps {
   results: Tour[];
@@ -11,10 +15,6 @@ interface SearchResultsDisplayProps {
 
 type TourImage = Tour['images'][0];
 type TourPrice = Tour['prices'][0];
-import { v4 as uuidv4 } from 'uuid';
-import TourCard from './TourCard.js';
-import NoResults from './NoResults.js';
-import Spinner from '../Spinner/Spinner.js';
 
 function getRandomImage(images: TourImage[]) {
   const randomImage =
