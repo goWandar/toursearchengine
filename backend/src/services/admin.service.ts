@@ -30,11 +30,34 @@ export const AdminService = {
     }
   },
 
-  async getUsers(): Promise<ServiceResponse<{ id: string; name: string; email: string }[]>> {
+  async getUsers(
+    cursor?: string,
+    limit = 20,
+  ): Promise<
+    ServiceResponse<{
+      users: { id: string; name: string; email: string }[];
+      nextCursor: string | null;
+    }>
+  > {
     try {
-      const users = await prisma.user.findMany();
+      const safeLimit = Math.min(limit, 100);
+
+      const users = await prisma.user.findMany({
+        take: safeLimit,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: { id: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      });
+
+      const nextCursor = users.length === safeLimit ? users[users.length - 1].id : null;
+
       logger.success('[AdminService] Fetched all users.');
-      return { success: true, data: users };
+      return { success: true, data: { users, nextCursor } };
     } catch (error) {
       return handlePrismaRequestError(error, 'fetching users', 'AdminService');
     }

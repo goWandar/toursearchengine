@@ -69,18 +69,6 @@ router.get(
     const userId: string = req.params.id;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!userId) {
-      responseHandler(
-        res,
-        {
-          success: false,
-          error: 'UserId missing, unable to process.',
-        },
-        'GET',
-      );
-      return;
-    }
-
     const result = await AdminService.getUserById(userId);
 
     if (result.success) {
@@ -97,12 +85,18 @@ router.get(
   authenticateToken,
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
-    const result = await AdminService.getUsers();
+    const cursor = req.query.cursor as string | undefined;
+    const limit = parseInt(req.query.limit as string) || 20;
+
+    const result = await AdminService.getUsers(cursor, limit);
     const adminEmail = getUserEmailFromRequest(req);
 
-    //TODO: add pagination !!!
     if (!result.success) {
-      logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved all users`);
+      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users`);
+    } else {
+      logger.info(
+        `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
+      );
     }
 
     responseHandler(res, result, 'GET');
