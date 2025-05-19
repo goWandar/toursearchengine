@@ -232,11 +232,13 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
     );
   }
 
-  const { error } = await SupabaseProvider.userDeleteOwnProfile(userId);
+  const { error } = await SupabaseProvider.deleteUserProfile(userId);
 
   if (error) {
     return responseHandler(res, { success: false, error: error.message }, 'DELETE');
   }
+
+  // await prisma.user.delete({ where: { id: userId } });
 
   const result = {
     success: true,

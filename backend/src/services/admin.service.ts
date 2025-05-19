@@ -1,5 +1,3 @@
-// admin.routes: This could include GET a Single User by ID, GET All Users, etc.
-
 import { prisma } from '../db/prisma';
 
 import { handlePrismaRequestError } from '../utils/errorHandler';
@@ -7,6 +5,7 @@ import { validateUserInput, checkIfValidUUID } from '../utils/inputValidation';
 import logger from '../utils/logger';
 
 import { User, ServiceResponse } from '../types/types';
+import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {
   async adminCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
@@ -91,6 +90,25 @@ export const AdminService = {
       return { success: true, data: user };
     } catch (error) {
       return handlePrismaRequestError(error, 'fetching user by ID', 'AdminService');
+    }
+  },
+
+  async deleteUserById(userId: string): Promise<ServiceResponse<null>> {
+    try {
+      // 1. Delete Supabase Auth user:
+      const { error: authError } = await SupabaseProvider.deleteUserProfile(userId);
+
+      if (authError) {
+        return { success: false, error: `Failed to delete auth user: ${authError.message}` };
+      }
+
+      // 2. delete from db
+      await prisma.user.delete({ where: { id: userId } });
+
+      logger.success(`[AdminService] Successfully deleted user ${userId}`);
+      return { success: true, data: null };
+    } catch (error) {
+      return handlePrismaRequestError(error, 'deleting user', 'AdminService');
     }
   },
 };

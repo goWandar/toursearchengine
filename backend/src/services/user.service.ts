@@ -28,4 +28,8 @@ export const UserService = {
       return handlePrismaRequestError(error, 'creating user', 'UserService');
     }
   },
+
+  //TODO:
+
+  // await prisma.user.delete({ where: { id: userId } });
 };

@@ -53,7 +53,7 @@ export const SupabaseProvider = {
     });
   },
 
-  async userDeleteOwnProfile(userId: string) {
+  async deleteUserProfile(userId: string) {
     const adminClient = createClient(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
