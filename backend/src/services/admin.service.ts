@@ -4,7 +4,7 @@ import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
-import { User, ServiceResponse } from '../types/types';
+import { User, PublicUser, ServiceResponse } from '../types/types';
 import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {
@@ -36,7 +36,7 @@ export const AdminService = {
     limit = 20,
   ): Promise<
     ServiceResponse<{
-      users: { id: string; name: string; email: string }[];
+      users: PublicUser[];
       nextCursor: string | null;
     }>
   > {
@@ -66,9 +66,7 @@ export const AdminService = {
     }
   },
 
-  async getUserById(
-    userId: string,
-  ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
+  async getUserById(userId: string): Promise<ServiceResponse<PublicUser>> {
     if (!userId) {
       logger.error('[AdminService] Validation failed: Missing user ID.');
       return { success: false, error: 'User ID is required.' };
