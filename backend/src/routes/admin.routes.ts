@@ -66,7 +66,8 @@ router.get(
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
     const cursor = req.query.cursor as string | undefined;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const parsedLimit = parseInt(req.query.limit as string);
+    const limit = isNaN(parsedLimit) ? 20 : parsedLimit;
 
     const result = await AdminService.getUsers(cursor, limit);
     const adminEmail = getUserEmailFromRequest(req);
