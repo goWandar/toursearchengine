@@ -10,7 +10,9 @@ import { SupabaseProvider } from '../providers/supabase.provider';
 export const AdminService = {
   async adminCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
     const validationResult = validateUserInput(name, email);
+
     if (!validationResult.success) {
+      logger.error('[AdminService] Validation failed during user creation.');
       return {
         success: false,
         error: validationResult.error ?? '',
@@ -22,7 +24,7 @@ export const AdminService = {
         data: { id, name, email, role: 'ADMIN' },
       });
 
-      await logger.success(`[AdminService] User created successfully:`, user.email);
+      logger.success(`[AdminService] User created successfully:`, user.email);
       return { success: true, data: user as User };
     } catch (error) {
       return handlePrismaRequestError(error, 'creating user', 'AdminService');
@@ -55,7 +57,9 @@ export const AdminService = {
 
       const nextCursor = users.length === safeLimit ? users[users.length - 1].id : null;
 
-      logger.success('[AdminService] Fetched all users.');
+      logger.success(
+        `[AdminService] Retrieved ${users.length} users | Cursor: ${cursor ?? 'none'} | NextCursor: ${nextCursor ?? 'null'}`,
+      );
       return { success: true, data: { users, nextCursor } };
     } catch (error) {
       return handlePrismaRequestError(error, 'fetching users', 'AdminService');
@@ -66,7 +70,7 @@ export const AdminService = {
     userId: string,
   ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
     if (!userId) {
-      logger.error('[AdminService] Validation failed: User ID is required.');
+      logger.error('[AdminService] Validation failed: Missing user ID.');
       return { success: false, error: 'User ID is required.' };
     }
 
@@ -80,7 +84,7 @@ export const AdminService = {
         return { success: false, error: 'User not found.' };
       }
 
-      logger.success(`[AdminService] Retrieved user: ${user.name}, email: ${user.email}`);
+      logger.success(`[AdminService] User retrieved | ID: ${user.id} | Email: ${user.email}`);
 
       return { success: true, data: user };
     } catch (error) {
@@ -94,6 +98,9 @@ export const AdminService = {
       const { error: authError } = await SupabaseProvider.deleteUserProfile(userId);
 
       if (authError) {
+        logger.error(
+          `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${authError.message}`,
+        );
         return { success: false, error: `Failed to delete auth user: ${authError.message}` };
       }
 
