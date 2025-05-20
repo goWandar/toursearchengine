@@ -90,12 +90,20 @@ router.delete(
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
     const userId = req.params.id;
+    const adminEmail = getUserEmailFromRequest(req);
 
     if (!userId) {
+      logger.error(`[AdminRoute] Admin (${adminEmail}) attempted delete without User ID`);
       return responseHandler(res, { success: false, error: 'User ID is required' }, 'DELETE');
     }
 
     const result = await AdminService.deleteUserById(userId);
+
+    if (result.success) {
+      logger.info(`[AdminRoute] Admin (${adminEmail}) deleted user ID: ${userId}`);
+    } else {
+      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId}`);
+    }
 
     return responseHandler(res, result, 'DELETE');
   },
