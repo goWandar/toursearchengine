@@ -1,7 +1,7 @@
 import { prisma } from '../db/prisma';
 
 import { handlePrismaRequestError } from '../utils/errorHandler';
-import { validateUserInput, checkIfValidUUID } from '../utils/inputValidation';
+import { validateUserInput } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
 import { User, ServiceResponse } from '../types/types';
@@ -68,11 +68,6 @@ export const AdminService = {
     if (!userId) {
       logger.error('[AdminService] Validation failed: User ID is required.');
       return { success: false, error: 'User ID is required.' };
-    }
-
-    if (!checkIfValidUUID(userId)) {
-      logger.error(`[AdminService] Validation failed: Invalid user ID format (${userId})`);
-      return { success: false, error: 'Invalid user ID format.' };
     }
 
     try {
