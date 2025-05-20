@@ -1,7 +1,7 @@
 import { prisma } from '../db/prisma';
 
 import { handlePrismaRequestError } from '../utils/errorHandler';
-import { validateUserInput } from '../utils/inputValidation';
+import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
 import { User, PublicUser, ServiceResponse } from '../types/types';
@@ -67,9 +67,11 @@ export const AdminService = {
   },
 
   async getUserById(userId: string): Promise<ServiceResponse<PublicUser>> {
-    if (!userId) {
-      logger.error('[AdminService] Validation failed: Missing user ID.');
-      return { success: false, error: 'User ID is required.' };
+    const idValidation = validateId(userId);
+
+    if (!idValidation.success) {
+      logger.error(`[AdminService] Validation failed: ${idValidation.error}`);
+      return { success: false, error: idValidation.error ?? '' };
     }
 
     try {
@@ -91,6 +93,12 @@ export const AdminService = {
   },
 
   async deleteUserById(userId: string): Promise<ServiceResponse<null>> {
+    const idValidation = validateId(userId);
+
+    if (!idValidation.success) {
+      logger.error(`[AdminService] Validation failed: ${idValidation.error}`);
+      return { success: false, error: idValidation.error ?? '' };
+    }
     try {
       // 1. Delete Supabase Auth user:
       const { error: authError } = await SupabaseProvider.deleteUserProfile(userId);
