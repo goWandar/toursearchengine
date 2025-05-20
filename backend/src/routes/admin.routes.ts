@@ -40,7 +40,7 @@ router.post(
   },
 );
 
-// GET: Fetch single user by ID
+// GET: Admin fetches a single user by ID
 router.get(
   '/admin/user/:id',
   authenticateToken,
@@ -59,7 +59,7 @@ router.get(
   },
 );
 
-// GET: Fetch all users
+// GET: Admin fetches all users
 router.get(
   '/admin/users',
   authenticateToken,
@@ -83,7 +83,7 @@ router.get(
   },
 );
 
-// DELETE: delete single user by ID
+// DELETE: Admin deletes a single user by ID
 router.delete(
   '/admin/user/:id',
   authenticateToken,

@@ -2,7 +2,7 @@ import { prisma } from '../db/prisma';
 
 import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, checkIfValidUUID } from '../utils/inputValidation';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 import { User, ServiceResponse } from '../types/types';
 import { SupabaseProvider } from '../providers/supabase.provider';

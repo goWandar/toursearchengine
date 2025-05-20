@@ -57,6 +57,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
+// TODO: Add Rate Limiting
 // POST User Sign In
 router.post('/user/signin', async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -237,8 +238,6 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
   if (error) {
     return responseHandler(res, { success: false, error: error.message }, 'DELETE');
   }
-
-  // await prisma.user.delete({ where: { id: userId } });
 
   const result = {
     success: true,

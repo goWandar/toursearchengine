@@ -18,5 +18,3 @@ export const logger = {
     console.log(chalk.default.green('[SUCCESS]'), ...args);
   },
 };
-
-export default logger;
