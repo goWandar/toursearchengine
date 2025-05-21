@@ -101,13 +101,13 @@ export const AdminService = {
     }
     try {
       // 1. Delete Supabase Auth user:
-      const { error: authError } = await SupabaseProvider.deleteUserProfile(userId);
+      const result = await SupabaseProvider.deleteUserProfile(userId);
 
-      if (authError) {
+      if (!result.success) {
         logger.error(
-          `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${authError.message}`,
+          `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${result.error}`,
         );
-        return { success: false, error: `Failed to delete auth user: ${authError.message}` };
+        return { success: false, error: `Failed to delete auth user: ${result.error}` };
       }
 
       // 2. delete from db

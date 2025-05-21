@@ -31,17 +31,16 @@ router.post('/user/signup', async (req: Request, res: Response) => {
   }
 
   // Create user via Supabase Auth
-  const { data, error } = await SupabaseProvider.signUp(email, password);
-
-  if (error) {
+  const signUpResult = await SupabaseProvider.signUp(email, password);
+  if (!signUpResult.success) {
     return responseHandler(
       res,
-      { success: false, error: error?.message || 'Signup failed' },
+      { success: false, error: signUpResult.error || 'Signup failed' },
       'POST',
     );
   }
 
-  const supabaseUserId = data.user?.id;
+  const supabaseUserId = signUpResult.data.user?.id;
 
   if (!supabaseUserId) {
     return responseHandler(
@@ -79,17 +78,17 @@ router.post('/user/signin', async (req: Request, res: Response) => {
   }
 
   // Sign in via Supabase Auth
-  const { data, error } = await SupabaseProvider.signIn(email, password);
+  const signInResult = await SupabaseProvider.signIn(email, password);
 
-  if (error || !data?.session?.access_token) {
-    return responseHandler(
-      res,
-      { success: false, error: error?.message || 'Authentication failed' },
-      'POST',
-    );
+  if (!signInResult.success) {
+    return responseHandler(res, { success: false, error: signInResult.error }, 'POST');
   }
 
-  const user = data.user as AuthUser;
+  const { user, session } = signInResult.data;
+
+  if (!session?.access_token) {
+    return responseHandler(res, { success: false, error: 'Session token missing' }, 'POST');
+  }
 
   const result = {
     success: true,
@@ -103,10 +102,10 @@ router.post('/user/signin', async (req: Request, res: Response) => {
 
 // POST user sign out
 router.post('/user/signout', async (_req: Request, res: Response) => {
-  const { error } = await SupabaseProvider.signOut();
+  const signOutResult = await SupabaseProvider.signOut();
 
-  if (error) {
-    return responseHandler(res, { success: false, error: error.message }, 'POST');
+  if (!signOutResult.success) {
+    return responseHandler(res, { success: false, error: signOutResult.error }, 'POST');
   }
 
   const result = {
@@ -233,10 +232,10 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
     );
   }
 
-  const { error } = await SupabaseProvider.deleteUserProfile(userId);
+  const deleteResult = await SupabaseProvider.deleteUserProfile(userId);
 
-  if (error) {
-    return responseHandler(res, { success: false, error: error.message }, 'DELETE');
+  if (!deleteResult.success) {
+    return responseHandler(res, { success: false, error: deleteResult.error }, 'DELETE');
   }
 
   const result = {
