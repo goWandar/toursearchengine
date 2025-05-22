@@ -52,14 +52,23 @@ export const SupabaseProvider = {
     return { success: true, data: null };
   },
 
-  async getUserData(token: string) {
+  async getUserData(): Promise<SupabaseResult<SupabaseUser | null>> {
     const {
       data: { user },
+      error,
     } = await supabase.auth.getUser();
-    return { user };
+
+    if (error) {
+      return formatSupabaseError('getUserData', error);
+    }
+
+    return { success: true, data: user };
   },
 
-  async userChangePassword(token: string, newPassword: string) {
+  async userChangePassword(
+    token: string,
+    newPassword: string,
+  ): Promise<SupabaseResult<SupabaseUser>> {
     const supabaseWithToken = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!, {
       global: {
         headers: {
@@ -68,16 +77,31 @@ export const SupabaseProvider = {
       },
     });
 
-    return await supabaseWithToken.auth.updateUser({ password: newPassword });
+    const { data, error } = await supabaseWithToken.auth.updateUser({ password: newPassword });
+
+    if (error || !data?.user) {
+      return formatSupabaseError(
+        'userChangePassword',
+        error || { message: 'Failed to update user password' },
+      );
+    }
+
+    return { success: true, data: data.user };
   },
 
-  async sendMagicLink(email: string) {
-    return await supabase.auth.signInWithOtp({
+  async sendMagicLink(email: string): Promise<SupabaseResult<null>> {
+    const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: process.env.SUPABASE_REDIRECT_URL,
       },
     });
+
+    if (error) {
+      return formatSupabaseError('sendMagicLink', error);
+    }
+
+    return { success: true, data: null };
   },
 
   async deleteUserProfile(userId: string): Promise<SupabaseResult<null>> {
@@ -95,7 +119,15 @@ export const SupabaseProvider = {
     return { success: true, data: null };
   },
 
-  async refreshToken(refreshToken: string) {
-    return await supabase.auth.refreshSession({ refresh_token: refreshToken });
+  async refreshToken(
+    refreshToken: string,
+  ): Promise<SupabaseResult<{ user: SupabaseUser; session: Session }>> {
+    const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
+
+    if (error || !data?.session || !data?.user) {
+      return formatSupabaseError('refreshToken', error || { message: 'Failed to refresh session' });
+    }
+
+    return { success: true, data: { user: data.user, session: data.session } };
   },
 };

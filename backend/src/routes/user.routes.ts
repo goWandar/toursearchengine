@@ -5,7 +5,6 @@ import { SupabaseProvider } from '../providers/supabase.provider';
 import { responseHandler } from '../utils/responseHandler';
 import { UserService } from '../services/user.service';
 
-import { AuthUser } from '../types/types';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
@@ -141,10 +140,10 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
     return responseHandler(res, { success: false, error: 'Missing or invalid token.' }, 'POST');
   }
 
-  const { error } = await SupabaseProvider.userChangePassword(token, newPassword);
+  const changePasswordResult = await SupabaseProvider.userChangePassword(token, newPassword);
 
-  if (error) {
-    return responseHandler(res, { success: false, error: error.message }, 'POST');
+  if (!changePasswordResult.success) {
+    return responseHandler(res, { success: false, error: changePasswordResult.error }, 'POST');
   }
 
   const result = {
@@ -158,17 +157,17 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
 });
 
 // POST user password reset
-router.post('/user/send-password-reset', async (req: Request, res: Response) => {
+router.post('/user/send-magic-link', async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
     return responseHandler(res, { success: false, error: 'Email is required' }, 'POST');
   }
 
-  const { error } = await SupabaseProvider.sendMagicLink(email);
+  const sendMagicLinkResult = await SupabaseProvider.sendMagicLink(email);
 
-  if (error) {
-    return responseHandler(res, { success: false, error: error.message }, 'POST');
+  if (!sendMagicLinkResult.success) {
+    return responseHandler(res, { success: false, error: sendMagicLinkResult.error }, 'POST');
   }
 
   const result = {
@@ -190,17 +189,17 @@ router.post('/user/refresh-token', async (req: Request, res: Response) => {
     return responseHandler(res, { success: false, error: 'Missing refresh token' }, 'POST');
   }
 
-  const { data, error } = await SupabaseProvider.refreshToken(refreshToken);
+  const refreshTokenResult = await SupabaseProvider.refreshToken(refreshToken);
 
-  if (error) {
+  if (!refreshTokenResult.success) {
     return responseHandler(
       res,
-      { success: false, error: error.message || 'Invalid refresh token' },
+      { success: false, error: refreshTokenResult.error || 'Invalid refresh token' },
       'POST',
     );
   }
 
-  if (!data.session?.access_token) {
+  if (!refreshTokenResult.data.session?.access_token) {
     return responseHandler(
       res,
       { success: false, error: 'Failed to generate new access token' },
@@ -211,9 +210,9 @@ router.post('/user/refresh-token', async (req: Request, res: Response) => {
   const result = {
     success: true,
     data: {
-      accessToken: data.session.access_token,
-      refreshToken: data.session.refresh_token,
-      expiresIn: data.session.expires_in,
+      accessToken: refreshTokenResult.data.session.access_token,
+      refreshToken: refreshTokenResult.data.session.refresh_token,
+      expiresIn: refreshTokenResult.data.session.expires_in,
     },
   };
 
