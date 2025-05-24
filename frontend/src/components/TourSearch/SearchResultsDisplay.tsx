@@ -1,9 +1,9 @@
-import { Tour } from '@/types/types';
 import { v4 as uuidv4 } from 'uuid';
 import '../../assets/_searchResultsDisplay.scss';
 import Spinner from '../Spinner/Spinner';
 import NoResults from './NoResults';
 import TourCard from './TourCard';
+import { Tour } from '@/types';
 
 interface SearchResultsDisplayProps {
   results: Tour[];
@@ -67,7 +67,7 @@ const SearchResultsDisplay = ({
                     price={getPrice(tour.prices)}
                     country={tour.country}
                     places={tour.location.split(',')}
-                    onBookNow={() => onBookNow(tour.id)}
+                    onBookNow={() => onBookNow(tour.id.toString())}
                   />
                 );
               })}
