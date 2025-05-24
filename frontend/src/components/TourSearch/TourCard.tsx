@@ -9,7 +9,7 @@ interface TourCardProps {
   onBookNow: () => void;
 }
 
-const TourCard: React.FC<TourCardProps> = ({ image, title, price, country, places, onBookNow }) => {
+const TourCard = ({ image, title, price, country, places, onBookNow }: TourCardProps) => {
   return (
     <div className='tour-card'>
       <div className='card-image'>

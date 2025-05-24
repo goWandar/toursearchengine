@@ -6,7 +6,7 @@ interface TourFilters {
   safariType: string;
 }
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_PATH;
 
 export function createUrlwithFilter(filters: TourFilters, cursor?: number): string {
   let url = `${baseUrl}/api/tours/?`;

@@ -1,12 +1,7 @@
-import type { Tour } from '@/types/index';
+import type { SearchResponse, Tour } from '@/types/index';
 import axios from 'axios';
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
-
-export interface SearchResponse {
-  tours: Tour[];
-  cursor: number | null;
-}
 
 export async function getTours(): Promise<Tour[]> {
   const response = await axios.get<Tour[]>(`${baseUrl}/api/tours`);

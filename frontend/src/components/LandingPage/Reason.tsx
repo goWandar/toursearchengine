@@ -1,4 +1,4 @@
-const Reason: React.FC = () => {
+const Reason = () => {
   return (
     <section className='reason py-5' id='features'>
       <div className='container'>

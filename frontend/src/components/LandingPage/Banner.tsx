@@ -1,4 +1,4 @@
-const Banner: React.FC = () => {
+const Banner = () => {
   return (
     <>
       <section className='banner'>

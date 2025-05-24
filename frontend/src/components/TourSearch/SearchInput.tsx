@@ -9,13 +9,7 @@ interface SearchInputProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({
-  placeholder,
-  options,
-  onSelect,
-  isOpen,
-  setIsOpen,
-}) => {
+const SearchInput = ({ placeholder, options, onSelect, isOpen, setIsOpen }: SearchInputProps) => {
   const [selectedOption, setSelectedOption] = useState('');
 
   /**

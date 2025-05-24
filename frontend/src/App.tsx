@@ -12,7 +12,7 @@ import Navbar from './components/LandingPage/Navbar';
 import Reason from './components/LandingPage/Reason';
 import TourSearch from './components/TourSearch/TourSearch';
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <Router>
       <Routes>

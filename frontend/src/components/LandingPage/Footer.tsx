@@ -6,7 +6,7 @@ interface SocialLink {
   icon: React.ReactNode;
 }
 
-const Footer: React.FC = () => {
+const Footer = () => {
   const socialLinks: SocialLink[] = [
     {
       url: 'https://www.linkedin.com/company/kulturexplora/posts/?feedView=all',

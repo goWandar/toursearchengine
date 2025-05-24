@@ -37,13 +37,13 @@ function getPrice(prices: TourPrice[]) {
   return amountInfo.pricePerPerson;
 }
 
-const SearchResultsDisplay: React.FC<SearchResultsDisplayProps> = ({
+const SearchResultsDisplay = ({
   results = [],
   onBookNow,
   hasSearched,
   loading = false,
   loadingMessage = 'Loading tours...',
-}) => {
+}: SearchResultsDisplayProps) => {
   return (
     <div
       className={`search-results ${

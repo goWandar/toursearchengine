@@ -1,4 +1,4 @@
-const Subscribe: React.FC = () => {
+const Subscribe = () => {
   return <div>subscribe</div>;
 };
 

@@ -1,4 +1,4 @@
-const About: React.FC = () => {
+const About = () => {
   return (
     <>
       <section id='about' className='about py-5'>

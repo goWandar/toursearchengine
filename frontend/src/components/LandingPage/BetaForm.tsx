@@ -1,25 +1,15 @@
+import { ApiError, Message } from '@/types';
 import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+
+const { VITE_API_PATH } = import.meta.env;
 
 interface FormData {
   email: string;
 }
 
-interface Message {
-  text: string;
-  type: 'success' | 'error';
-}
-
-interface ApiError {
-  statusCode: number;
-  error?: string;
-  message?: string;
-}
-
-const { VITE_API_PATH } = import.meta.env;
-
-const BetaForm: React.FC = () => {
+const BetaForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<Message | null>(null);
 

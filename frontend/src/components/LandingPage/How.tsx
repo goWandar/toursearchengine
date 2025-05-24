@@ -19,7 +19,7 @@ interface ProcessStep {
   icon: IconType;
 }
 
-const ProcessCard: React.FC<ProcessCardProps> = ({ number, title, description, icon: Icon }) => {
+const ProcessCard = ({ number, title, description, icon: Icon }: ProcessCardProps) => {
   return (
     <div className='process-card d-flex align-items-center p-4 bg-white position-relative mt-8'>
       {/* number bg */}

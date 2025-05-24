@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-const Loading: React.FC = () => {
+const Loading = () => {
   const planeLoaderRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

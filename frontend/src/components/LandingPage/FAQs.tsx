@@ -6,7 +6,7 @@ interface FAQ {
   answer: string;
 }
 
-const FAQs: React.FC = () => {
+const FAQs = () => {
   const [openIndices, setOpenIndices] = useState<number[]>([]); // Track open indices
 
   const Faqs: FAQ[] = [
