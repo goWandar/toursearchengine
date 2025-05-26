@@ -5,6 +5,8 @@ export interface User {
   role: 'USER' | 'ADMIN';
 }
 
+export type PublicUser = Pick<User, 'id' | 'name' | 'email'>;
+
 export interface AuthUser {
   id: string;
   email: string;

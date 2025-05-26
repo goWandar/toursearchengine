@@ -2,7 +2,7 @@ import { prisma } from '../db/prisma';
 
 import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput } from '../utils/inputValidation';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 import { User, ServiceResponse } from '../types/types';
 
@@ -28,4 +28,7 @@ export const UserService = {
       return handlePrismaRequestError(error, 'creating user', 'UserService');
     }
   },
+
+  //TODO:
+  // await prisma.user.delete({ where: { id: userId } });
 };

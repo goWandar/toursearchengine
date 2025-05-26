@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
+import { logger } from '../utils/logger';
+
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
 
 if (!supabaseJwtSecret) throw new Error('SUPABASE_JWT_SECRET is not set. Check your .env file.');
@@ -28,12 +30,11 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
 
   try {
     const decoded = (await verifyJwt(token, supabaseJwtSecret)) as JwtPayload;
-
     req.user = decoded as JwtPayload;
-    console.log('User authenticated:', decoded);
+    logger.info('User authenticated:', { sub: decoded.sub, role: decoded.role });
     next();
   } catch (err) {
-    console.error('Token verification failed:', err);
+    logger.error('Token verification failed:', err);
     res.status(403).json({ error: 'Invalid token' });
     return;
   }

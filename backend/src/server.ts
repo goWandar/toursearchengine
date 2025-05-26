@@ -10,7 +10,7 @@ import subscribersRoutes from './routes/subscribers.routes';
 import adminRoutes from './routes/admin.routes';
 import tourRoutes from './routes/tour.routes';
 
-import logger from './utils/logger';
+import { logger } from './utils/logger';
 
 const app = express();
 const port = process.env.PORT || 3000;
