@@ -55,7 +55,6 @@ router.post('/user/signup', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
-// TODO: Add Rate Limiting
 // POST User Sign In
 router.post('/user/signin', async (req: Request, res: Response) => {
   const { email, password } = req.body;
