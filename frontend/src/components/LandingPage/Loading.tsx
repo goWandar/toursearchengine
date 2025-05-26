@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 const Loading = () => {
-  const planeLoaderRef = useRef(null);
+  const planeLoaderRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const createDot = (x, y) => {
+    const createDot = (x: number, y: number): void => {
       const dot = document.createElement('div');
       dot.className = 'dot';
       dot.style.left = x + 'px';
@@ -18,7 +18,7 @@ const Loading = () => {
     };
 
     const trackPlane = () => {
-      const plane = document.querySelector('.plane');
+      const plane = document.querySelector<HTMLDivElement>('.plane');
       if (!plane || !planeLoaderRef.current) return;
 
       const rect = plane.getBoundingClientRect();
@@ -30,7 +30,7 @@ const Loading = () => {
       createDot(x, y);
     };
 
-    const intervalId = setInterval(trackPlane, 80);
+    const intervalId = window.setInterval(trackPlane, 80);
 
     // Cleanup function
     return () => {
@@ -40,9 +40,7 @@ const Loading = () => {
 
   return (
     <div className='loading-container'>
-      <div
-        className='plane-loader'
-        ref={planeLoaderRef}>
+      <div className='plane-loader' ref={planeLoaderRef}>
         <div className='plane'>✈</div>
       </div>
     </div>

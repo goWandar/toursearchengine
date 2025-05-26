@@ -1,9 +1,15 @@
 import { useState } from 'react';
 
-const FAQs = () => {
-  const [openIndices, setOpenIndices] = useState([]); // Track open indices
+interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+}
 
-  const Faqs = [
+const FAQs = () => {
+  const [openIndices, setOpenIndices] = useState<number[]>([]); // Track open indices
+
+  const Faqs: FAQ[] = [
     {
       id: '1',
       question: 'What is KultureXplora?',
@@ -78,10 +84,10 @@ const FAQs = () => {
     },
   ];
 
-  const toggleAccordion = index => {
+  const toggleAccordion = (index: number): void => {
     if (openIndices.includes(index)) {
       // If the index is already in the array, remove it (close the accordion)
-      setOpenIndices(openIndices.filter(i => i !== index));
+      setOpenIndices(openIndices.filter((i) => i !== index));
     } else {
       // If the index is not in the array, add it (open the accordion)
       setOpenIndices([...openIndices, index]);
@@ -90,34 +96,28 @@ const FAQs = () => {
 
   return (
     <>
-      <section
-        className='faqs container my-5'
-        id='faqs'>
+      <section className='faqs container my-5' id='faqs'>
         <h2 className='text-center mb-4'>FAQs</h2>
-        <div
-          className='accordion'
-          id='faqAccordion'>
+        <div className='accordion' id='faqAccordion'>
           {Faqs.map((faq, index) => (
-            <div
-              className='accordion-item'
-              key={faq.id}>
-              <h2
-                className='accordion-header'
-                id={`heading${index}`}>
+            <div className='accordion-item' key={faq.id}>
+              <h2 className='accordion-header' id={`heading${index}`}>
                 <button
                   className={`accordion-button ${openIndices.includes(index) ? '' : 'collapsed'}`}
                   type='button'
                   onClick={() => toggleAccordion(index)}
                   aria-expanded={openIndices.includes(index)}
                   aria-controls={`collapse${index}`}
-                  style={{ outline: 'none', boxShadow: 'none' }}>
+                  style={{ outline: 'none', boxShadow: 'none' }}
+                >
                   <strong>{faq.id}. </strong> {faq.question}
                 </button>
               </h2>
               <div
                 id={`collapse${index}`}
                 className={`accordion-collapse collapse ${openIndices.includes(index) ? 'show' : ''}`}
-                aria-labelledby={`heading${index}`}>
+                aria-labelledby={`heading${index}`}
+              >
                 <div className='accordion-body'>{faq.answer}</div>
               </div>
             </div>

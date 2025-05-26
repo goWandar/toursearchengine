@@ -1,15 +1,28 @@
+interface TourFilters {
+  location: string;
+  accommodationType: string;
+  days: string;
+  budget: string;
+  safariType: string;
+}
+
 const baseUrl = import.meta.env.VITE_API_PATH;
 
-export function createUrlwithFilter(filters, cursor) {
+export function createUrlwithFilter(filters: TourFilters, cursor?: number): string {
   let url = `${baseUrl}/api/tours/?`;
-  let daysMin, daysMax, priceMin, priceMax;
+  let daysMin: string | undefined;
+  let daysMax: string | undefined;
+  let priceMin: string | undefined;
+  let priceMax: string | undefined;
 
   const { location, accommodationType, days, budget, safariType } = filters;
+
   if (days !== '') {
     const daysArray = days.split('-').map((value) => value.trim());
     daysMin = daysArray[0];
     daysMax = daysArray[1];
   }
+
   if (budget !== '') {
     const budgetArray = budget
       .replaceAll('$', '')
@@ -25,7 +38,7 @@ export function createUrlwithFilter(filters, cursor) {
   if (accommodationType !== '') url += `&accomodationType=${encodeURIComponent(accommodationType)}`;
   if (safariType !== '') url += `&safariType=${encodeURIComponent(safariType)}`;
 
-  if (cursor > 0) url += `&cursor=${cursor}`;
+  if (cursor && cursor > 0) url += `&cursor=${cursor}`;
 
   return url;
 }
