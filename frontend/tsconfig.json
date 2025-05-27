@@ -23,7 +23,7 @@
     "paths": {
       "@/*": ["./*"] // Kept your existing simple alias, relative to baseUrl "src"
     },
-    "types": ["vite/client"] // Added vite/client types
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"], // More specific include
   "exclude": ["node_modules", "dist"] // Basic exclude
