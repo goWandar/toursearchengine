@@ -24,19 +24,7 @@ const App = () => {
         <Route
           path='/'
           element={
-            <div className='min-h-screen bg-white'>
-              <Navbar />
-              <Button
-                label='Search for a tour'
-                icon={<FaSearch />}
-                size={BUTTON_SIZE.LARGE}
-                variant={BUTTON_VARIANT.PRIMARY}
-                iconPosition={BUTTON_ICON_POSITION.TOP}
-                onClick={() => console.log('clicked')}
-                textColor='text-black'
-                iconColor='text-black'
-              />
-
+            <div>
               {/* Icon-only button (rectangle) */}
               <Button
                 icon={<FaSearch />}
@@ -60,6 +48,7 @@ const App = () => {
                 size={BUTTON_SIZE.LARGE}
                 variant={BUTTON_VARIANT.TERTIARY}
                 iconColor='text-primary-500'
+                iconPosition={BUTTON_ICON_POSITION.LEFT}
               />
               <Banner />
               <About />
