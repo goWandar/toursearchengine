@@ -1,0 +1,16 @@
+@import "bootstrap/scss/functions";
+@import "variables"; //custom variables
+@import "bootstrap/scss/bootstrap"; // Bootstrap core style
+@import "reset";
+@import "base";
+
+@import "navbar";
+
+@import "banner";
+@import "about";
+@import "reason";
+@import "how";
+@import "betaForm";
+@import "q&a";
+@import "footer";
+@import "loading";
