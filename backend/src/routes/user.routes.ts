@@ -9,7 +9,7 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-// POST User Sign Up
+// POST User signs up
 router.post('/user/signup', async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
@@ -55,7 +55,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
-// POST User Sign In
+// POST User signs in
 router.post('/user/signin', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -98,7 +98,7 @@ router.post('/user/signin', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
-// POST user sign out
+// POST User signs out
 router.post('/user/signout', async (_req: Request, res: Response) => {
   const signOutResult = await SupabaseProvider.signOut();
 
@@ -116,7 +116,7 @@ router.post('/user/signout', async (_req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
-// POST user change password
+// POST User changes password
 router.post('/user/change-password', authenticateToken, async (req: Request, res: Response) => {
   const { newPassword } = req.body;
   const userId = req.user?.sub;
@@ -155,7 +155,7 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
   return responseHandler(res, result, 'POST');
 });
 
-// POST user password reset
+// POST User resets password
 router.post('/user/send-magic-link', async (req: Request, res: Response) => {
   const { email } = req.body;
 
@@ -180,7 +180,7 @@ router.post('/user/send-magic-link', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
-// POST refresh session token
+// POST User refreshes session token
 router.post('/user/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.headers.authorization?.split(' ')[1]; // Bearer <refresh_token>
 
@@ -218,7 +218,7 @@ router.post('/user/refresh-token', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'POST');
 });
 
-// DELETE user account
+// DELETE User deletes account
 router.delete('/user/delete-account', authenticateToken, async (req: Request, res: Response) => {
   const userId = typeof req.user?.sub === 'string' ? req.user.sub : undefined; //`sub` is the Supabase user ID from the JWT token
 
@@ -230,18 +230,11 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
     );
   }
 
-  const deleteResult = await SupabaseProvider.deleteUserProfile(userId);
+  const result = await UserService.userDeleteAccount(userId);
 
-  if (!deleteResult.success) {
-    return responseHandler(res, { success: false, error: deleteResult.error }, 'DELETE');
+  if (!result.success) {
+    return responseHandler(res, { success: false, error: result.error }, 'DELETE');
   }
-
-  const result = {
-    success: true,
-    data: {
-      message: 'User profile deleted successfully.',
-    },
-  };
 
   return responseHandler(res, result, 'DELETE');
 });
