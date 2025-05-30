@@ -29,28 +29,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
     );
   }
 
-  // Create user via Supabase Auth
-  const signUpResult = await SupabaseProvider.signUp(email, password);
-  if (!signUpResult.success) {
-    return responseHandler(
-      res,
-      { success: false, error: signUpResult.error || 'Signup failed' },
-      'POST',
-    );
-  }
-
-  const supabaseUserId = signUpResult.data.user?.id;
-
-  if (!supabaseUserId) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Signup failed: User ID is null' },
-      'POST',
-    );
-  }
-
-  // Store userdata
-  const result = await UserService.userCreateUser(supabaseUserId, name, email);
+  const result = await UserService.userSignUp(name, email, password);
 
   return responseHandler(res, result, 'POST');
 });

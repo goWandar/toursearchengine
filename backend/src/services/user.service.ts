@@ -4,11 +4,12 @@ import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
-import { User, ServiceResponse } from '../types/types';
+import { ServiceResponse } from '../types/types';
+import type { User } from '@prisma/client';
 import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const UserService = {
-  async userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
+  async _userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
     const validationResult = validateUserInput(name, email);
 
     if (!validationResult.success) {
@@ -27,10 +28,31 @@ export const UserService = {
       });
 
       logger.success(`[UserService] User created successfully:`, user.email);
-      return { success: true, data: user as User };
+      return { success: true, data: user };
     } catch (error) {
       return handlePrismaRequestError(error, 'creating user', 'UserService');
     }
+  },
+
+  async userSignUp(name: string, email: string, password: string): Promise<ServiceResponse<User>> {
+    const signUpResult = await SupabaseProvider.signUp(email, password);
+
+    if (!signUpResult.success) {
+      logger.error(`[UserService] Supabase sign-up failed: ${signUpResult.error}`);
+      return {
+        success: false,
+        error: signUpResult.error,
+      };
+    }
+
+    const supabaseUserId = signUpResult.data.user?.id;
+
+    if (!supabaseUserId) {
+      return { success: false, error: 'Signup failed: Missing user ID' };
+    }
+
+    // store userdata in db
+    return this._userCreateUser(supabaseUserId, name, email);
   },
 
   async userDeleteAccount(userId: string): Promise<ServiceResponse<null>> {
