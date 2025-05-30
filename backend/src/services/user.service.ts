@@ -55,6 +55,40 @@ export const UserService = {
     return this._userCreateUser(supabaseUserId, name, email);
   },
 
+  async userSingIn(
+    email: string,
+    password: string,
+  ): Promise<ServiceResponse<{ email: string; accessToken: string }>> {
+    const signInResult = await SupabaseProvider.signIn(email, password);
+
+    if (!signInResult.success) {
+      logger.error(`[UserService] Supabase sign-in failed: ${signInResult.error}`);
+      return { success: false, error: signInResult.error };
+    }
+
+    const { user, session } = signInResult.data;
+    const accessToken = session?.access_token;
+
+    if (!accessToken) {
+      logger.error('[UserService] Supabase session token missing after sign-in');
+      return { success: false, error: 'Session token missing' };
+    }
+
+    if (!user.email) {
+      return { success: false, error: 'Email not returned from Supabase' };
+    }
+
+    logger.success(`[UserService] User signed in: ${user.email}`);
+
+    return {
+      success: true,
+      data: {
+        email: user.email,
+        accessToken,
+      },
+    };
+  },
+
   async userDeleteAccount(userId: string): Promise<ServiceResponse<null>> {
     const idValidation = validateId(userId);
 

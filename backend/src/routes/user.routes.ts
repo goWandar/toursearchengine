@@ -54,25 +54,7 @@ router.post('/user/signin', async (req: Request, res: Response) => {
     );
   }
 
-  // Sign in via Supabase Auth
-  const signInResult = await SupabaseProvider.signIn(email, password);
-
-  if (!signInResult.success) {
-    return responseHandler(res, { success: false, error: signInResult.error }, 'POST');
-  }
-
-  const { user, session } = signInResult.data;
-
-  if (!session?.access_token) {
-    return responseHandler(res, { success: false, error: 'Session token missing' }, 'POST');
-  }
-
-  const result = {
-    success: true,
-    data: {
-      loggedInUser: user.email,
-    },
-  };
+  const result = await UserService.userSingIn(email, password);
 
   return responseHandler(res, result, 'POST');
 });
