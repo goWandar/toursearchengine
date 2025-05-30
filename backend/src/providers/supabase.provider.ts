@@ -3,7 +3,7 @@ import { supabase } from '../config/supabase';
 
 import { formatSupabaseError } from '../utils/supabaseErrorHandler';
 
-type SupabaseResult<T> = { success: true; data: T } | { success: false; error: string };
+import { ServiceResponse as SupabaseResult } from '../types/types';
 
 export const SupabaseProvider = {
   client: supabase, // Expose Supabase client instance
