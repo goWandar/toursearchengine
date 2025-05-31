@@ -27,7 +27,7 @@ export const UserService = {
         data: { id, name, email, role: 'USER' },
       });
 
-      logger.success(`[UserService] User created successfully:`, user.email);
+      logger.success(`[UserService] User created successfully: ${user.email}`);
       return { success: true, data: user };
     } catch (error) {
       return handlePrismaRequestError(error, 'creating user', 'UserService');
@@ -86,6 +86,20 @@ export const UserService = {
         email: user.email,
         accessToken,
       },
+    };
+  },
+
+  async userSignOut(): Promise<ServiceResponse<null>> {
+    const signOutResult = await SupabaseProvider.signOut();
+
+    if (!signOutResult.success) {
+      logger.error(`[UserService] Supabase sign-out failed: ${signOutResult.error}`);
+      return { success: false, error: signOutResult.error };
+    }
+
+    return {
+      success: true,
+      data: null,
     };
   },
 

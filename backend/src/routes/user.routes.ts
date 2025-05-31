@@ -61,18 +61,7 @@ router.post('/user/signin', async (req: Request, res: Response) => {
 
 // POST User signs out
 router.post('/user/signout', async (_req: Request, res: Response) => {
-  const signOutResult = await SupabaseProvider.signOut();
-
-  if (!signOutResult.success) {
-    return responseHandler(res, { success: false, error: signOutResult.error }, 'POST');
-  }
-
-  const result = {
-    success: true,
-    data: {
-      message: 'User signed out successfully',
-    },
-  };
+  const result = await UserService.userSignOut();
 
   return responseHandler(res, result, 'POST');
 });
