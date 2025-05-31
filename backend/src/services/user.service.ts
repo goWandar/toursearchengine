@@ -103,6 +103,38 @@ export const UserService = {
     };
   },
 
+  async userChangePassword(
+    userId: string | undefined,
+    newPassword: string,
+    token: string | undefined,
+  ): Promise<ServiceResponse<null>> {
+    if (!userId) {
+      return { success: false, error: 'User not authenticated.' };
+    }
+
+    if (!newPassword || newPassword.length < 8) {
+      return { success: false, error: 'New password must be at least 8 characters long.' };
+    }
+
+    if (!token) {
+      return { success: false, error: 'Missing or invalid token.' };
+    }
+
+    const changePasswordResult = await SupabaseProvider.userChangePassword(token, newPassword);
+
+    if (!changePasswordResult.success) {
+      logger.error(
+        `[UserService] Failed to change password for user ${userId}: ${changePasswordResult.error}`,
+      );
+      return { success: false, error: changePasswordResult.error };
+    }
+
+    return {
+      success: true,
+      data: null,
+    };
+  },
+
   async userDeleteAccount(userId: string): Promise<ServiceResponse<null>> {
     const idValidation = validateId(userId);
 

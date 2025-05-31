@@ -73,34 +73,7 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
 
-  if (!newPassword || newPassword.length < 8) {
-    return responseHandler(
-      res,
-      { success: false, error: 'New password must be at least 8 characters long.' },
-      'POST',
-    );
-  }
-
-  if (!userId) {
-    return responseHandler(res, { success: false, error: 'User not authenticated.' }, 'POST');
-  }
-
-  if (!token) {
-    return responseHandler(res, { success: false, error: 'Missing or invalid token.' }, 'POST');
-  }
-
-  const changePasswordResult = await SupabaseProvider.userChangePassword(token, newPassword);
-
-  if (!changePasswordResult.success) {
-    return responseHandler(res, { success: false, error: changePasswordResult.error }, 'POST');
-  }
-
-  const result = {
-    success: true,
-    data: {
-      message: 'Password changed successfully',
-    },
-  };
+  const result = await UserService.userChangePassword(userId, newPassword, token);
 
   return responseHandler(res, result, 'POST');
 });
