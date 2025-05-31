@@ -10,18 +10,6 @@ import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const UserService = {
   async _userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
-    const validationResult = validateUserInput(name, email);
-
-    if (!validationResult.success) {
-      logger.error(
-        '[UserService] Validation failed during user creation - check email and username.',
-      );
-      return {
-        success: false,
-        error: validationResult.error ?? '',
-      };
-    }
-
     try {
       const user = await prisma.user.create({
         data: { id, name, email, role: 'USER' },
@@ -35,6 +23,20 @@ export const UserService = {
   },
 
   async userSignUp(name: string, email: string, password: string): Promise<ServiceResponse<User>> {
+    if (!name || !email || !password) {
+      return { success: false, error: 'Name, email, and password are required' };
+    }
+
+    if (password.length < 8) {
+      return { success: false, error: 'Password must be at least 8 characters long.' };
+    }
+
+    const inputValidation = validateUserInput(name, email);
+    if (!inputValidation.success) {
+      logger.error('[UserService] Input validation failed during sign-up.');
+      return { success: false, error: inputValidation.error ?? 'Invalid input' };
+    }
+
     const signUpResult = await SupabaseProvider.signUp(email, password);
 
     if (!signUpResult.success) {
@@ -59,6 +61,14 @@ export const UserService = {
     email: string,
     password: string,
   ): Promise<ServiceResponse<{ email: string; accessToken: string }>> {
+    if (!email || !password) {
+      return { success: false, error: 'Email and password are required' };
+    }
+
+    if (password.length < 8) {
+      return { success: false, error: 'Password must be at least 8 characters long.' };
+    }
+
     const signInResult = await SupabaseProvider.signIn(email, password);
 
     if (!signInResult.success) {

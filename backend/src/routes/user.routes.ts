@@ -13,24 +13,7 @@ const router = Router();
 router.post('/user/signup', async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Name, email, and password are required' },
-      'POST',
-    );
-  }
-
-  if (password.length < 8) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Password must be at least 8 characters long.' },
-      'POST',
-    );
-  }
-
   const result = await UserService.userSignUp(name, email, password);
-
   return responseHandler(res, result, 'POST');
 });
 
@@ -38,24 +21,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
 router.post('/user/signin', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Email and password are required' },
-      'POST',
-    );
-  }
-
-  if (password.length < 8) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Password must be at least 8 characters long.' },
-      'POST',
-    );
-  }
-
   const result = await UserService.userSingIn(email, password);
-
   return responseHandler(res, result, 'POST');
 });
 
