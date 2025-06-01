@@ -38,10 +38,7 @@ router.get(
     const adminEmail = getUserEmailFromRequest(req);
 
     const result = await AdminService.getUserById(userId);
-
-    if (result.success) {
-      logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved user with ID: ${userId}`);
-    }
+    logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved user with ID: ${userId}`);
 
     responseHandler(res, result, 'GET');
   },
@@ -57,16 +54,12 @@ router.get(
     const parsedLimit = parseInt(req.query.limit as string);
     const limit = isNaN(parsedLimit) ? 20 : parsedLimit;
 
-    const result = await AdminService.getUsers(cursor, limit);
     const adminEmail = getUserEmailFromRequest(req);
+    const result = await AdminService.getUsers(cursor, limit);
 
-    if (!result.success) {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users`);
-    } else {
-      logger.info(
-        `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
-      );
-    }
+    logger.info(
+      `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
+    );
 
     responseHandler(res, result, 'GET');
   },
@@ -81,17 +74,10 @@ router.delete(
     const userId = req.params.id;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!userId) {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) attempted delete without User ID`);
-      return responseHandler(res, { success: false, error: 'User ID is required' }, 'DELETE');
-    }
-
     const result = await AdminService.deleteUserById(userId);
 
     if (result.success) {
       logger.info(`[AdminRoute] Admin (${adminEmail}) deleted user ID: ${userId}`);
-    } else {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId}`);
     }
 
     return responseHandler(res, result, 'DELETE');

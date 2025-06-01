@@ -107,17 +107,18 @@ export const AdminService = {
       logger.error(`[AdminService] Validation failed: ${idValidation.error}`);
       return { success: false, error: idValidation.error ?? '' };
     }
+
+    // 1. Delete Supabase Auth user:
+    const supabaseDeleteResult = await SupabaseProvider.deleteUserProfile(userId);
+
+    if (!supabaseDeleteResult.success) {
+      logger.error(
+        `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${supabaseDeleteResult.error}`,
+      );
+      return { success: false, error: `Failed to delete auth user: ${supabaseDeleteResult.error}` };
+    }
+
     try {
-      // 1. Delete Supabase Auth user:
-      const result = await SupabaseProvider.deleteUserProfile(userId);
-
-      if (!result.success) {
-        logger.error(
-          `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${result.error}`,
-        );
-        return { success: false, error: `Failed to delete auth user: ${result.error}` };
-      }
-
       // 2. delete from db
       await prisma.user.delete({ where: { id: userId } });
 
