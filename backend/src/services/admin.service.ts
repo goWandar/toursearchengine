@@ -4,7 +4,8 @@ import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
-import { User, PublicUser, ServiceResponse } from '../types/types';
+import { PublicUser, ServiceResponse } from '../types/types';
+import type { User } from '@prisma/client';
 import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {

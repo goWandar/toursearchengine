@@ -1,7 +1,7 @@
 export interface AuthenticatedUser {
   sub: string;
   email?: string;
-  role?: string;
+  role: 'USER' | 'ADMIN';
 }
 
 declare global {
@@ -11,3 +11,5 @@ declare global {
     }
   }
 }
+
+export {};

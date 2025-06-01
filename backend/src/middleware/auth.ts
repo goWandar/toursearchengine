@@ -4,6 +4,8 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { logger } from '../utils/logger';
 
+import type { AuthenticatedUser } from '../types/types';
+
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
 
 if (!supabaseJwtSecret) throw new Error('SUPABASE_JWT_SECRET is not set. Check your .env file.');
@@ -29,8 +31,8 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
   }
 
   try {
-    const decoded = (await verifyJwt(token, supabaseJwtSecret)) as JwtPayload;
-    req.user = decoded as JwtPayload;
+    const decoded = (await verifyJwt(token, supabaseJwtSecret)) as AuthenticatedUser;
+    req.user = decoded;
     logger.info('User authenticated:', { sub: decoded.sub, role: decoded.role });
     next();
   } catch (err) {

@@ -12,6 +12,12 @@ export interface AuthUser {
   email: string;
 }
 
+export interface AuthenticatedUser {
+  sub: string;
+  email?: string;
+  role: 'USER' | 'ADMIN';
+}
+
 export interface Tour {
   id: number;
   uniqueId: number;
