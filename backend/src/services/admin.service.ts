@@ -9,7 +9,11 @@ import { PublicUser, ServiceResponse } from '../types/types';
 import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {
-  async adminCreateUser(name: string, email: string): Promise<ServiceResponse<User>> {
+  async adminCreateUser(
+    name: string,
+    email: string,
+    role: string = 'USER',
+  ): Promise<ServiceResponse<User>> {
     const validationResult = validateUserInput(name, email);
 
     if (!validationResult.success) {
@@ -22,7 +26,7 @@ export const AdminService = {
 
     try {
       const user = await prisma.user.create({
-        data: { name, email, role: 'ADMIN' },
+        data: { name, email, role },
       });
 
       logger.success(`[AdminService] User created successfully:`, user.email);

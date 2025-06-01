@@ -15,10 +15,10 @@ router.post(
   authenticateToken,
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
-    const { name, email } = req.body;
+    const { name, email, role } = req.body;
     const adminEmail = getUserEmailFromRequest(req);
 
-    const result = await AdminService.adminCreateUser(name, email);
+    const result = await AdminService.adminCreateUser(name, email, role);
 
     if (result.success) {
       logger.info(
