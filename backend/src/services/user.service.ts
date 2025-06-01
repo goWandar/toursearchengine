@@ -60,7 +60,7 @@ export const UserService = {
     return this._userCreateUser(supabaseUserId, name, email);
   },
 
-  async userSingIn(
+  async userSignIn(
     email: string,
     password: string,
   ): Promise<ServiceResponse<{ email: string; accessToken: string }>> {
@@ -177,6 +177,43 @@ export const UserService = {
       success: true,
       data: {
         email,
+      },
+    };
+  },
+
+  async userRefreshToken(refreshToken: string | undefined): Promise<
+    ServiceResponse<{
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+    }>
+  > {
+    if (!refreshToken) {
+      logger.warn('[UserService] userRefreshToken: Missing refresh token.');
+      return { success: false, error: 'Missing refresh token' };
+    }
+
+    const refreshResult = await SupabaseProvider.refreshToken(refreshToken);
+
+    if (!refreshResult.success) {
+      logger.error(`[UserService] Failed to refresh token: ${refreshResult.error}`);
+      return { success: false, error: refreshResult.error || 'Invalid refresh token' };
+    }
+
+    const session = refreshResult.data.session;
+
+    if (!session?.access_token) {
+      logger.error('[UserService] Supabase returned no access token.');
+      return { success: false, error: 'Failed to generate new access token' };
+    }
+
+    logger.success('[UserService] Token refreshed successfully.');
+    return {
+      success: true,
+      data: {
+        accessToken: session.access_token,
+        refreshToken: session.refresh_token,
+        expiresIn: session.expires_in,
       },
     };
   },

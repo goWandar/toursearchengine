@@ -1,7 +1,5 @@
 import { Request, Response, Router } from 'express';
 
-import { SupabaseProvider } from '../providers/supabase.provider';
-
 import { responseHandler } from '../utils/responseHandler';
 import { UserService } from '../services/user.service';
 
@@ -21,7 +19,7 @@ router.post('/user/signup', async (req: Request, res: Response) => {
 router.post('/user/signin', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const result = await UserService.userSingIn(email, password);
+  const result = await UserService.userSignIn(email, password);
   return responseHandler(res, result, 'POST');
 });
 
@@ -57,36 +55,7 @@ router.post('/user/send-magic-link', async (req: Request, res: Response) => {
 router.post('/user/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.headers.authorization?.split(' ')[1]; // Bearer <refresh_token>
 
-  if (!refreshToken) {
-    return responseHandler(res, { success: false, error: 'Missing refresh token' }, 'POST');
-  }
-
-  const refreshTokenResult = await SupabaseProvider.refreshToken(refreshToken);
-
-  if (!refreshTokenResult.success) {
-    return responseHandler(
-      res,
-      { success: false, error: refreshTokenResult.error || 'Invalid refresh token' },
-      'POST',
-    );
-  }
-
-  if (!refreshTokenResult.data.session?.access_token) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Failed to generate new access token' },
-      'POST',
-    );
-  }
-
-  const result = {
-    success: true,
-    data: {
-      accessToken: refreshTokenResult.data.session.access_token,
-      refreshToken: refreshTokenResult.data.session.refresh_token,
-      expiresIn: refreshTokenResult.data.session.expires_in,
-    },
-  };
+  const result = await UserService.userRefreshToken(refreshToken);
 
   return responseHandler(res, result, 'POST');
 });
@@ -104,10 +73,6 @@ router.delete('/user/delete-account', authenticateToken, async (req: Request, re
   }
 
   const result = await UserService.userDeleteAccount(userId);
-
-  if (!result.success) {
-    return responseHandler(res, { success: false, error: result.error }, 'DELETE');
-  }
 
   return responseHandler(res, result, 'DELETE');
 });
