@@ -11,17 +11,19 @@ const router = Router();
 
 // POST: Admin creates a user
 router.post(
-  '/admin/user',
+  '/admin/create-user',
   authenticateToken,
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
-    const { id, name, email } = req.body;
+    const { name, email } = req.body;
     const adminEmail = getUserEmailFromRequest(req);
 
-    const result = await AdminService.adminCreateUser(id, name, email);
+    const result = await AdminService.adminCreateUser(name, email);
 
     if (result.success) {
-      logger.info(`[AdminRoute] Admin (${adminEmail}) created user: ${email} (id: ${id})`);
+      logger.info(
+        `[AdminRoute] Admin (${adminEmail}) created user: ${email} (id: ${result.data.id})`,
+      );
     }
 
     responseHandler(res, result, 'POST');

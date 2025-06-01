@@ -4,19 +4,12 @@ import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
-import { User, PublicUser, ServiceResponse } from '../types/types';
+import { User } from '@prisma/client';
+import { PublicUser, ServiceResponse } from '../types/types';
 import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {
-  async adminCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
-    if (!id || !name || !email) {
-      logger.warn('[AdminService] Missing required fields for user creation');
-      return {
-        success: false,
-        error: 'ID, name and email are required.',
-      };
-    }
-
+  async adminCreateUser(name: string, email: string): Promise<ServiceResponse<User>> {
     const validationResult = validateUserInput(name, email);
 
     if (!validationResult.success) {
@@ -29,7 +22,7 @@ export const AdminService = {
 
     try {
       const user = await prisma.user.create({
-        data: { id, name, email, role: 'ADMIN' },
+        data: { name, email, role: 'ADMIN' },
       });
 
       logger.success(`[AdminService] User created successfully:`, user.email);
