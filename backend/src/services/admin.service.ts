@@ -9,6 +9,14 @@ import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {
   async adminCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
+    if (!id || !name || !email) {
+      logger.warn('[AdminService] Missing required fields for user creation');
+      return {
+        success: false,
+        error: 'ID, name and email are required.',
+      };
+    }
+
     const validationResult = validateUserInput(name, email);
 
     if (!validationResult.success) {

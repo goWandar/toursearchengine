@@ -18,18 +18,6 @@ router.post(
     const { id, name, email } = req.body;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!id || !name || !email) {
-      responseHandler(
-        res,
-        {
-          success: false,
-          error: 'ID, name and email are required.',
-        },
-        'POST',
-      );
-      return;
-    }
-
     const result = await AdminService.adminCreateUser(id, name, email);
 
     if (result.success) {
