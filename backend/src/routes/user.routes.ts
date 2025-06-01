@@ -64,14 +64,6 @@ router.post('/user/refresh-token', async (req: Request, res: Response) => {
 router.delete('/user/delete-account', authenticateToken, async (req: Request, res: Response) => {
   const userId = typeof req.user?.sub === 'string' ? req.user.sub : undefined; //`sub` is the Supabase user ID from the JWT token
 
-  if (!userId) {
-    return responseHandler(
-      res,
-      { success: false, error: 'Unauthorized: User ID not found.' },
-      'DELETE',
-    );
-  }
-
   const result = await UserService.userDeleteAccount(userId);
 
   return responseHandler(res, result, 'DELETE');
