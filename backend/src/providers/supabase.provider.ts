@@ -1,5 +1,5 @@
-import { createClient, Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
+import { createClient, Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 import { formatSupabaseError } from '../utils/supabaseErrorHandler';
 

@@ -44,27 +44,11 @@ router.post('/user/change-password', authenticateToken, async (req: Request, res
   return responseHandler(res, result, 'POST');
 });
 
-// POST User resets password
+// POST User requests password magic link
 router.post('/user/send-magic-link', async (req: Request, res: Response) => {
   const { email } = req.body;
 
-  if (!email) {
-    return responseHandler(res, { success: false, error: 'Email is required' }, 'POST');
-  }
-
-  const sendMagicLinkResult = await SupabaseProvider.sendMagicLink(email);
-
-  if (!sendMagicLinkResult.success) {
-    return responseHandler(res, { success: false, error: sendMagicLinkResult.error }, 'POST');
-  }
-
-  const result = {
-    success: true,
-    data: {
-      message: 'Password reset link sent to email.',
-      email,
-    },
-  };
+  const result = await UserService.userRequestMagicLink(email);
 
   return responseHandler(res, result, 'POST');
 });
