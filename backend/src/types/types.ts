@@ -7,10 +7,7 @@ export interface User {
 
 export type PublicUser = Pick<User, 'id' | 'name' | 'email'>;
 
-export interface AuthUser {
-  id: string;
-  email: string;
-}
+export type AuthUser = Pick<User, 'id' | 'email'>;
 
 export interface Tour {
   id: number;
