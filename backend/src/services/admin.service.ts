@@ -12,7 +12,8 @@ export const AdminService = {
   async adminCreateUser(
     name: string,
     email: string,
-    role: string = 'USER',
+    password: string,
+    role: 'USER' | 'ADMIN' = 'USER',
   ): Promise<ServiceResponse<User>> {
     const validationResult = validateUserInput(name, email);
 
@@ -24,9 +25,23 @@ export const AdminService = {
       };
     }
 
+    const supabaseCreateResult = await SupabaseProvider.createUser(email, password);
+
+    if (!supabaseCreateResult.success) {
+      logger.error(
+        `[AdminService] Failed to create Supabase user | email: ${email}} | Error: ${supabaseCreateResult.error}`,
+      );
+      return { success: false, error: supabaseCreateResult.error };
+    }
+
     try {
       const user = await prisma.user.create({
-        data: { name, email, role },
+        data: {
+          id: supabaseCreateResult.data.id,
+          name,
+          email,
+          role,
+        },
       });
 
       logger.success(`[AdminService] User created successfully:`, user.email);
@@ -102,6 +117,7 @@ export const AdminService = {
 
     if (!idValidation.success) {
       logger.error(`[AdminService] Validation failed: ${idValidation.error}`);
+      console.log('[DEBUG] userId that failed validation:', userId);
       return { success: false, error: idValidation.error ?? '' };
     }
 

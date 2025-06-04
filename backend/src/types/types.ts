@@ -52,4 +52,6 @@ export interface Price {
   tourId: number;
 }
 
-export type ServiceResponse<T> = { success: true; data: T } | { success: false; error: string };
+export type ServiceError = { success: false; error: string };
+
+export type ServiceResponse<T> = { success: true; data: T } | ServiceError;

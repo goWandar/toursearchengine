@@ -40,7 +40,14 @@ router.get(
     const adminEmail = getUserEmailFromRequest(req);
 
     const result = await AdminService.getUserById(userId);
-    logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved user with ID: ${userId}`);
+
+    if (result.success) {
+      logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved user with ID: ${userId}`);
+    } else {
+      logger.warn(
+        `[AdminRoute] Admin (${adminEmail}) failed to retrieve user with ID: ${userId} — ${result.error}`,
+      );
+    }
 
     responseHandler(res, result, 'GET');
   },
@@ -59,9 +66,13 @@ router.get(
     const adminEmail = getUserEmailFromRequest(req);
     const result = await AdminService.getUsers(cursor, limit);
 
-    logger.info(
-      `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
-    );
+    if (result.success) {
+      logger.info(
+        `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
+      );
+    } else {
+      logger.warn(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users — ${result.error}`);
+    }
 
     responseHandler(res, result, 'GET');
   },
@@ -80,6 +91,10 @@ router.delete(
 
     if (result.success) {
       logger.info(`[AdminRoute] Admin (${adminEmail}) deleted user ID: ${userId}`);
+    } else {
+      logger.warn(
+        `[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId} — ${result.error}`,
+      );
     }
 
     return responseHandler(res, result, 'DELETE');
