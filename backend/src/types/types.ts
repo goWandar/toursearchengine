@@ -7,10 +7,7 @@ export interface User {
 
 export type PublicUser = Pick<User, 'id' | 'name' | 'email'>;
 
-export interface AuthUser {
-  id: string;
-  email: string;
-}
+export type AuthUser = Pick<User, 'id' | 'email'>;
 
 export interface Tour {
   id: number;
@@ -55,4 +52,6 @@ export interface Price {
   tourId: number;
 }
 
-export type ServiceResponse<T> = { success: true; data: T } | { success: false; error: string };
+export type ServiceError = { success: false; error: string };
+
+export type ServiceResponse<T> = { success: true; data: T } | ServiceError;

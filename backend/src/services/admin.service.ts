@@ -4,11 +4,17 @@ import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
-import { User, PublicUser, ServiceResponse } from '../types/types';
+import { User } from '@prisma/client';
+import { PublicUser, ServiceResponse } from '../types/types';
 import { SupabaseProvider } from '../providers/supabase.provider';
 
 export const AdminService = {
-  async adminCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
+  async adminCreateUser(
+    name: string,
+    email: string,
+    password: string,
+    role: 'USER' | 'ADMIN' = 'USER',
+  ): Promise<ServiceResponse<User>> {
     const validationResult = validateUserInput(name, email);
 
     if (!validationResult.success) {
@@ -19,9 +25,23 @@ export const AdminService = {
       };
     }
 
+    const supabaseCreateResult = await SupabaseProvider.createUser(email, password);
+
+    if (!supabaseCreateResult.success) {
+      logger.error(
+        `[AdminService] Failed to create Supabase user | email: ${email}} | Error: ${supabaseCreateResult.error}`,
+      );
+      return { success: false, error: supabaseCreateResult.error };
+    }
+
     try {
       const user = await prisma.user.create({
-        data: { id, name, email, role: 'ADMIN' },
+        data: {
+          id: supabaseCreateResult.data.id,
+          name,
+          email,
+          role,
+        },
       });
 
       logger.success(`[AdminService] User created successfully:`, user.email);
@@ -97,19 +117,21 @@ export const AdminService = {
 
     if (!idValidation.success) {
       logger.error(`[AdminService] Validation failed: ${idValidation.error}`);
+      console.log('[DEBUG] userId that failed validation:', userId);
       return { success: false, error: idValidation.error ?? '' };
     }
+
+    // 1. Delete Supabase Auth user:
+    const supabaseDeleteResult = await SupabaseProvider.deleteUserProfile(userId);
+
+    if (!supabaseDeleteResult.success) {
+      logger.error(
+        `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${supabaseDeleteResult.error}`,
+      );
+      return { success: false, error: `Failed to delete auth user: ${supabaseDeleteResult.error}` };
+    }
+
     try {
-      // 1. Delete Supabase Auth user:
-      const result = await SupabaseProvider.deleteUserProfile(userId);
-
-      if (!result.success) {
-        logger.error(
-          `[AdminService] Failed to delete Supabase user | ID: ${userId} | Error: ${result.error}`,
-        );
-        return { success: false, error: `Failed to delete auth user: ${result.error}` };
-      }
-
       // 2. delete from db
       await prisma.user.delete({ where: { id: userId } });
 

@@ -11,29 +11,19 @@ const router = Router();
 
 // POST: Admin creates a user
 router.post(
-  '/admin/user',
+  '/admin/create-user',
   authenticateToken,
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
-    const { id, name, email } = req.body;
+    const { name, email, role } = req.body;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!id || !name || !email) {
-      responseHandler(
-        res,
-        {
-          success: false,
-          error: 'ID, name and email are required.',
-        },
-        'POST',
-      );
-      return;
-    }
-
-    const result = await AdminService.adminCreateUser(id, name, email);
+    const result = await AdminService.adminCreateUser(name, email, role);
 
     if (result.success) {
-      logger.info(`[AdminRoute] Admin (${adminEmail}) created user: ${email} (id: ${id})`);
+      logger.info(
+        `[AdminRoute] Admin (${adminEmail}) created user: ${email} (id: ${result.data.id})`,
+      );
     }
 
     responseHandler(res, result, 'POST');
@@ -53,6 +43,10 @@ router.get(
 
     if (result.success) {
       logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved user with ID: ${userId}`);
+    } else {
+      logger.warn(
+        `[AdminRoute] Admin (${adminEmail}) failed to retrieve user with ID: ${userId} — ${result.error}`,
+      );
     }
 
     responseHandler(res, result, 'GET');
@@ -69,15 +63,15 @@ router.get(
     const parsedLimit = parseInt(req.query.limit as string);
     const limit = isNaN(parsedLimit) ? 20 : parsedLimit;
 
-    const result = await AdminService.getUsers(cursor, limit);
     const adminEmail = getUserEmailFromRequest(req);
+    const result = await AdminService.getUsers(cursor, limit);
 
-    if (!result.success) {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users`);
-    } else {
+    if (result.success) {
       logger.info(
         `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
       );
+    } else {
+      logger.warn(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users — ${result.error}`);
     }
 
     responseHandler(res, result, 'GET');
@@ -93,17 +87,14 @@ router.delete(
     const userId = req.params.id;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!userId) {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) attempted delete without User ID`);
-      return responseHandler(res, { success: false, error: 'User ID is required' }, 'DELETE');
-    }
-
     const result = await AdminService.deleteUserById(userId);
 
     if (result.success) {
       logger.info(`[AdminRoute] Admin (${adminEmail}) deleted user ID: ${userId}`);
     } else {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId}`);
+      logger.warn(
+        `[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId} — ${result.error}`,
+      );
     }
 
     return responseHandler(res, result, 'DELETE');

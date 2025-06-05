@@ -31,7 +31,7 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
   try {
     const decoded = (await verifyJwt(token, supabaseJwtSecret)) as JwtPayload;
     req.user = decoded as JwtPayload;
-    logger.info('User authenticated:', { sub: decoded.sub, role: decoded.role });
+    logger.info('User authenticated');
     next();
   } catch (err) {
     logger.error('Token verification failed:', err);
