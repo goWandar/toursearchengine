@@ -1,8 +1,4 @@
-export interface AuthenticatedUser {
-  sub: string;
-  email?: string;
-  role: 'USER' | 'ADMIN';
-}
+import { AuthenticatedUser } from './types';
 
 declare global {
   namespace Express {
