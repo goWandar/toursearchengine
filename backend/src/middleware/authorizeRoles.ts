@@ -1,23 +1,45 @@
 import { Request, Response, NextFunction } from 'express';
+import { prisma } from '../db/prisma';
 
-// Role-Based Access Control (RBAC) guard for Express routes. It ensures that only users with specific roles (like "ADMIN" or "USER") can access a given route.
+// Role-Based Access Control (RBAC) guard for Express routes.
+// It ensures that only users with specific roles (like "ADMIN" or "USER") can access a given route.
 
-export const authorizeRoles = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    const user = req.user;
+export const authorizeRoles = (...allowedRoles: string[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    // 1. get the authenticated user’s ID (sub) from the JWT token payload
+    const userId = typeof req.user?.sub === 'string' ? req.user.sub : undefined;
 
-    if (!user) {
-      res.status(403).json({ error: 'Access denied: no role provided' });
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized: no user ID in token' });
       return;
     }
 
-    if (!user.role || !roles.includes(user.role)) {
-      res.status(403).json({
-        error: 'Access denied: insufficient permissions',
-      });
-      return;
-    }
+    try {
+      // 2. check if user exists
+      const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    next();
+      if (!user) {
+        res.status(404).json({ error: 'User not found in database' });
+        return;
+      }
+
+      // 3. verify the role
+      if (!allowedRoles.includes(user.role)) {
+        res.status(403).json({ error: 'Access denied: insufficient permissions' });
+        return;
+      }
+
+      if (typeof req.user !== 'object' || req.user === null) {
+        req.user = {};
+      }
+
+      // 4. attach role to the request
+      req.user = { ...req.user, role: user.role };
+
+      next();
+    } catch (error) {
+      console.error('Error in authorizeRoles middleware:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   };
 };

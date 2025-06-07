@@ -30,12 +30,13 @@ npm install
 ```sh
 # Environment Variables
 
-PROJECT_URL=
 API_KEY=
 SUPABASE_URL=
-SUPABASE_KEY=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_JWT_SECRET=
 SUPABASE_USER=
-DB_PASSWORD=
+
 
 # Connect to Supabase via connection pooling with Supavisor.
 

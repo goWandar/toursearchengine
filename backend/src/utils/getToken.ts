@@ -1,12 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
-// Load .env
+// ESM workaround for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables
 config({ path: resolve(__dirname, '../../.env') });
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_KEY;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 const tokenTestEmail = process.env.TOKEN_TEST_EMAIL;
 const tokenTestPassword = process.env.TOKEN_TEST_PASSWORD;
