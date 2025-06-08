@@ -27,36 +27,39 @@ model BetaSubscribers {
 
 model Tour {
   id                Int         @id @default(autoincrement())
-  uniqueId          Int         @unique
+  uniqueId          String      @unique
   title             String
   description       String?
-  location          String
-  country           String
+  location          String?
+  countryId         Int
+  country           Country     @relation(fields: [countryId], references: [id])
   durationInDays    Int         @default(0)
   itinerary         String?
-  safariType        String?
   accommodationType String?
   siteURL           String?
   included          String?
   excluded          String?
-  rating            Float?      @default(0)
-  reviews           String?
   dateCreated       DateTime    @default(now())
   dateModified      DateTime?   @updatedAt
   archived          Boolean     @default(false)
   images            TourImage[]
   prices            TourPrice[]
+  parksId           Park[]      @relation("TourParks")
+  operatorId        Int?
+  operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
 
+  @@unique([id, uniqueId])
   @@map("tours")
 }
 
 model TourImage {
   id           Int       @id @default(autoincrement())
-  image_urls   String
+  imageUrls    String
   dateCreated  DateTime  @default(now())
   dateModified DateTime? @updatedAt
   tourId       Int
-  tour         Tour      @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
+  tourUniqueId String
+  tour         Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
 
   @@map("tour_images")
 }
@@ -66,12 +69,43 @@ model TourPrice {
   numOfPeople    Int       @default(0)
   currency       String
   pricePerPerson Float     @default(0)
-  seasonName     String
-  seasonPeriod   String
+  seasonName     String?
+  seasonPeriod   String?
   dateCreated    DateTime  @default(now())
   dateModified   DateTime? @updatedAt
-  tourId         Int       @default(0)
-  tour           Tour      @relation(fields: [tourId], references: [uniqueId], onDelete: Cascade)
+  tourId         Int
+  tourUniqueId   String
+  tour           Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
 
   @@map("tour_prices")
+}
+
+model Park {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  toursId      Tour[]    @relation("TourParks")
+
+  @@map("parks")
+}
+
+model Country {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("countries")
+}
+
+model Operator {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("operators")
 }
