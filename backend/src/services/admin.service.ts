@@ -8,6 +8,7 @@ import { PublicUser, ServiceResponse } from '../types/types';
 import type { User } from '@prisma/client';
 
 import { SupabaseProvider } from '../providers/supabase.provider';
+import { PrismaProvider } from '../providers/prisma.provider';
 
 export const AdminService = {
   async adminCreateUser(
@@ -35,21 +36,17 @@ export const AdminService = {
       return { success: false, error: supabaseCreateResult.error };
     }
 
-    try {
-      const user = await prisma.user.create({
-        data: {
-          id: supabaseCreateResult.data.id,
-          name,
-          email,
-          role,
-        },
-      });
+    const prismaCreateResult = await PrismaProvider.createUser({
+      id: supabaseCreateResult.data.id,
+      name,
+      email,
+      role,
+    });
 
-      logger.success(`[AdminService] User created successfully:`, user.email);
-      return { success: true, data: user as User };
-    } catch (error) {
-      return handlePrismaRequestError(error, 'creating user', 'AdminService');
-    }
+    if (!prismaCreateResult.success) return prismaCreateResult;
+
+    logger.success(`[AdminService] User created successfully:`, prismaCreateResult.data.email);
+    return { success: true, data: prismaCreateResult.data as User };
   },
 
   async getUsers(

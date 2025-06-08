@@ -6,20 +6,23 @@ import { logger } from '../utils/logger';
 
 import { ServiceResponse } from '../types/types';
 import type { User } from '@prisma/client';
+
 import { SupabaseProvider } from '../providers/supabase.provider';
+import { PrismaProvider } from '../providers/prisma.provider';
 
 export const UserService = {
   async _userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
-    try {
-      const user = await prisma.user.create({
-        data: { id, name, email, role: 'USER' },
-      });
+    const prismaCreateResult = await PrismaProvider.createUser({
+      id,
+      name,
+      email,
+      role: 'USER',
+    });
 
-      logger.success(`[UserService] User created successfully: ${user.email}`);
-      return { success: true, data: user };
-    } catch (error) {
-      return handlePrismaRequestError(error, 'creating user', 'UserService');
-    }
+    if (!prismaCreateResult.success) return prismaCreateResult;
+
+    logger.success(`[UserService] User created successfully: ${prismaCreateResult.data.email}`);
+    return { success: true, data: prismaCreateResult.data };
   },
 
   async userSignUp(name: string, email: string, password: string): Promise<ServiceResponse<User>> {
