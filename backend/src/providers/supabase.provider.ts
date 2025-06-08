@@ -1,4 +1,4 @@
-import { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { Session, AuthUser, User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase, supabaseAdmin, getSupabaseWithToken } from '../config/supabase';
 
 import { ServiceResponse as SupabaseResult } from '../types/types';

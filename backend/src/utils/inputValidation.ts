@@ -57,7 +57,7 @@ export const validateUserInput = (
   return { success: true };
 };
 
-export const validateId = (id: string): { success: boolean; error?: string } => {
+export const validateId = (id: string | undefined): { success: boolean; error?: string } => {
   if (!id || typeof id !== 'string') {
     return { success: false, error: 'User ID is required' };
   }

@@ -33,7 +33,7 @@ export const SubscribersService = {
         data: { email },
       });
 
-      await logger.success(`[Subscribers Service] Email registered successfully:`, email);
+      logger.success(`[Subscribers Service] Email registered successfully:`, email);
       return { success: true, data: newEmail };
     } catch (error) {
       return handlePrismaRequestError(error, 'registering email', 'SubscribersService');

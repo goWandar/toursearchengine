@@ -7,7 +7,11 @@ export interface User {
 
 export type PublicUser = Pick<User, 'id' | 'name' | 'email'>;
 
-export type AuthUser = Pick<User, 'id' | 'email'>;
+export interface AuthenticatedUser {
+  sub: string;
+  email?: string;
+  role: 'USER' | 'ADMIN';
+}
 
 export interface Tour {
   id: number;
