@@ -50,38 +50,27 @@ export const AdminService = {
   },
 
   async getUsers(
-    cursor?: string,
     limit = 20,
+    cursor?: string,
   ): Promise<
     ServiceResponse<{
       users: PublicUser[];
       nextCursor: string | null;
     }>
   > {
-    try {
-      const safeLimit = Math.min(limit, 100);
+    const result = await PrismaProvider.getUsers(limit, cursor);
 
-      const users = await prisma.user.findMany({
-        take: safeLimit,
-        skip: cursor ? 1 : 0,
-        cursor: cursor ? { id: cursor } : undefined,
-        orderBy: { id: 'asc' },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      });
-
-      const nextCursor = users.length === safeLimit ? users[users.length - 1].id : null;
-
-      logger.success(
-        `[AdminService] Retrieved ${users.length} users | Cursor: ${cursor ?? 'none'} | NextCursor: ${nextCursor ?? 'null'}`,
-      );
-      return { success: true, data: { users, nextCursor } };
-    } catch (error) {
-      return handlePrismaRequestError(error, 'fetching users', 'AdminService');
+    if (!result.success) {
+      logger.error(`[AdminService] Failed to fetch users | Error: ${result.error}`);
+      return result;
     }
+
+    const { users, nextCursor } = result.data;
+
+    logger.success(
+      `[AdminService] Retrieved ${users.length} users | Cursor: ${cursor ?? 'none'} | NextCursor: ${nextCursor ?? 'null'}`,
+    );
+    return { success: true, data: { users, nextCursor } };
   },
 
   async getUserById(userId: string): Promise<ServiceResponse<PublicUser>> {
