@@ -56,4 +56,20 @@ export const PrismaProvider = {
       return handlePrismaRequestError(error, 'fetching users', 'AdminService');
     }
   },
+
+  async getUserById(userId: string): Promise<ServiceResponse<PublicUser>> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        return { success: false, error: 'User not found.' };
+      }
+
+      return { success: true, data: { id: user.id, name: user.name, email: user.email } };
+    } catch (error) {
+      return handlePrismaRequestError(error, 'fetching user by ID', 'AdminService');
+    }
+  },
 };

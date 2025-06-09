@@ -58,14 +58,14 @@ export const AdminService = {
       nextCursor: string | null;
     }>
   > {
-    const result = await PrismaProvider.getUsers(limit, cursor);
+    const getUsersResult = await PrismaProvider.getUsers(limit, cursor);
 
-    if (!result.success) {
-      logger.error(`[AdminService] Failed to fetch users | Error: ${result.error}`);
-      return result;
+    if (!getUsersResult.success) {
+      logger.error(`[AdminService] Failed to fetch users | Error: ${getUsersResult.error}`);
+      return getUsersResult;
     }
 
-    const { users, nextCursor } = result.data;
+    const { users, nextCursor } = getUsersResult.data;
 
     logger.success(
       `[AdminService] Retrieved ${users.length} users | Cursor: ${cursor ?? 'none'} | NextCursor: ${nextCursor ?? 'null'}`,
@@ -81,22 +81,17 @@ export const AdminService = {
       return { success: false, error: idValidation.error ?? '' };
     }
 
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
+    const getUserResult = await PrismaProvider.getUserById(userId);
 
-      if (!user) {
-        logger.error(`[AdminService] User not found with ID: ${userId}`);
-        return { success: false, error: 'User not found.' };
-      }
-
-      logger.success(`[AdminService] User retrieved | ID: ${user.id} | Email: ${user.email}`);
-
-      return { success: true, data: user };
-    } catch (error) {
-      return handlePrismaRequestError(error, 'fetching user by ID', 'AdminService');
+    if (!getUserResult.success) {
+      logger.error(`[AdminService] Failed to get user ${userId}: ${getUserResult.error}`);
+      return getUserResult;
     }
+
+    const user = getUserResult.data;
+    logger.success(`[AdminService] User retrieved | ID: ${user.id} | Email: ${user.email}`);
+
+    return { success: true, data: user };
   },
 
   async deleteUserById(userId: string): Promise<ServiceResponse<null>> {
