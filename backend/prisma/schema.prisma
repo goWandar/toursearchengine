@@ -31,8 +31,8 @@ model Tour {
   title             String
   description       String?
   location          String?
-  countryId         Int
-  country           Country     @relation(fields: [countryId], references: [id])
+  countryId         Int?
+  country           Country?    @relation(fields: [countryId], references: [id])
   durationInDays    Int         @default(0)
   itinerary         String?
   accommodationType String?
