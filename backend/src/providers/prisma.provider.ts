@@ -72,4 +72,14 @@ export const PrismaProvider = {
       return handlePrismaRequestError(error, 'fetching user by ID', 'AdminService');
     }
   },
+
+  async deleteUserById(userId: string): Promise<ServiceResponse<null>> {
+    try {
+      await prisma.user.delete({ where: { id: userId } });
+
+      return { success: true, data: null };
+    } catch (error) {
+      return handlePrismaRequestError(error, 'deleting user', 'AdminService');
+    }
+  },
 };

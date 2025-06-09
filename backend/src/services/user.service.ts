@@ -1,6 +1,3 @@
-import { prisma } from '../db/prisma';
-
-import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
@@ -233,7 +230,7 @@ export const UserService = {
 
     const validUserId = userId as string;
 
-    // 1. Delete Supabase Auth user:
+    // 1. delete Supabase Auth user
     const result = await SupabaseProvider.deleteUserProfile(validUserId);
 
     if (!result.success) {
@@ -244,14 +241,16 @@ export const UserService = {
     }
 
     // 2. delete from db
-    try {
-      await prisma.user.delete({ where: { id: validUserId } });
+    const prismaDeleteResult = await PrismaProvider.deleteUserById(validUserId);
 
-      logger.success(`[UserService] Account deleted successfully ${validUserId}`);
-      return { success: true, data: null };
-    } catch (error) {
-      logger.error(`[UserService] Unexpected error while deleting account ${validUserId}`, error);
-      return handlePrismaRequestError(error, 'deleting user', 'UserService');
+    if (!prismaDeleteResult.success) {
+      logger.error(
+        `[UserService] Failed to delete user from DB | ID: ${userId} | Error: ${prismaDeleteResult.error}`,
+      );
+      return prismaDeleteResult;
     }
+
+    logger.success(`[UserService] Successfully deleted user ${userId}`);
+    return { success: true, data: null };
   },
 };
