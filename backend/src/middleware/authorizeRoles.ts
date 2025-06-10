@@ -30,7 +30,8 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
       }
 
       if (user.role !== 'USER' && user.role !== 'ADMIN') {
-        return res.status(403).json({ error: 'Invalid role' });
+        res.status(403).json({ error: 'Invalid role' });
+        return;
       }
 
       // 4. attach role to the request

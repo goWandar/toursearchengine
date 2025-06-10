@@ -1,25 +1,25 @@
-import { prisma } from '../db/prisma';
-
-import { handlePrismaRequestError } from '../utils/errorHandler';
 import { validateUserInput, validateId } from '../utils/inputValidation';
 import { logger } from '../utils/logger';
 
 import { ServiceResponse } from '../types/types';
 import type { User } from '@prisma/client';
+
 import { SupabaseProvider } from '../providers/supabase.provider';
+import { PrismaProvider } from '../providers/prisma.provider';
 
 export const UserService = {
   async _userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {
-    try {
-      const user = await prisma.user.create({
-        data: { id, name, email, role: 'USER' },
-      });
+    const prismaCreateResult = await PrismaProvider.createUser({
+      id,
+      name,
+      email,
+      role: 'USER',
+    });
 
-      logger.success(`[UserService] User created successfully: ${user.email}`);
-      return { success: true, data: user };
-    } catch (error) {
-      return handlePrismaRequestError(error, 'creating user', 'UserService');
-    }
+    if (!prismaCreateResult.success) return prismaCreateResult;
+
+    logger.success(`[UserService] User created successfully: ${prismaCreateResult.data.email}`);
+    return { success: true, data: prismaCreateResult.data };
   },
 
   async userSignUp(name: string, email: string, password: string): Promise<ServiceResponse<User>> {
@@ -230,7 +230,7 @@ export const UserService = {
 
     const validUserId = userId as string;
 
-    // 1. Delete Supabase Auth user:
+    // 1. delete Supabase Auth user
     const result = await SupabaseProvider.deleteUserProfile(validUserId);
 
     if (!result.success) {
@@ -241,14 +241,16 @@ export const UserService = {
     }
 
     // 2. delete from db
-    try {
-      await prisma.user.delete({ where: { id: validUserId } });
+    const prismaDeleteResult = await PrismaProvider.deleteUserById(validUserId);
 
-      logger.success(`[UserService] Account deleted successfully ${validUserId}`);
-      return { success: true, data: null };
-    } catch (error) {
-      logger.error(`[UserService] Unexpected error while deleting account ${validUserId}`, error);
-      return handlePrismaRequestError(error, 'deleting user', 'UserService');
+    if (!prismaDeleteResult.success) {
+      logger.error(
+        `[UserService] Failed to delete user from DB | ID: ${userId} | Error: ${prismaDeleteResult.error}`,
+      );
+      return prismaDeleteResult;
     }
+
+    logger.success(`[UserService] Successfully deleted user ${userId}`);
+    return { success: true, data: null };
   },
 };
