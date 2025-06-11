@@ -47,9 +47,6 @@ export const TourService = {
           },
         },
       },
-      safariType: safariType
-        ? { contains: String(safariType), mode: 'insensitive' }
-        : undefined,
       accommodationType: accommodationType
         ? { contains: String(accommodationType), mode: 'insensitive' }
         : undefined,
@@ -81,4 +78,8 @@ export const TourService = {
       return handlePrismaRequestError(error, 'getting tours', 'TourService');
     }
   },
+
+  async getTourByCountryId(
+    req: Request,
+    res: Response): Promise<ServiceResponse<Tour | null>> {
 };
