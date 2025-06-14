@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
 
-import { responseHandler } from '../utils/responseHandler';
-import { UserService } from '../services/user.service';
+import { UserService } from '../services/user.service.js';
+import { responseHandler } from '../utils/responseHandler.js';
 
-import { authenticateToken } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = Router();
 

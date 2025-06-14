@@ -1,9 +1,9 @@
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
-import { supabase, supabaseAdmin, getSupabaseWithToken } from '../config/supabase';
+import { getSupabaseWithToken, supabase, supabaseAdmin } from '../config/supabase.js';
 
-import { ServiceResponse as SupabaseResult } from '../types/types';
+import { ServiceResponse as SupabaseResult } from '../types/types.js';
 
-import { formatSupabaseError } from '../utils/supabaseErrorHandler';
+import { formatSupabaseError } from '../utils/supabaseErrorHandler.js';
 
 export const SupabaseProvider = {
   client: supabase, // Expose Supabase client instance

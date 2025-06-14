@@ -3,11 +3,11 @@ import {
   notFound,
   serverError,
   success
-} from '../utils/genericResponseHandler';
+} from '../utils/genericResponseHandler.js';
 
-import { prisma } from '../db/prisma';
+import { prisma } from '../db/prisma.js';
 
-import { Tour } from '../types/types';
+import { Tour } from '../types/types.js';
 
 type GetToursResponse = {
   tours: Tour[];

@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { logger } from '../utils/logger';
+import { logger } from '../utils/logger.js';
 
-import type { AuthenticatedUser } from '../types/types';
+import type { AuthenticatedUser } from '../types/types.js';
 
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
 

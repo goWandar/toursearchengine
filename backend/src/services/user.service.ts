@@ -1,11 +1,11 @@
-import { validateUserInput, validateId } from '../utils/inputValidation';
-import { logger } from '../utils/logger';
+import { validateId, validateUserInput } from '../utils/inputValidation.js';
+import { logger } from '../utils/logger.js';
 
-import { ServiceResponse } from '../types/types';
 import type { User } from '@prisma/client';
+import { ServiceResponse } from '../types/types.js';
 
-import { SupabaseProvider } from '../providers/supabase.provider';
-import { PrismaProvider } from '../providers/prisma.provider';
+import { PrismaProvider } from '../providers/prisma.provider.js';
+import { SupabaseProvider } from '../providers/supabase.provider.js';
 
 export const UserService = {
   async _userCreateUser(id: string, name: string, email: string): Promise<ServiceResponse<User>> {

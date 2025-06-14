@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 
 // import { responseHandler } from '../utils/responseHandler';
-import { TourService } from '../services/tour.service';
+import { TourService } from '../services/tour.service.js';
 
 const router: Router = Router();
 
