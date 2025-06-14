@@ -83,6 +83,10 @@ model TourPrice {
 model Park {
   id           Int       @id @default(autoincrement())
   name         String    @unique
+  type         String
+  country      String
+  countryCode  String
+  keyword      String
   dateCreated  DateTime  @default(now())
   dateModified DateTime? @updatedAt
   toursId      Tour[]    @relation("TourParks")
