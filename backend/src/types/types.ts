@@ -15,10 +15,10 @@ export interface AuthenticatedUser {
 
 export interface Tour {
   id: number;
-  uniqueId: number;
+  uniqueId: string;
   title: string;
   description: string | null;
-  location: string;
+  location: string | null;
   countryId: number;
   country?: Country;
   durationInDays: number;
@@ -68,8 +68,10 @@ export interface Country {
 export interface Park {
   id: number;
   name: string;
-  countryId: number;
-  country: Country | null;
+  type: string;
+  country: string;
+  countryCode: string;
+  keyword: string;
   dateCreated: Date;
   dateModified: Date | null;
   toursId: Tour['id'][];

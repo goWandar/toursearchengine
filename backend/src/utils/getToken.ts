@@ -1,10 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 
 // ESM workaround for __dirname
-const __filename = fileURLToPath(import.meta.url);
+// const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load environment variables
