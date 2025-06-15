@@ -1,13 +1,13 @@
 import { Request, Response, Router } from 'express';
 
-import { AdminService } from '../services/admin.service';
+import { AdminService } from '../services/admin.service.js';
 
-import { authenticateToken } from '../middleware/auth';
-import { authorizeRoles } from '../middleware/authorizeRoles';
+import { authenticateToken } from '../middleware/auth.js';
+import { authorizeRoles } from '../middleware/authorizeRoles.js';
 
-import { getUserEmailFromRequest } from '../utils/authHelpers';
-import { responseHandler } from '../utils/responseHandler';
-import { logger } from '../utils/logger';
+import { getUserEmailFromRequest } from '../utils/authHelpers.js';
+import { responseHandler } from '../utils/responseHandler.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 

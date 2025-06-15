@@ -1,4 +1,4 @@
-import { Tour } from "../types/types";
+import { Tour } from '../types/types.js';
 type Filters = {
   location: string | undefined;
   daysMin: number | undefined;
@@ -15,7 +15,7 @@ function applyFilters(filters: Filters, tours: Tour[]): Tour[] {
 
   if (location !== undefined) {
     filteredTours = filteredTours.filter((tour) => {
-      const locationArray = tour.location.toLowerCase().split(", ");
+      const locationArray = tour.location.toLowerCase().split(', ');
       return locationArray.includes(location.toLowerCase());
     });
   }

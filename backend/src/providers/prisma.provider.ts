@@ -1,9 +1,18 @@
-import { prisma } from '../db/prisma';
+import { prisma } from '../db/prisma.js';
 
-import type { User } from '@prisma/client';
-import { ServiceResponse, PublicUser } from '../types/types';
+import { Prisma } from '@prisma/client';
 
-import { handlePrismaRequestError } from '../utils/errorHandler';
+import type { User, Tour } from '@prisma/client';
+import { ServiceResponse, PublicUser } from '../types/types.js';
+
+import { handlePrismaRequestError } from '../utils/errorHandler.js';
+
+type TourWithIncludes = Prisma.TourGetPayload<{
+  include: {
+    prices: true;
+    images: true;
+  };
+}>;
 
 export const PrismaProvider = {
   client: prisma,
@@ -53,7 +62,7 @@ export const PrismaProvider = {
 
       return { success: true, data: { users, nextCursor } };
     } catch (error) {
-      return handlePrismaRequestError(error, 'fetching users', 'AdminService');
+      return handlePrismaRequestError(error, 'fetching users', 'PrismaProvider');
     }
   },
 
@@ -69,7 +78,7 @@ export const PrismaProvider = {
 
       return { success: true, data: { id: user.id, name: user.name, email: user.email } };
     } catch (error) {
-      return handlePrismaRequestError(error, 'fetching user by ID', 'AdminService');
+      return handlePrismaRequestError(error, 'fetching user by ID', 'PrismaProvider');
     }
   },
 
@@ -79,7 +88,41 @@ export const PrismaProvider = {
 
       return { success: true, data: null };
     } catch (error) {
-      return handlePrismaRequestError(error, 'deleting user', 'AdminService');
+      return handlePrismaRequestError(error, 'deleting user', 'PrismaProvider');
+    }
+  },
+
+  async getTours(
+    limit: number = 8,
+    cursor?: number,
+    filters?: Prisma.TourWhereInput,
+  ): Promise<ServiceResponse<{ tours: TourWithIncludes[]; nextCursor: number | null }>> {
+    try {
+      const safeLimit = Math.max(1, Math.min(limit, 100));
+
+      const tours = await prisma.tour.findMany({
+        take: safeLimit,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        where: filters,
+        orderBy: { id: 'asc' },
+        include: {
+          prices: true,
+          images: true,
+        },
+      });
+
+      const nextCursor = tours.length === safeLimit ? tours[tours.length - 1].id : null;
+
+      return {
+        success: true,
+        data: {
+          tours,
+          nextCursor,
+        },
+      };
+    } catch (error) {
+      return handlePrismaRequestError(error, 'getTours', 'PrismaProvider');
     }
   },
 };

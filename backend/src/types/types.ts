@@ -36,6 +36,57 @@ export interface Tour {
   prices: Price[];
 }
 
+export interface TourFilterInput {
+  id?: number;
+  uniqueId?: string;
+  title?: string;
+  description?: string | null;
+  location?: string | null;
+  countryId?: number | null;
+  durationInDays?: number;
+  itinerary?: string | null;
+  accommodationType?: string | null;
+  siteURL?: string | null;
+  included?: string | null;
+  excluded?: string | null;
+  dateCreated?: Date | string;
+  dateModified?: Date | string | null;
+  archived?: boolean;
+  operatorId?: number | null;
+  daysMin?: number;
+  daysMax?: number;
+  priceMin?: number;
+  priceMax?: number;
+  safariType?: string;
+}
+
+export type PrismaTourFilters = {
+  location?: {
+    contains: string;
+    mode: 'insensitive';
+  };
+  safariType?: {
+    contains: string;
+    mode: 'insensitive';
+  };
+  accommodationType?: {
+    contains: string;
+    mode: 'insensitive';
+  };
+  durationInDays?: {
+    gte?: number;
+    lte?: number;
+  };
+  prices?: {
+    some: {
+      pricePerPerson: {
+        gte?: number;
+        lte?: number;
+      };
+    };
+  };
+};
+
 export interface Image {
   id: number;
   image_urls: string;

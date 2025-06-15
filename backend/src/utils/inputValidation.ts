@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 // Function to check any number of required fields dynamically
 export const checkRequiredFields = (...args: { key: string; value: any }[]) => {

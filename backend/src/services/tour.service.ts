@@ -1,84 +1,76 @@
-import { Request, Response } from 'express';
+import { logger } from '../utils/logger.js';
 
 import { Prisma } from '@prisma/client';
-import { prisma } from '../db/prisma';
 
-import { handlePrismaRequestError } from '../utils/errorHandler';
-import { ServiceResponse, Tour } from '../types/types';
+import { ServiceResponse, TourFilterInput } from '../types/types.js';
+import { PrismaProvider } from '../providers/prisma.provider.js';
 
-type GetAllToursResponse = {
-  tours: Tour[];
-  cursor: number | null;
-};
+type TourWhereInput = Prisma.TourWhereInput;
+type TourWithIncludes = Prisma.TourGetPayload<{
+  include: {
+    prices: true;
+    images: true;
+  };
+}>;
+
+function buildTourFilters(params: TourFilterInput): TourWhereInput {
+  const { location, daysMin, daysMax, priceMin, priceMax, accommodationType } = params;
+
+  return {
+    ...(location && {
+      location: {
+        contains: location,
+        mode: 'insensitive',
+      },
+    }),
+
+    ...(accommodationType && {
+      accommodationType: {
+        contains: accommodationType,
+        mode: 'insensitive',
+      },
+    }),
+
+    ...(daysMin || daysMax
+      ? {
+          durationInDays: {
+            ...(daysMin ? { gte: Number(daysMin) } : {}),
+            ...(daysMax ? { lte: Number(daysMax) } : {}),
+          },
+        }
+      : {}),
+
+    ...(priceMin || priceMax
+      ? {
+          prices: {
+            some: {
+              pricePerPerson: {
+                ...(priceMin ? { gte: Number(priceMin) } : {}),
+                ...(priceMax ? { lte: Number(priceMax) } : {}),
+              },
+            },
+          },
+        }
+      : {}),
+  };
+}
 
 export const TourService = {
-  async getAllTours(
-    req: Request,
-    res: Response
-  ): Promise<ServiceResponse<GetAllToursResponse>> {
-    const {
-      location,
-      daysMin,
-      daysMax,
-      cursor = 0,
-      limit = 8,
-      priceMin,
-      priceMax,
-      safariType,
-      accommodationType,
-    } = req.query;
+  async getFilteredTours(
+    limit = 8,
+    cursor?: string,
+    filters: TourFilterInput = {},
+  ): Promise<ServiceResponse<{ tours: TourWithIncludes[]; nextCursor: number | null }>> {
+    const prismaFilters = buildTourFilters(filters);
+    const numericCursor = cursor ? Number(cursor) : undefined;
 
-    const filters: Prisma.TourWhereInput = {
-      location: location
-        ? {
-            contains: String(location),
-            mode: 'insensitive',
-          }
-        : undefined,
-      durationInDays: {
-        gte: daysMin ? Number(daysMin) : undefined,
-        lte: daysMax ? Number(daysMax) : undefined,
-      },
-      prices: {
-        some: {
-          pricePerPerson: {
-            gte: priceMin ? Number(priceMin) : undefined,
-            lte: priceMax ? Number(priceMax) : undefined,
-          },
-        },
-      },
-      safariType: safariType
-        ? { contains: String(safariType), mode: 'insensitive' }
-        : undefined,
-      accommodationType: accommodationType
-        ? { contains: String(accommodationType), mode: 'insensitive' }
-        : undefined,
-    };
+    const filterToursResult = await PrismaProvider.getTours(limit, numericCursor, prismaFilters);
 
-    try {
-      const tours: Tour[] = await prisma.tour.findMany({
-        skip: 1,
-        take: Number(limit),
-        cursor: cursor ? { id: Number(cursor) } : undefined,
-        where: filters,
-        include: {
-          prices: true,
-          images: true,
-        },
-        orderBy: {
-          id: 'asc',
-        },
-      });
+    if (!filterToursResult.success) return filterToursResult;
 
-      return {
-        success: true,
-        data: {
-          tours,
-          cursor: tours.length ? tours[tours.length - 1].id : null,
-        },
-      };
-    } catch (error) {
-      return handlePrismaRequestError(error, 'getting tours', 'TourService');
-    }
+    const { tours, nextCursor } = filterToursResult.data;
+
+    logger.success(`[TourService] Tours fetched successfully.`);
+    return { success: true, data: { tours, nextCursor } };
   },
 };

@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 export const responseHandler = (
   res: Response,

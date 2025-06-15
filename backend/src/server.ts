@@ -3,14 +3,14 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
-import corsConfig from './config/cors';
+import corsConfig from './config/cors.js';
 
-import userRoutes from './routes/user.routes';
-import subscribersRoutes from './routes/subscribers.routes';
-import adminRoutes from './routes/admin.routes';
-import tourRoutes from './routes/tour.routes';
+import userRoutes from './routes/user.routes.js';
+import subscribersRoutes from './routes/subscribers.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import tourRoutes from './routes/tour.routes.js';
 
-import { logger } from './utils/logger';
+import { logger } from './utils/logger.js';
 
 const app = express();
 const port = process.env.PORT || 3000;

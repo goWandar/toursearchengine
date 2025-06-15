@@ -1,10 +1,10 @@
-import { prisma } from '../db/prisma';
+import { prisma } from '../db/prisma.js';
 
-import { handlePrismaRequestError } from '../utils/errorHandler';
-import { checkRequiredFields, emailFormattingCheck } from '../utils/inputValidation';
-import { logger } from '../utils/logger';
+import { handlePrismaRequestError } from '../utils/errorHandler.js';
+import { checkRequiredFields, emailFormattingCheck } from '../utils/inputValidation.js';
+import { logger } from '../utils/logger.js';
 
-import { ServiceResponse } from '../types/types';
+import { ServiceResponse } from '../types/types.js';
 
 export const SubscribersService = {
   async registerEmailForBeta(

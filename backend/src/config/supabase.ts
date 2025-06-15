@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY } from './supabase.config';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY } from './supabase.config.js';
 
 console.log(' Supabase Client Initialized:');
 
