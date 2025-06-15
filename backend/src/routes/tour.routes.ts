@@ -10,8 +10,12 @@ const router: Router = Router();
 //   responseHandler(res, result, 'GET');
 // });
 
-router.get('/tours/:countryId', async (req: Request, res: Response) => {
+router.get('/tours/country/:countryId', async (req: Request, res: Response) => {
   await TourService.getToursByCountryId(req, res);
+});
+
+router.get('/tours/park/:parkId', async (req: Request, res: Response) => {
+  await TourService.getToursByParkId(req, res);
 });
 
 export default router;

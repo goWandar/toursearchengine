@@ -136,5 +136,73 @@ export const TourService = {
         error instanceof Error ? error : new Error(String(error))
       );
     }
-  }
+  },
+
+  async getToursByParkId(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    const { parkId } = req.params;
+    const { cursor, limit = 8 } = req.query;
+
+    try {
+      const parsedLimit = parseInt(limit as string, 10);
+      const cursorId = cursor ? parseInt(cursor as string, 10) : undefined;
+
+      // Get 8 tours at a time for the specified park
+      const tours = await prisma.tour.findMany({
+        where: {
+          parksId: {
+            some: {
+              id: parseInt(parkId, 10),
+            },
+          },
+        },
+        take: parsedLimit,
+        ...(cursorId && {
+          skip: 1,
+          cursor: { id: cursorId },
+        }),
+        orderBy: { id: 'asc' },
+        include: {
+          operator: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          country: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          parksId: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        }
+      });
+
+      const nextCursor = tours.length === parsedLimit ? tours[tours.length - 1].id : null;
+
+      if (!tours.length) {
+        return notFound(res, 'No tours found for this park');
+      }
+
+      return success(res, 'Tours fetched successfully', {
+        tours,
+        nextCursor,
+        hasMore: !!nextCursor,
+      });
+    } catch (error) {
+      return serverError(
+        res,
+        'Failed to fetch tours by park ID',
+        error instanceof Error ? error : new Error(String(error))
+      );
+    }
+  },
 };
