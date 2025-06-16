@@ -86,48 +86,40 @@ export const TourService = {
     req: Request,
     res: Response
   ): Promise<Response> {
-    const { countryId } = req.params;
-    const { cursor, limit = 8 } = req.query;
-
     try {
-      const parsedLimit = parseInt(limit as string, 10);
-      const cursorId = cursor ? parseInt(cursor as string, 10) : undefined;
-
-      // Get 8 tours at a time for the specified country
-      const tours = await prisma.tour.findMany({
-        where: { countryId: parseInt(countryId, 10) },
-        take: parsedLimit,
-        ...(cursorId && {
-          skip: 1,
-          cursor: { id: cursorId },
+      const countryId = parseInt(req.params.countryId);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
+  
+      const [tours, total] = await Promise.all([
+        prisma.tour.findMany({
+          where: { countryId, archived: false },
+          skip,
+          take: limit,
+          orderBy: { dateCreated: 'asc' },
+          include: {
+            operator: { select: { id: true, name: true } },
+          },
         }),
-        orderBy: { id: 'asc' },
-        include: {
-          operator: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          parksId: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        }
-      });
-
-      const nextCursor = tours.length === parsedLimit ? tours[tours.length - 1].id : null;
-
+        prisma.tour.count({
+          where: { countryId, archived: false },
+        }),
+      ]);
+  
       if (!tours.length) {
         return notFound(res, 'No tours found for this country');
       }
-
+  
       return success(res, 'Tours fetched successfully', {
         tours,
-        nextCursor,
-        hasMore: !!nextCursor,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: page * limit < total,
+        },
       });
     } catch (error) {
       return serverError(
@@ -142,60 +134,48 @@ export const TourService = {
     req: Request,
     res: Response
   ): Promise<Response> {
-    const { parkId } = req.params;
-    const { cursor, limit = 8 } = req.query;
-
     try {
-      const parsedLimit = parseInt(limit as string, 10);
-      const cursorId = cursor ? parseInt(cursor as string, 10) : undefined;
-
-      // Get 8 tours at a time for the specified park
-      const tours = await prisma.tour.findMany({
-        where: {
-          parksId: {
-            some: {
-              id: parseInt(parkId, 10),
-            },
+      const parkId = parseInt(req.params.parkId);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 8;
+      const skip = (page - 1) * limit;
+  
+      const [tours, total] = await Promise.all([
+        prisma.tour.findMany({
+          where: {
+            parksId: { some: { id: parkId } },
+            archived: false,
           },
-        },
-        take: parsedLimit,
-        ...(cursorId && {
-          skip: 1,
-          cursor: { id: cursorId },
+          skip,
+          take: limit,
+          orderBy: { dateCreated: 'asc' },
+          include: {
+            operator: { select: { id: true, name: true } },
+            country: { select: { id: true, name: true } },
+            parksId: { select: { id: true, name: true } },
+          },
         }),
-        orderBy: { id: 'asc' },
-        include: {
-          operator: {
-            select: {
-              id: true,
-              name: true,
-            },
+        prisma.tour.count({
+          where: {
+            parksId: { some: { id: parkId } },
+            archived: false,
           },
-          country: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          parksId: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        }
-      });
-
-      const nextCursor = tours.length === parsedLimit ? tours[tours.length - 1].id : null;
-
+        }),
+      ]);
+  
       if (!tours.length) {
         return notFound(res, 'No tours found for this park');
       }
-
+  
       return success(res, 'Tours fetched successfully', {
         tours,
-        nextCursor,
-        hasMore: !!nextCursor,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: page * limit < total,
+        },
       });
     } catch (error) {
       return serverError(
@@ -204,5 +184,5 @@ export const TourService = {
         error instanceof Error ? error : new Error(String(error))
       );
     }
-  },
+  }
 };
