@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 
-import { responseHandler } from '../utils/responseHandler';
-import { SubscribersService } from '../services/subscribers.service';
+import { SubscribersService } from '../services/subscribers.service.js';
+import { responseHandler } from '../utils/responseHandler.js';
 
 const router = Router();
 

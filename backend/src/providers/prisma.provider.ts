@@ -1,9 +1,9 @@
-import { prisma } from '../db/prisma';
+import { prisma } from '../db/prisma.js';
 
 import type { User } from '@prisma/client';
-import { ServiceResponse, PublicUser } from '../types/types';
+import { PublicUser, ServiceResponse } from '../types/types.js';
 
-import { handlePrismaRequestError } from '../utils/errorHandler';
+import { handlePrismaRequestError } from '../utils/errorHandler.js';
 
 export const PrismaProvider = {
   client: prisma,

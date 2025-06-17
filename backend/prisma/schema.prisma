@@ -44,9 +44,10 @@ model Tour {
   archived          Boolean     @default(false)
   images            TourImage[]
   prices            TourPrice[]
-  parksId           Park[]      @relation("TourParks")
   operatorId        Int?
   operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+
+  tourParks TourPark[]
 
   @@unique([id, uniqueId])
   @@map("tours")
@@ -83,11 +84,27 @@ model TourPrice {
 model Park {
   id           Int       @id @default(autoincrement())
   name         String    @unique
+  type         String
+  country      String
+  countryCode  String
+  keyword      String
   dateCreated  DateTime  @default(now())
   dateModified DateTime? @updatedAt
-  toursId      Tour[]    @relation("TourParks")
+
+  tourParks TourPark[]
 
   @@map("parks")
+}
+
+model TourPark {
+  tourId Int
+  parkId Int
+
+  tour Tour @relation(fields: [tourId], references: [id])
+  park Park @relation(fields: [parkId], references: [id])
+
+  @@id([tourId, parkId])
+  @@map("_TourParks")
 }
 
 model Country {
