@@ -15,73 +15,8 @@ type GetToursResponse = {
 };
 
 export const TourService = {
-  // async getAllTours(
-  //   req: Request,
-  //   res: Response
-  // ): Promise<ServiceResponse<GetToursResponse>> {
-  //   const {
-  //     location,
-  //     daysMin,
-  //     daysMax,
-  //     cursor = 0,
-  //     limit = 8,
-  //     priceMin,
-  //     priceMax,
-  //     safariType,
-  //     accommodationType,
-  //   } = req.query;
 
-  //   const filters: Prisma.TourWhereInput = {
-  //     location: location
-  //       ? {
-  //           contains: String(location),
-  //           mode: 'insensitive',
-  //         }
-  //       : undefined,
-  //     durationInDays: {
-  //       gte: daysMin ? Number(daysMin) : undefined,
-  //       lte: daysMax ? Number(daysMax) : undefined,
-  //     },
-  //     prices: {
-  //       some: {
-  //         pricePerPerson: {
-  //           gte: priceMin ? Number(priceMin) : undefined,
-  //           lte: priceMax ? Number(priceMax) : undefined,
-  //         },
-  //       },
-  //     },
-  //     accommodationType: accommodationType
-  //       ? { contains: String(accommodationType), mode: 'insensitive' }
-  //       : undefined,
-  //   };
-
-  //   try {
-  //     const tours: Tour[] = await prisma.tour.findMany({
-  //       skip: 1,
-  //       take: Number(limit),
-  //       cursor: cursor ? { id: Number(cursor) } : undefined,
-  //       where: filters,
-  //       include: {
-  //         prices: true,
-  //         images: true,
-  //       },
-  //       orderBy: {
-  //         id: 'asc',
-  //       },
-  //     });
-
-  //     return {
-  //       success: true,
-  //       data: {
-  //         tours,
-  //         cursor: tours.length ? tours[tours.length - 1].id : null,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     return handlePrismaRequestError(error, 'getting tours', 'TourService');
-  //   }
-  // },
-
+  // Get tours by country ID
   async getToursByCountryId(
     req: Request,
     res: Response
@@ -100,6 +35,15 @@ export const TourService = {
           orderBy: { dateCreated: 'asc' },
           include: {
             operator: { select: { id: true, name: true } },
+            images: true,
+            prices: true,
+            tourParks: {
+              select: {
+                park: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
           },
         }),
         prisma.tour.count({
@@ -111,8 +55,14 @@ export const TourService = {
         return notFound(res, 'No tours found for this country');
       }
   
+      //Flatten parks array for each tour
+      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
+        ...rest,
+        parks: tourParks.map(tp => tp.park),
+      }));
+  
       return success(res, 'Tours fetched successfully', {
-        tours,
+        tours: formattedTours,
         pagination: {
           page,
           limit,
@@ -130,6 +80,7 @@ export const TourService = {
     }
   },
 
+  // Get tours by park ID
   async getToursByParkId(
     req: Request,
     res: Response
@@ -143,7 +94,9 @@ export const TourService = {
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: {
-            parksId: { some: { id: parkId } },
+            tourParks: {
+              some: { parkId },
+            },
             archived: false,
           },
           skip,
@@ -152,12 +105,20 @@ export const TourService = {
           include: {
             operator: { select: { id: true, name: true } },
             country: { select: { id: true, name: true } },
-            parksId: { select: { id: true, name: true } },
+            tourParks: {
+              include: {
+                park: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
           },
         }),
         prisma.tour.count({
           where: {
-            parksId: { some: { id: parkId } },
+            tourParks: {
+              some: { parkId },
+            },
             archived: false,
           },
         }),
@@ -167,8 +128,16 @@ export const TourService = {
         return notFound(res, 'No tours found for this park');
       }
   
+      // Flatten parks and remove the one used for filtering
+      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
+        ...rest,
+        parks: tourParks
+          .filter(tp => tp.park.id !== parkId)
+          .map(tp => tp.park),
+      }));
+  
       return success(res, 'Tours fetched successfully', {
-        tours,
+        tours: formattedTours,
         pagination: {
           page,
           limit,

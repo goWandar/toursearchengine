@@ -6,6 +6,8 @@ import morgan from 'morgan';
 import corsConfig from './config/cors.js';
 
 import adminRoutes from './routes/admin.routes.js';
+import countryRoutes from './routes/country.routes.js';
+import parkRoutes from './routes/park.routes.js';
 import subscribersRoutes from './routes/subscribers.routes.js';
 import tourRoutes from './routes/tour.routes.js';
 import userRoutes from './routes/user.routes.js';
@@ -43,6 +45,8 @@ app.use('/api', adminRoutes);
 app.use('/api', userRoutes);
 app.use('/api', subscribersRoutes);
 app.use('/api', tourRoutes);
+app.use('/api', countryRoutes);
+app.use('/api', parkRoutes);
 
 // 404 handler
 app.use((req, res) => {
