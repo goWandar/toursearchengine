@@ -23,8 +23,14 @@ export const CountryService = {
               name: 'asc',
             },
           });
+
+          
+          const countriesWithType = countries.map(country => ({
+            ...country,
+            type: 'country',
+          }));
       
-          return success(res, 'Countries fetched successfully', countries);
+          return success(res, 'Countries fetched successfully', countriesWithType);
         } catch (error) {
           return serverError(
             res,
