@@ -56,7 +56,7 @@ export const TourService = {
       }
   
       //Flatten parks array for each tour
-      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[]; [key: string]: any }) => ({
         ...rest,
         parks: tourParks.map(tp => tp.park),
       }));
@@ -129,7 +129,7 @@ export const TourService = {
       }
   
       // Flatten parks and remove the one used for filtering
-      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[]; [key: string]: any }) => ({
         ...rest,
         parks: tourParks
           .filter(tp => tp.park.id !== parkId)
