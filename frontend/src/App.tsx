@@ -11,6 +11,8 @@ import How from './components/LandingPage/How';
 import Navbar from './components/LandingPage/Navbar';
 import Reason from './components/LandingPage/Reason';
 import TourSearch from './components/TourSearch/TourSearch';
+import TextSearch from './components/TextSearch/TextSearch';
+import TextSearchPage from './components/TextSearch/TextSearchPage';
 
 const App = () => {
   return (
@@ -37,6 +39,14 @@ const App = () => {
             <>
               {/* <Navbar /> */}
               <TourSearch />
+            </>
+          }
+        />
+        <Route
+          path='/search'
+          element={
+            <>
+              <TextSearchPage />
             </>
           }
         />

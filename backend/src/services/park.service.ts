@@ -18,13 +18,19 @@ export const ParkService = {
             select: {
               id: true,
               name: true,
+              keyword: true,
             },
             orderBy: {
               name: 'asc',
             },
           });
+
+          const parksWithType = parks.map(park => ({
+            ...park,
+            type: 'park',
+          }))
       
-          return success(res, 'Parks fetched successfully', parks);
+          return success(res, 'Parks fetched successfully', parksWithType);
         } catch (error) {
           return serverError(
             res,
