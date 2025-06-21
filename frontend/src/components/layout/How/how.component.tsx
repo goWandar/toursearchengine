@@ -40,14 +40,14 @@ const cards = [
 
 const HowWandarWorks = () => {
   return (
-    <div className='grid grid-cols-[auto_1fr_auto] min-h-[50rem] w-full bg-transparent overflow-hidden'>
+    <div className='grid grid-cols-[auto_1fr_auto] min-h-[60rem] w-full bg-transparent overflow-hidden'>
       {/* Left icon */}
       <div className='self-end pb-[2.3rem]'>
         <img src={SubtractLeft} alt='Subtract Left' />
       </div>
 
       {/* Main content */}
-      <div className='flex flex-col items-center justify-center p-4 sm:p-8 md:p-12'>
+      <div className='flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 max-w-[1500px] mx-auto'>
         <div className='flex flex-col items-center mb-6 sm:mb-8 md:mb-[4rem]'>
           <h2
             className='text-[#2E2E2E] font-semibold text-[2rem] md:text-[3.375rem] leading-[2rem] md:leading-[2.1875rem] text-center'

@@ -7,7 +7,7 @@ const App = () => {
     <div>
       <Router>
         <Hero />
-        <div className='max-w-[1500px] mx-auto'>
+        <div className='max-w-[2500px] mx-auto'>
           <HowWandarWorksLayout />
         </div>
       </Router>
