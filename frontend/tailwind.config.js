@@ -3,6 +3,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        'xl-1450': '1450px',
+      },
       colors: {
         primary: {
           50: '#FEF6F0',
@@ -10,12 +13,13 @@ export default {
           200: '#FBD3B7',
           300: '#F9BD93',
           400: '#F7A76F',
-          500: '#F4A261', // Your primary color
+          500: '#F4A261',
           600: '#F28D3D',
           700: '#E67A29',
           800: '#C66622',
           900: '#A5521B',
           950: '#833E14',
+          brown: '#8B6545',
         },
         // Complementary colors that work well with the primary color
         secondary: {

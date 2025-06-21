@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.74.3",
-    "animate.css": "^4.1.1",
     "axios": "^1.9.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
@@ -32,7 +31,7 @@
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.17",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.31.0",
