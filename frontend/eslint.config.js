@@ -13,7 +13,7 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off', // Allow any type
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
