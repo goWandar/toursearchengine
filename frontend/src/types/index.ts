@@ -137,3 +137,19 @@ export interface ApiError {
   error?: string;
   message?: string;
 }
+
+export interface ParkSearchType {
+  id: number;
+  name: string;
+  keyword: string;
+}
+
+export interface CountrySearchType {
+  id: number;
+  name: string;
+}
+
+export interface ParksCountries {
+  parks: ParkSearchType[];
+  countries:CountrySearchType[];
+}
