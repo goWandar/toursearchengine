@@ -22,8 +22,7 @@ const Navbar = () => {
             label={item}
             variant={BUTTON_VARIANT.TERTIARY}
             hasBorder={false}
-            textColor='#FFFFFF'
-            className='!text-white hover:!text-primary-500 hover:!bg-transparent'
+            className='text-white hover:text-primary-500 hover:bg-transparent'
           />
         ))}
       </div>
@@ -34,7 +33,7 @@ const Navbar = () => {
           id='join-beta-button'
           label='Join Beta'
           variant={BUTTON_VARIANT.PRIMARY}
-          textColor='#2E2E2E'
+          className='text-[#2E2E2E]'
         />
       </div>
     </nav>

@@ -37,7 +37,6 @@ export interface ButtonProps {
   className?: string;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
-  textColor?: string;
   iconColor?: string;
   hasBorder?: boolean;
   backgroundColor?: string;

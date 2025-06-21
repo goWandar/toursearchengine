@@ -28,16 +28,16 @@ const HeroContent = () => {
           id='discover-more-button'
           label='Discover more'
           variant={BUTTON_VARIANT.PRIMARY}
-          textColor='#000000'
-          icon={<BsArrowRight className='text-black' />}
+          icon={<BsArrowRight />}
           iconPosition={BUTTON_ICON_POSITION.RIGHT}
+          className='text-black hover:bg-primary-600 transition-colors duration-200'
         />
         <Button
           id='watch-video-button'
           label='Watch Video'
           variant={BUTTON_VARIANT.TERTIARY}
-          textColor='text-white hover:text-black'
           hasBorder={true}
+          className='text-white hover:text-black'
         />
       </div>
     </div>

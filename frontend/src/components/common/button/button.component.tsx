@@ -17,7 +17,6 @@ const Button = ({
   className = '',
   disabled = false,
   type = 'button',
-  textColor,
   iconColor,
   hasBorder = true,
   backgroundColor,
@@ -57,49 +56,31 @@ const Button = ({
   const buttonStyles = `
     ${baseStyles}
     ${sizeStyles[size]}
-    ${variantStyles[variant]}
+    ${!backgroundColor ? variantStyles[variant] : ''}
     ${shapeStyles[shape]}
     ${borderStyles}
     ${disabled ? disabledStyles : ''}
-    ${backgroundColor ? `bg-[${backgroundColor}]` : ''}
-    ${textColor}
     ${className}
   `;
-
-  // Text color will now be applied directly as an inline style
-  // Class for icon styles will still be used.
-  const iconClass = iconColor ? `text-[${iconColor}]` : '';
 
   const renderContent = () => {
     // If no label is provided, treat it as an icon-only button
     if (!label) {
-      return (
-        <span className={iconClass} style={{ color: iconColor }}>
-          {icon}
-        </span>
-      );
+      return <span style={{ color: iconColor }}>{icon}</span>;
     }
 
     // If shape is circle and no label, show only icon
     if (shape === BUTTON_SHAPE.CIRCLE && !label) {
-      return (
-        <span className={iconClass} style={{ color: iconColor }}>
-          {icon}
-        </span>
-      );
+      return <span style={{ color: iconColor }}>{icon}</span>;
     }
 
     // If icon position is center, show only icon
     if (iconPosition === BUTTON_ICON_POSITION.CENTER) {
-      return (
-        <span className={iconClass} style={{ color: iconColor }}>
-          {icon}
-        </span>
-      );
+      return <span style={{ color: iconColor }}>{icon}</span>;
     }
 
     const iconElement = icon && (
-      <span className={`${iconSpacing[iconPosition]} ${iconClass}`} style={{ color: iconColor }}>
+      <span className={`${iconSpacing[iconPosition]}`} style={{ color: iconColor }}>
         {icon}
       </span>
     );
@@ -114,7 +95,13 @@ const Button = ({
   };
 
   return (
-    <button type={type} className={buttonStyles} onClick={onClick} disabled={disabled}>
+    <button
+      type={type}
+      className={buttonStyles}
+      onClick={onClick}
+      disabled={disabled}
+      style={{ backgroundColor }}
+    >
       {renderContent()}
     </button>
   );
