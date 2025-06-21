@@ -1,21 +1,23 @@
-import { Country, getAllCountries, getAllParks, Park } from "@/utils/tourService/textSearchUtils"
-import { useEffect, useState } from "react"
+import { getAllCountries, getAllParks } from "@/utils/tourService/textSearchUtils";
+import { useEffect, useState } from "react";
 import SuggestionBox from "./SuggestionBox";
+import { CountrySearchType, ParksCountries, ParkSearchType } from "@/types";
 
 const TextSearch = () => {
-  const [searchDataList, setSearchDataList] = useState<(Park | Country)[]>([]);
+  const [searchParksList, setSearchParksList] = useState<ParkSearchType[]>([]);
+  const [searchCountriesList, setSearchCountriesList] = useState<CountrySearchType[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState<(Park | Country)[]>([]);
-
+  const [filteredSuggestions, setFilteredSuggestions] = useState<(ParkSearchType | CountrySearchType)[]>([]);
+  const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
 
   // Fetch all parks and countries on mount
   useEffect(() => {
-    // First try fetching from localStorage on mount 
     const cachedData = localStorage.getItem("parksAndCountries");
 
     if (cachedData) {
       const parsedData = JSON.parse(cachedData);
-      setSearchDataList(parsedData);
+      setSearchParksList(parsedData.parks);
+      setSearchCountriesList(parsedData.countries);
       return;
     }
 
@@ -23,19 +25,20 @@ const TextSearch = () => {
       try {
         const parks = await getAllParks();
         const countries = await getAllCountries();
-        const combined = [...parks, ...countries];
-        
-        // Set the combined data for use
-        setSearchDataList(combined);
 
-        // Store the combined data in localStorage
+        const combined: ParksCountries = {
+          parks,
+          countries,
+        };
+
+        setSearchParksList(parks);
+        setSearchCountriesList(countries);
         localStorage.setItem("parksAndCountries", JSON.stringify(combined));
-
       } catch (err) {
         console.error("Failed to fetch parks or countries", err);
       }
     };
-  
+
     fetchParksCountries();
   }, []);
 
@@ -44,54 +47,60 @@ const TextSearch = () => {
     const value = e.target.value;
     setInputValue(value);
 
-    // Filter suggestions
-    const suggestions = searchDataList.filter((item) => {
-      let textToSearch: string = "";
-      if ("keyword" in item && typeof item.keyword === "string") {
-        textToSearch = item.keyword;
-      } else if ("name" in item && typeof item.name === "string") {
-        textToSearch = item.name;
-      }
-      return textToSearch.toLowerCase().includes(value.toLowerCase());
-    });
+    const filteredParks = searchParksList
+      .filter((park) =>
+        (park.name + " " + park.keyword).toLowerCase().includes(value.toLowerCase())
+      )
+      .slice(0, 5);
 
-    setFilteredSuggestions(suggestions);
+    const filteredCountries = searchCountriesList
+      .filter((country) =>
+        country.name.toLowerCase().includes(value.toLowerCase())
+      )
+      .slice(0, 5);
+
+    setFilteredSuggestions([...filteredParks, ...filteredCountries]);
   };
 
   // Handle selection of a suggestion
   const handleSelect = (value: string) => {
-    // Set input value to the selected suggestion
     setInputValue(value);
-
-    // Hide suggestions on selection
-    setFilteredSuggestions([]); // hide suggestions
+    setFilteredSuggestions([]);
+    setIsSuggestionSelected(true);
   };
-
-  
 
   return (
     <form>
-      <label htmlFor="search">Search</label><br />
-      <input
-        id="search"
-        type="text"
-        value={inputValue}
-        onChange={handleChange}
-        autoComplete="off"
-        style={{ padding: "8px", width: "300px", backgroundColor: "white", color: "black" }}
-      />
-      
+      <label htmlFor="search" className="form-label">Search</label><br />
+
+      <div className="d-flex flex-column flex-md-row align-items-start gap-2">
+        <input
+          id="search"
+          type="text"
+          value={inputValue}
+          onChange={handleChange}
+          autoComplete="off"
+          className="form-control w-auto"
+        />
+
+        {/* Submit Button */}
+        {isSuggestionSelected && (
+          <input
+            type="submit"
+            value="Search"
+            className="btn btn-primary"
+          />
+        )}
+      </div>
+
       {/* Auto Suggestion Box */}
-      <SuggestionBox 
+      <SuggestionBox
         filteredSuggestions={filteredSuggestions}
         handleSelect={handleSelect}
         inputValue={inputValue}
       />
-
     </form>
   );
-}
+};
 
-
-
-export default TextSearch
+export default TextSearch;

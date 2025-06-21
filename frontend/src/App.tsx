@@ -46,7 +46,6 @@ const App = () => {
           path='/search'
           element={
             <>
-              {/* <Navbar /> */}
               <TextSearchPage />
             </>
           }

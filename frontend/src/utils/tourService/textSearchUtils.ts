@@ -1,17 +1,8 @@
+import { CountrySearchType, ParkSearchType } from "@/types";
 import axios from "axios"
 
-export interface Park {
-    id: number;
-    name: string;
-}
-
-export interface Country {
-    id: number;
-    name: string;
-}
-
 // Get All Parks Handler
-export const getAllParks = async (): Promise<Park[]> => {
+export const getAllParks = async (): Promise<ParkSearchType[]> => {
     try {
         const response = await axios.get("http://localhost:3000/api/parks");
         const parks = response.data
@@ -23,7 +14,7 @@ export const getAllParks = async (): Promise<Park[]> => {
 }
 
 // Get All Countries Handler
-export const getAllCountries = async (): Promise<Country[]> => {
+export const getAllCountries = async (): Promise<CountrySearchType[]> => {
     try {
         const response = await axios.get("http://localhost:3000/api/countries");
         const countries = response.data
@@ -33,3 +24,4 @@ export const getAllCountries = async (): Promise<Country[]> => {
         return [];
     }
 }
+
