@@ -13,7 +13,7 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off', // Allow any type
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
@@ -45,7 +45,6 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      'prettier/prettier': 'error',
       'no-console': 'off', // Allow console statements
       'react/prop-types': 'off',
       'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
@@ -54,6 +53,7 @@ export default [
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      'comma-dangle': 'off',
     },
   },
   {
@@ -66,7 +66,6 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off', // Allow any type
       eqeqeq: ['error', 'smart'],
       'no-debugger': 'error',
-      'prettier/prettier': 'error',
     },
   },
   eslintConfigPrettier,
