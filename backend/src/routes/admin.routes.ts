@@ -1,39 +1,31 @@
 import { Request, Response, Router } from 'express';
 
-import { authenticateToken } from '../middleware/auth';
-import { authorizeRoles } from '../middleware/authorizeRoles';
-import { responseHandler } from '../utils/responseHandler';
-import { getUserEmailFromRequest } from '../utils/authHelpers';
-import { logger } from '../utils/logger';
-import { AdminService } from '../services/admin.service';
+import { AdminService } from '../services/admin.service.js';
+
+import { authenticateToken } from '../middleware/auth.js';
+import { authorizeRoles } from '../middleware/authorizeRoles.js';
+
+import { getUserEmailFromRequest } from '../utils/authHelpers.js';
+import { logger } from '../utils/logger.js';
+import { responseHandler } from '../utils/responseHandler.js';
 
 const router = Router();
 
 // POST: Admin creates a user
 router.post(
-  '/admin/user',
+  '/admin/create-user',
   authenticateToken,
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
-    const { id, name, email } = req.body;
+    const { name, email, role } = req.body;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!id || !name || !email) {
-      responseHandler(
-        res,
-        {
-          success: false,
-          error: 'ID, name and email are required.',
-        },
-        'POST',
-      );
-      return;
-    }
-
-    const result = await AdminService.adminCreateUser(id, name, email);
+    const result = await AdminService.adminCreateUser(name, email, role);
 
     if (result.success) {
-      logger.info(`[AdminRoute] Admin (${adminEmail}) created user: ${email} (id: ${id})`);
+      logger.info(
+        `[AdminRoute] Admin (${adminEmail}) created user: ${email} (id: ${result.data.id})`,
+      );
     }
 
     responseHandler(res, result, 'POST');
@@ -53,6 +45,10 @@ router.get(
 
     if (result.success) {
       logger.info(`[AdminRoute] Admin (${adminEmail}) retrieved user with ID: ${userId}`);
+    } else {
+      logger.warn(
+        `[AdminRoute] Admin (${adminEmail}) failed to retrieve user with ID: ${userId} — ${result.error}`,
+      );
     }
 
     responseHandler(res, result, 'GET');
@@ -65,19 +61,21 @@ router.get(
   authenticateToken,
   authorizeRoles('ADMIN'),
   async (req: Request, res: Response) => {
-    const cursor = req.query.cursor as string | undefined;
     const parsedLimit = parseInt(req.query.limit as string);
-    const limit = isNaN(parsedLimit) ? 20 : parsedLimit;
+    const cursor = req.query.cursor as string | undefined;
 
-    const result = await AdminService.getUsers(cursor, limit);
+    // Default limit + clamp limit
+    const limit = Math.max(1, Math.min(isNaN(parsedLimit) ? 20 : parsedLimit, 100));
+
     const adminEmail = getUserEmailFromRequest(req);
+    const result = await AdminService.getUsers(limit, cursor);
 
-    if (!result.success) {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users`);
-    } else {
+    if (result.success) {
       logger.info(
         `[AdminRoute] Admin (${adminEmail}) retrieved users with cursor ${cursor ?? 'none'} (limit: ${limit})`,
       );
+    } else {
+      logger.warn(`[AdminRoute] Admin (${adminEmail}) failed to retrieve users — ${result.error}`);
     }
 
     responseHandler(res, result, 'GET');
@@ -93,17 +91,14 @@ router.delete(
     const userId = req.params.id;
     const adminEmail = getUserEmailFromRequest(req);
 
-    if (!userId) {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) attempted delete without User ID`);
-      return responseHandler(res, { success: false, error: 'User ID is required' }, 'DELETE');
-    }
-
     const result = await AdminService.deleteUserById(userId);
 
     if (result.success) {
       logger.info(`[AdminRoute] Admin (${adminEmail}) deleted user ID: ${userId}`);
     } else {
-      logger.error(`[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId}`);
+      logger.warn(
+        `[AdminRoute] Admin (${adminEmail}) failed to delete user ID: ${userId} — ${result.error}`,
+      );
     }
 
     return responseHandler(res, result, 'DELETE');

@@ -1,12 +1,38 @@
-import { createClient, Session, User as SupabaseUser } from '@supabase/supabase-js';
-import { supabase } from '../config/supabase';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { getSupabaseWithToken, supabase, supabaseAdmin } from '../config/supabase.js';
 
-import { formatSupabaseError } from '../utils/supabaseErrorHandler';
+import { ServiceResponse as SupabaseResult } from '../types/types.js';
 
-type SupabaseResult<T> = { success: true; data: T } | { success: false; error: string };
+import { formatSupabaseError } from '../utils/supabaseErrorHandler.js';
 
 export const SupabaseProvider = {
   client: supabase, // Expose Supabase client instance
+
+  async createUser(
+    email: string,
+    password: string,
+  ): Promise<SupabaseResult<{ id: string; email: string }>> {
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
+
+    if (error || !data?.user?.id) {
+      return formatSupabaseError(
+        'createUser',
+        error || { message: 'Missing user in Supabase response' },
+      );
+    }
+
+    return {
+      success: true,
+      data: {
+        id: data.user.id,
+        email: data.user.email!,
+      },
+    };
+  },
 
   async signUp(
     email: string,
@@ -69,13 +95,7 @@ export const SupabaseProvider = {
     token: string,
     newPassword: string,
   ): Promise<SupabaseResult<SupabaseUser>> {
-    const supabaseWithToken = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    });
+    const supabaseWithToken = getSupabaseWithToken(token);
 
     const { data, error } = await supabaseWithToken.auth.updateUser({ password: newPassword });
 
@@ -90,10 +110,19 @@ export const SupabaseProvider = {
   },
 
   async sendMagicLink(email: string): Promise<SupabaseResult<null>> {
+    const redirectUrl = process.env.SUPABASE_REDIRECT_URL;
+
+    if (!redirectUrl) {
+      return {
+        success: false,
+        error: '[sendMagicLink] Missing SUPABASE_REDIRECT_URL env variable',
+      };
+    }
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: process.env.SUPABASE_REDIRECT_URL,
+        emailRedirectTo: redirectUrl,
       },
     });
 
@@ -105,15 +134,10 @@ export const SupabaseProvider = {
   },
 
   async deleteUserProfile(userId: string): Promise<SupabaseResult<null>> {
-    const adminClient = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-
-    const { error } = await adminClient.auth.admin.deleteUser(userId);
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
     if (error) {
-      return formatSupabaseError('deleteUser', error);
+      return formatSupabaseError('deleteUserProfile', error);
     }
 
     return { success: true, data: null };

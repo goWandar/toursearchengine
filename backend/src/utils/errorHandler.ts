@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { logger } from '../utils/logger';
+import { logger } from '../utils/logger.js';
 
 export const handlePrismaRequestError = (
   error: unknown,
@@ -60,6 +60,11 @@ export const handlePrismaRequestError = (
     }
   }
 
-  logger.error(`[${serviceName}] Unexpected error (${action}):`, error);
+  if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+    logger.error(`[${serviceName}] Unknown Prisma request error during ${action}:`, error.message);
+    return { success: false, error: 'Unknown database error. Please try again.' };
+  }
+
+  logger.error(`[${serviceName}] Unexpected error during (${action}):`, error);
   return { success: false, error: 'An unexpected error occurred.' };
 };

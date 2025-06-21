@@ -1,8 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { logger } from '../utils/logger';
+import { logger } from '../utils/logger.js';
+
+import type { AuthenticatedUser } from '../types/types.js';
 
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
 
@@ -29,9 +31,9 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
   }
 
   try {
-    const decoded = (await verifyJwt(token, supabaseJwtSecret)) as JwtPayload;
-    req.user = decoded as JwtPayload;
-    logger.info('User authenticated:', { sub: decoded.sub, role: decoded.role });
+    const decoded = (await verifyJwt(token, supabaseJwtSecret)) as AuthenticatedUser;
+    req.user = decoded;
+    logger.info('User authenticated');
     next();
   } catch (err) {
     logger.error('Token verification failed:', err);

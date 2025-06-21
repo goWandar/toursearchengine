@@ -52,33 +52,33 @@ export interface TourPrice {
 
 export interface Tour {
   id: number;
-  uniqueId: number;
+  uniqueId: string;
   title: string;
   description: string | null;
-  location: string;
-  country: string;
+  location: string | null;
+  countryId: number;
+  country?: Country;
   durationInDays: number;
   itinerary: string | null;
-  safariType: string | null;
-  included: string | null;
-  excluded: string | null;
   accommodationType: string | null;
   siteURL: string | null;
-  rating: number | null;
-  reviews: string | null;
+  included: string | null;
+  excluded: string | null;
   dateCreated: Date;
   dateModified: Date | null;
   archived: boolean;
   images: Image[];
   prices: Price[];
+  parksId:  Park['id'][];
 }
 
 export interface Image {
   id: number;
-  image_urls: string;
+  imageUrls: string;
   dateCreated: Date;
   dateModified: Date | null;
   tourId: number;
+  tourUniqueId: string;
 }
 
 export interface Price {
@@ -86,11 +86,40 @@ export interface Price {
   numOfPeople: number;
   currency: string;
   pricePerPerson: number;
-  seasonName: string;
-  seasonPeriod: string;
+  seasonName: string | null;
+  seasonPeriod: string | null;
   dateCreated: Date;
   dateModified: Date | null;
   tourId: number;
+  tourUniqueId: string;
+}
+
+export interface Country {
+  id: number;
+  name: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tours: Tour[];
+}
+
+export interface Park {
+  id: number;
+  name: string;
+  type: string;
+  country: string;
+  countryCode: string;
+  keyword: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  toursId: Tour['id'][];
+}
+
+export interface Operator {
+  id: number;
+  name: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tours: Tour[]
 }
 
 export interface SearchResponse {
@@ -107,4 +136,20 @@ export interface ApiError {
   statusCode: number;
   error?: string;
   message?: string;
+}
+
+export interface ParkSearchType {
+  id: number;
+  name: string;
+  keyword: string;
+}
+
+export interface CountrySearchType {
+  id: number;
+  name: string;
+}
+
+export interface ParksCountries {
+  parks: ParkSearchType[];
+  countries:CountrySearchType[];
 }

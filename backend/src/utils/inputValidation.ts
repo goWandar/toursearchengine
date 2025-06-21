@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 // Function to check any number of required fields dynamically
 export const checkRequiredFields = (...args: { key: string; value: any }[]) => {
@@ -57,7 +57,7 @@ export const validateUserInput = (
   return { success: true };
 };
 
-export const validateId = (id: string): { success: boolean; error?: string } => {
+export const validateId = (id: string | undefined): { success: boolean; error?: string } => {
   if (!id || typeof id !== 'string') {
     return { success: false, error: 'User ID is required' };
   }
