@@ -58,7 +58,7 @@ const WhyWandarWithUs = () => {
              Wandar 
               <div className='h-[0.2em] bg-[#F4A261] mx-auto mt-[0.5em] rounded-none' />
             </span>
-            With Us
+            With US
           </h2>
         </div>
         {/* Cards Grid Responsive */}
