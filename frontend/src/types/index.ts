@@ -57,7 +57,7 @@ export interface Tour {
   description: string | null;
   location: string | null;
   countryId: number;
-  country?: Country;
+  country?: string;
   durationInDays: number;
   itinerary: string | null;
   accommodationType: string | null;

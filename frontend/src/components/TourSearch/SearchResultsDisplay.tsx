@@ -21,7 +21,7 @@ function getRandomImage(images: TourImage[]) {
     'https://moafrikatours.com/wp-content/uploads/2022/02/4202426-1316341_150_5_1450_893_650_400-1.jpg';
   if (images.length !== 0) {
     //TODO this no longer randomizes but take the first picture from the array
-    return images[0].image_urls;
+    return images[0].imageUrls;
   } else {
     return randomImage;
   }
@@ -66,7 +66,7 @@ const SearchResultsDisplay = ({
                     title={tour.title}
                     price={getPrice(tour.prices)}
                     country={tour.country}
-                    places={tour.location.split(',')}
+                    places={tour.location?.split(',')}
                     onBookNow={() => onBookNow(tour.id.toString())}
                   />
                 );
