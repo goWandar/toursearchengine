@@ -4,8 +4,8 @@ interface TourCardProps {
   image: string;
   title: string;
   price: string | number;
-  country: string;
-  places: string[];
+  country?: string;
+  places?: string[];
   onBookNow: () => void;
 }
 
@@ -23,7 +23,7 @@ const TourCard = ({ image, title, price, country, places, onBookNow }: TourCardP
           <div className='card-places'>
             <span>Visits:</span>
             <ul>
-              {places.map((place, index) => {
+              {places?.map((place, index) => {
                 return <li key={index}>{place}</li>;
               })}
             </ul>

@@ -33,6 +33,7 @@ export interface ButtonProps {
   shape?: BUTTON_SHAPE;
   icon?: ReactNode;
   iconPosition?: BUTTON_ICON_POSITION;
+  textColor?:string;//rgb(139 101 69 / var(--tw-text-opacity, 1))';
   onClick?: () => void;
   className?: string;
   disabled?: boolean;

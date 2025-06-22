@@ -35,7 +35,7 @@ const Card = ({
       className={`
         inline-flex
         w-full
-        min-w-[280px]
+        min-w-[240px]
         h-[24rem]
         p-[1.7rem_2rem]
         flex-col

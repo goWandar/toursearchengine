@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Hero from './components/layout/Hero';
 import HowWandarWorksLayout from './components/layout/How';
+import WhyWandarLayout from './components/layout/Why';
 
 const App = () => {
   return (
@@ -13,7 +14,7 @@ const App = () => {
               <Hero />
               <div className='max-w-[2500px] mx-auto'>
                 <HowWandarWorksLayout />
-              </div>
+              </div>              
             </>
           }
         />
