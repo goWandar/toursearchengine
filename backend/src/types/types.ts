@@ -1,8 +1,90 @@
 export interface User {
-    name: string;
-    email: string;
+  id: string;
+  name: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
 }
 
-export type ServiceResponse<T> =
-    | { success: true; data: T }
-    | { success: false; error: string };
+export type PublicUser = Pick<User, 'id' | 'name' | 'email'>;
+
+export interface AuthenticatedUser {
+  sub: string;
+  email?: string;
+  role: 'USER' | 'ADMIN';
+}
+
+export interface Tour {
+  id: number;
+  uniqueId: string;
+  title: string;
+  description: string | null;
+  location: string | null;
+  countryId: number;
+  country?: Country;
+  durationInDays: number;
+  itinerary: string | null;
+  accommodationType: string | null;
+  siteURL: string | null;
+  included: string | null;
+  excluded: string | null;
+  dateCreated: Date;
+  dateModified: Date | null;
+  archived: boolean;
+  images: Image[];
+  prices: Price[];
+  parksId:  Park['id'][];
+}
+
+export interface Image {
+  id: number;
+  imageUrls: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tourId: number;
+  tourUniqueId: string;
+}
+
+export interface Price {
+  id: number;
+  numOfPeople: number;
+  currency: string;
+  pricePerPerson: number;
+  seasonName: string | null;
+  seasonPeriod: string | null;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tourId: number;
+  tourUniqueId: string;
+}
+
+export interface Country {
+  id: number;
+  name: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tours: Tour[];
+}
+
+export interface Park {
+  id: number;
+  name: string;
+  type: string;
+  country: string;
+  countryCode: string;
+  keyword: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  toursId: Tour['id'][];
+}
+
+export interface Operator {
+  id: number;
+  name: string;
+  dateCreated: Date;
+  dateModified: Date | null;
+  tours: Tour[]
+}
+
+export type ServiceError = { success: false; error: string };
+
+export type ServiceResponse<T> = { success: true; data: T } | ServiceError;

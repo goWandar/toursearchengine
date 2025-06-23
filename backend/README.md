@@ -1,23 +1,23 @@
 # kulturExplora Backend
 
-This is the backend for the kulturExplora project, built with Node.js, Express.js, and TypeScript. It uses Prisma ORM to manage the database.
+This is the backend for the kulturExplora Tour Search Engine project, built with Node.js, Express.js, and TypeScript. It uses Prisma ORM to manage the database.
 
 ## Tech Stack
 
--   Node.js & Express.js – Backend framework
--   TypeScript – Strongly typed JavaScript
--   Prisma ORM – Database management
--   PostgreSQL
+- Node.js & Express.js – Backend framework
+- TypeScript – Strongly typed JavaScript
+- Prisma ORM – Database management
+- PostgreSQL
 
 ## Setup & Installation
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/your-repo/kulturExplora-backend.git
-    cd kulturExplora-backend
+   ```sh
+    https://github.com/KulturExplora/toursearchengine.git
+   cd toursearchengine/backend
 
-    ```
+   ```
 
 2. Install dependencies:
 
@@ -25,11 +25,37 @@ This is the backend for the kulturExplora project, built with Node.js, Express.j
 npm install
 ```
 
-3. Set up environment variables: Create a .env file in the root directory and add:
+3. Set up environment variables: create a .env file in the `backend/root` directory and add the following environment variables:
 
 ```sh
-DATABASE_URL=your_database_url
+# Environment Variables
+
+API_KEY=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_JWT_SECRET=
+SUPABASE_USER=
+
+
+# Connect to Supabase via connection pooling with Supavisor.
+
+DATABASE_URL=
+
+# Direct connection to the database. Used for migrations.
+
+DIRECT_URL=
+
+# App variables
+
+PORT=
 ```
+
+**Important Notes**:
+
+- The values required for testing and development environments are available on the KulturExplora Confluence page.
+- Ensure you have the correct access permissions to retrieve these credentials.
+- Never commit your .env file to version control to keep sensitive data secure.
 
 4. Migrate the database:
 
@@ -45,15 +71,15 @@ npm run dev
 
 ## Available Scripts
 
--   npm run dev – Start the server in development mode with ts-node
--   npm run build – Compile TypeScript to JavaScript
--   npm start – Run the production server using the compiled JavaScript
+- npm run dev – Start the server in development mode with ts-node
+- npm run build – Compile TypeScript to JavaScript
+- npm start – Run the production server using the compiled JavaScript
 
 ## API Documentation
 
 (TBD – Add endpoints as they are implemented)
 
-## Project Structure
+## Project Structure (Work in Progress)
 
 ```sh
 📦 my-supabase-app
@@ -89,5 +115,4 @@ npm run dev
 ┣ 📜 package.json         # Dependencies & scripts
 ┣ 📜 tsconfig.json        # TypeScript config
 ┗ 📜 README.md            # Documentation
-
 ```

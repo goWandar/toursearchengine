@@ -1,0 +1,14 @@
+import type { SearchResponse, Tour } from '@/types/index';
+import axios from 'axios';
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
+
+export async function getTours(): Promise<Tour[]> {
+  const response = await axios.get<Tour[]>(`${baseUrl}/api/tours`);
+  return response.data;
+}
+
+export async function searchToursAPI(url: string): Promise<SearchResponse> {
+  const response = await axios.get<SearchResponse>(url);
+  return response.data;
+}
