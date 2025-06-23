@@ -142,11 +142,13 @@ export interface ParkSearchType {
   id: number;
   name: string;
   keyword: string;
+  type?: string;
 }
 
 export interface CountrySearchType {
   id: number;
   name: string;
+  type?: string;
 }
 
 export interface ParksCountries {

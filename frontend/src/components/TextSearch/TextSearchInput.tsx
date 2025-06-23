@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import SuggestionBox from "./SuggestionBox";
 import { CountrySearchType, ParksCountries, ParkSearchType } from "@/types";
 import { getAllCountries, getAllParks } from "@/api/api";
 import { handleInputChange } from "@/utils/tourService/textSearchUtils";
+import TextSearchSuggestion from "./TextSearchSuggestion";
+import { Navigate, useNavigate } from "react-router";
 
-const TextSearch = () => {
+const TextSearchInput = () => {
   const [searchParksList, setSearchParksList] = useState<ParkSearchType[]>([]);
   const [searchCountriesList, setSearchCountriesList] = useState<CountrySearchType[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState<(ParkSearchType | CountrySearchType)[]>([]);
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch all parks and countries on mount
   useEffect(() => {
@@ -49,11 +51,15 @@ const TextSearch = () => {
   };
 
   // Handle selection of a suggestion
-  const handleSelect = (value: string) => {
-    setInputValue(value);
+  const handleSelect = (suggestion: ParkSearchType | CountrySearchType) => {
+    setInputValue(suggestion.name);
     setFilteredSuggestions([]);
     setIsSuggestionSelected(true);
+
+    // Redirect using id and type in URL params
+    navigate(`/results?id=${suggestion.id}&type=${suggestion.type}`);
   };
+
 
   return (
     <form>
@@ -80,7 +86,7 @@ const TextSearch = () => {
       </div>
 
       {/* Auto Suggestion Box */}
-      <SuggestionBox
+      <TextSearchSuggestion
         filteredSuggestions={filteredSuggestions}
         handleSelect={handleSelect}
         inputValue={inputValue}
@@ -91,4 +97,4 @@ const TextSearch = () => {
   );
 };
 
-export default TextSearch;
+export default TextSearchInput;

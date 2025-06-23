@@ -34,3 +34,24 @@ export const getAllCountries = async (): Promise<CountrySearchType[]> => {
       return [];
   }
 }
+
+// Get Tours by Country ID
+export const getToursByCountryId = async (
+  countryId: number,
+  page = 1,
+  limit = 10
+): Promise<Tour[]> => {
+  try {
+    const response = await axios.get<{ data: Tour[] }>(
+      `${baseUrl}/api/tours/country/${countryId}`,
+      {
+        params: { page, limit },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    return [];
+  }
+};
+

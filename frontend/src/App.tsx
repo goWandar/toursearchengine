@@ -12,6 +12,7 @@ import Navbar from './components/LandingPage/Navbar';
 import Reason from './components/LandingPage/Reason';
 import TourSearch from './components/TourSearch/TourSearch';
 import TextSearchPage from './components/TextSearch/TextSearchPage';
+import TextSearchResults from './components/TextSearch/TextSearchResults';
 
 const App = () => {
   return (
@@ -41,11 +42,21 @@ const App = () => {
             </>
           }
         />
+        {/* Temp Page for testing free text search */}
         <Route
           path='/search'
           element={
             <>
               <TextSearchPage />
+            </>
+          }
+        />
+        {/* Tour Results Page  */}
+        <Route
+          path='/results'
+          element={
+            <>
+              <TextSearchResults />
             </>
           }
         />

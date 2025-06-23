@@ -1,14 +1,14 @@
 import { CountrySearchType, ParkSearchType } from "@/types";
 import { getFilteredCountries, getFilteredParks } from "@/utils/tourService/textSearchUtils";
 
-const SuggestionBox = ({
+const TextSearchSuggestion = ({
   filteredSuggestions,
   handleSelect,
   inputValue,
   isSuggestionSelected,
 }: {
   filteredSuggestions: (ParkSearchType | CountrySearchType)[];
-  handleSelect: (value: string) => void;
+  handleSelect: (suggestion: ParkSearchType | CountrySearchType) => void;
   inputValue: string;
   isSuggestionSelected?: boolean;
 }) => {
@@ -37,7 +37,7 @@ const SuggestionBox = ({
               {parks.map((item, idx) => (
                 <li
                   key={`park-${idx}`}
-                  onClick={() => handleSelect(item.name)}
+                  onClick={() => handleSelect(item)}
                   className="px-2 py-1 border-bottom text-capitalize"
                   style={{ cursor: "pointer" }}
                 >
@@ -53,7 +53,7 @@ const SuggestionBox = ({
               {countries.map((item, idx) => (
                 <li
                   key={`country-${idx}`}
-                  onClick={() => handleSelect(item.name)}
+                  onClick={() => handleSelect(item)}
                   className="px-2 py-1 border-bottom text-capitalize"
                   style={{ cursor: "pointer" }}
                 >
@@ -68,4 +68,4 @@ const SuggestionBox = ({
   );
 }
 
-export default SuggestionBox;
+export default TextSearchSuggestion;

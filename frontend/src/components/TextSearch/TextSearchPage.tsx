@@ -1,4 +1,4 @@
-import TextSearch from './TextSearch'
+import TextSearch from './TextSearchInput'
 
 const TextSearchPage = () => {
   return (
