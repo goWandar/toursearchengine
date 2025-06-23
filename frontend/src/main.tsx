@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './assets/all.scss';
+import './lib/axios';
 
 const queryClient = new QueryClient();
 

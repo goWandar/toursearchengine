@@ -1,29 +1,38 @@
 import { CountrySearchType, ParkSearchType } from "@/types";
+import { getFilteredCountries, getFilteredParks } from "@/utils/tourService/textSearchUtils";
 
 const SuggestionBox = ({
   filteredSuggestions,
   handleSelect,
   inputValue,
+  isSuggestionSelected,
 }: {
   filteredSuggestions: (ParkSearchType | CountrySearchType)[];
   handleSelect: (value: string) => void;
   inputValue: string;
+  isSuggestionSelected?: boolean;
 }) => {
   // Function to convert string to title case
   const toTitleCase = (str: string) =>
     str.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
 
-  // Separate parks and countries
-  const parks = filteredSuggestions.filter((item): item is ParkSearchType => 'keyword' in item).slice(0, 5);
-  const countries = filteredSuggestions.filter((item): item is CountrySearchType => !('keyword' in item)).slice(0, 5);
+  const parks: ParkSearchType[] = getFilteredParks(filteredSuggestions);
+  const countries: CountrySearchType[] = getFilteredCountries(filteredSuggestions);
+
+  const noResults = parks.length === 0 && countries.length === 0;
 
   return (
     <div>
-      {inputValue && ((parks.length > 0 || countries.length > 0) ? (
+      {inputValue && !isSuggestionSelected && noResults ? (
+        <div className="card mt-1 shadow-sm" style={{ maxWidth: "300px" }}>
+          <div className="card-body py-2 px-3">
+            <p className="mb-0 text-muted">No tours available around this location yet.</p>
+          </div>
+        </div>
+      ) : inputValue && (parks.length > 0 || countries.length > 0) ? (
         <ul className="list-unstyled mt-1 border rounded shadow-sm bg-white p-2 w-100" style={{ maxWidth: "300px" }}>
           {parks.length > 0 && (
             <>
-              {/* Parks header */}
               <li className="fw-bold px-2 py-1 border-bottom">Parks</li>
               {parks.map((item, idx) => (
                 <li
@@ -37,10 +46,9 @@ const SuggestionBox = ({
               ))}
             </>
           )}
-
+  
           {countries.length > 0 && (
             <>
-              {/* Countries header */}
               <li className="fw-bold px-2 py-1 border-bottom mt-2">Countries</li>
               {countries.map((item, idx) => (
                 <li
@@ -55,15 +63,9 @@ const SuggestionBox = ({
             </>
           )}
         </ul>
-      ) : (
-        <div className="card mt-1 shadow-sm" style={{ maxWidth: "300px" }}>
-          <div className="card-body py-2 px-3">
-            <p className="mb-0 text-muted">No tours available around this location yet.</p>
-          </div>
-        </div>
-      ))}
+      ) : null}
     </div>
   );
-};
+}
 
 export default SuggestionBox;

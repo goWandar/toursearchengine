@@ -1,7 +1,8 @@
-import { getAllCountries, getAllParks } from "@/utils/tourService/textSearchUtils";
 import { useEffect, useState } from "react";
 import SuggestionBox from "./SuggestionBox";
 import { CountrySearchType, ParksCountries, ParkSearchType } from "@/types";
+import { getAllCountries, getAllParks } from "@/api/api";
+import { handleInputChange } from "@/utils/tourService/textSearchUtils";
 
 const TextSearch = () => {
   const [searchParksList, setSearchParksList] = useState<ParkSearchType[]>([]);
@@ -44,22 +45,7 @@ const TextSearch = () => {
 
   // Handle Search Change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-
-    const filteredParks = searchParksList
-      .filter((park) =>
-        (park.name + " " + park.keyword).toLowerCase().includes(value.toLowerCase())
-      )
-      .slice(0, 5);
-
-    const filteredCountries = searchCountriesList
-      .filter((country) =>
-        country.name.toLowerCase().includes(value.toLowerCase())
-      )
-      .slice(0, 5);
-
-    setFilteredSuggestions([...filteredParks, ...filteredCountries]);
+    handleInputChange(e, setInputValue, searchParksList, searchCountriesList, setFilteredSuggestions, setIsSuggestionSelected);
   };
 
   // Handle selection of a suggestion
@@ -98,7 +84,9 @@ const TextSearch = () => {
         filteredSuggestions={filteredSuggestions}
         handleSelect={handleSelect}
         inputValue={inputValue}
+        isSuggestionSelected={isSuggestionSelected}
       />
+
     </form>
   );
 };
