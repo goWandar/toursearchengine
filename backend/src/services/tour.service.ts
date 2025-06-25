@@ -24,32 +24,32 @@ export const TourService = {
     try {
       const countryId = parseInt(req.params.countryId);
       const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string) || 8;
       const skip = (page - 1) * limit;
   
-      const [tours, total] = await Promise.all([
-        prisma.tour.findMany({
-          where: { countryId, archived: false },
-          skip,
-          take: limit,
-          orderBy: { dateCreated: 'asc' },
-          include: {
-            operator: { select: { id: true, name: true } },
-            images: true,
-            prices: true,
-            tourParks: {
-              select: {
-                park: {
-                  select: { id: true, name: true },
-                },
+      const tours = await prisma.tour.findMany({
+        where: { countryId, archived: false },
+        skip,
+        take: limit,
+        orderBy: { dateCreated: 'asc' },
+        include: {
+          operator: { select: { id: true, name: true } },
+          images: true,
+          prices: true,
+          country: { select: { id: true, name: true } },
+          tourParks: {
+            select: {
+              park: {
+                select: { id: true, name: true },
               },
             },
           },
-        }),
-        prisma.tour.count({
-          where: { countryId, archived: false },
-        }),
-      ]);
+        },
+      });
+
+      const total = await prisma.tour.count({
+        where: { countryId, archived: false },
+      });
   
       if (!tours.length) {
         return notFound(res, 'No tours found for this country');
@@ -91,38 +91,39 @@ export const TourService = {
       const limit = parseInt(req.query.limit as string) || 8;
       const skip = (page - 1) * limit;
   
-      const [tours, total] = await Promise.all([
-        prisma.tour.findMany({
-          where: {
-            tourParks: {
-              some: { parkId },
-            },
-            archived: false,
+      const tours = await prisma.tour.findMany({
+        where: {
+          tourParks: {
+            some: { parkId },
           },
-          skip,
-          take: limit,
-          orderBy: { dateCreated: 'asc' },
-          include: {
-            operator: { select: { id: true, name: true } },
-            country: { select: { id: true, name: true } },
-            tourParks: {
-              include: {
-                park: {
-                  select: { id: true, name: true },
-                },
+          archived: false,
+        },
+        skip,
+        take: limit,
+        orderBy: { dateCreated: 'asc' },
+        include: {
+          operator: { select: { id: true, name: true } },
+          images: true,
+          prices: true,
+          country: { select: { id: true, name: true } },
+          tourParks: {
+            include: {
+              park: {
+                select: { id: true, name: true },
               },
             },
           },
-        }),
-        prisma.tour.count({
-          where: {
-            tourParks: {
-              some: { parkId },
-            },
-            archived: false,
+        },
+      });
+
+      const total = await prisma.tour.count({
+        where: {
+          tourParks: {
+            some: { parkId },
           },
-        }),
-      ]);
+          archived: false,
+        },
+      });
   
       if (!tours.length) {
         return notFound(res, 'No tours found for this park');

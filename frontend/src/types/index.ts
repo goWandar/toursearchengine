@@ -27,19 +27,6 @@ export type Filters = {
   safariType: string;
 };
 
-// export interface Tour {
-//   id: string;
-//   uniqueId: string;
-//   title: string;
-//   description: string;
-//   location: string;
-//   country: string;
-//   images: TourImage[];
-//   prices: TourPrice[];
-//   safariType: string;
-//   duration: number;
-//   accommodation: string;
-// }
 
 export interface TourImage {
   image_urls: string;
@@ -57,7 +44,7 @@ export interface Tour {
   description: string | null;
   location: string | null;
   countryId: number;
-  country?: Country;
+  country: Pick<Country, 'id' | 'name'>;
   durationInDays: number;
   itinerary: string | null;
   accommodationType: string | null;
@@ -69,7 +56,11 @@ export interface Tour {
   archived: boolean;
   images: Image[];
   prices: Price[];
-  parksId:  Park['id'][];
+  tourParks: {
+    park: Pick<Park, 'id' | 'name'>
+  }[];
+  operatorId: Operator['id'];
+  operator: Pick<Operator, 'id' | 'name'>;
 }
 
 export interface Image {
@@ -99,7 +90,7 @@ export interface Country {
   name: string;
   dateCreated: Date;
   dateModified: Date | null;
-  tours: Tour[];
+  tours: Pick<Tour, 'id' | 'title'>[];
 }
 
 export interface Park {
@@ -111,7 +102,9 @@ export interface Park {
   keyword: string;
   dateCreated: Date;
   dateModified: Date | null;
-  toursId: Tour['id'][];
+  tourParks: {
+    tour: Pick<Tour, 'id' | 'title'>;
+  }[];
 }
 
 export interface Operator {
@@ -122,9 +115,15 @@ export interface Operator {
   tours: Tour[]
 }
 
-export interface SearchResponse {
+export interface TourSearchResponse {
   tours: Tour[];
-  cursor: number | null;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
 }
 
 export interface Message {
@@ -138,17 +137,19 @@ export interface ApiError {
   message?: string;
 }
 
+// Free Text Related Types
+
 export interface ParkSearchType {
   id: number;
   name: string;
   keyword: string;
-  type?: string;
+  type: string;
 }
 
 export interface CountrySearchType {
   id: number;
   name: string;
-  type?: string;
+  type: string;
 }
 
 export interface ParksCountries {
