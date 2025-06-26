@@ -1,5 +1,5 @@
 import { FaFacebookF, FaXTwitter, FaLinkedinIn, FaYoutube, FaInstagram } from 'react-icons/fa6';
-import Logo from '../../../assets/icons/union.svg'; // Update with your white logo path
+import Logo from '../../../assets/icons/Union.svg'; // Update with your white logo path
 
 const Footer = () => {
   return (
