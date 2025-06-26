@@ -24,7 +24,7 @@ const Card = ({
 
   const variantStyles = {
     [CARD_VARIANT.PRIMARY]: 'bg-white border-primary-brown',
-    [CARD_VARIANT.SECONDARY]: 'bg-primary-brown text-white',
+    [CARD_VARIANT.SECONDARY]: 'bg-[white] bg-opacity-10 text-white',
   };
 
   const defaultTextColor = variant === CARD_VARIANT.PRIMARY ? 'text-neutral-900' : 'text-white';

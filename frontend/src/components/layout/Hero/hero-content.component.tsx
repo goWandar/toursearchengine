@@ -1,10 +1,10 @@
 import Button from '../../common/button/button.component';
 import { BUTTON_ICON_POSITION, BUTTON_VARIANT } from '../../common/button/button.types';
 import { BsArrowRight } from 'react-icons/bs';
-
 const HeroContent = () => {
   return (
     <div className='flex flex-col items-center gap-20'>
+      
       {/* WE ARE WANDAR section */}
       <div className='flex items-center gap-2'>
         <div className='w-[1.62894rem] h-[0.0665rem] bg-[#F4A261]' />

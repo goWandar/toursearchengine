@@ -1,87 +1,102 @@
-import SubtractRight from '../../../assets/icons/Subtract-right.svg';
-import SubtractLeft from '../../../assets/icons/Subtract-left.svg';
-import DiscoverLight from '../../../assets/icons/discover-light.svg';
-import BrowseLight from '../../../assets/icons/browse-light.svg';
-import TimeLight from '../../../assets/icons/time-light.svg';
-import BookSearch from '../../../assets/icons/book-search.svg';
-import Card from '../../common/card/card.component';
-import { CARD_ALIGNMENT } from '../../common/card/card.types';
+import { FaArrowRight } from 'react-icons/fa';
+import Icon from '../../../assets/icons/discover-light.svg'; // Use available icon for now
 
-const cards = [
+const features = [
   {
-    id: 'discover-persona',
-    icon: <img src={DiscoverLight} alt='Discover Icon' className='w-12 h-12 mx-auto' />,
-    title: 'Discover Your Safari Persona',
+    id: 1,
+    icon: Icon,
+    title: 'Personalized Matching',
     description:
-      "Take our quick quiz to determine your safari travel style, preferences, and budget. We'll match you with experiences that align with your unique travel persona.",
+      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
   },
   {
-    id: 'browse-recommendations',
-    icon: <img src={BrowseLight} alt='Browse Icon' className='w-12 h-12 mx-auto' />,
-    title: 'Browse Personalized Recommendations',
+    id: 2,
+    icon: Icon,
+    title: 'Personalized Matching',
     description:
-      'Explore curated safari experiences tailored to your preferences and budget. Our platform showcases the best options that match your travel style.',
+      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
   },
   {
-    id: 'access-tools',
-    icon: <img src={TimeLight} alt='Time Icon' className='w-12 h-12 mx-auto' />,
-    title: 'Access Our Planning Tools',
+    id: 3,
+    icon: Icon,
+    title: 'Personalized Matching',
     description:
-      'Use our comprehensive planning tools to create your perfect safari itinerary. From accommodation to activities, we make planning seamless.',
+      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
   },
   {
-    id: 'book-confidence',
-    icon: <img src={BookSearch} alt='Book Search Icon' className='w-12 h-12 mx-auto' />,
-    title: 'Book With Confidence',
+    id: 4,
+    icon: Icon,
+    title: 'Personalized Matching',
     description:
-      'Connect with verified operators and secure your dream safari adventure. Our trusted partners ensure an unforgettable experience.',
+      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+  },
+  {
+    id: 5,
+    icon: Icon,
+    title: 'Personalized Matching',
+    description:
+      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+  },
+  {
+    id: 6,
+    icon: Icon,
+    title: 'Personalized Matching',
+    description:
+      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
   },
 ];
 
 const WhyWandarWithUs = () => {
   return (
-    <div className='grid grid-cols-[auto_1fr_auto] min-h-[60rem] w-full bg-transparent overflow-hidden'>
-      {/* Left icon */}
-      <div className='self-end pb-[2.3rem]'>
-        <img src={SubtractLeft} alt='Subtract Left' />
+    <section id='features' className="bg-[#396B6B] text-white py-20 px-4 sm:px-8 md:px-12">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <div className="inline-block bg-[#F4A261] text-[#2E2E2E] font-semibold px-4 py-1 text-sm rounded-full uppercase tracking-wide">
+          Experience the Difference
+        </div>
+        <h2 className="mt-4 text-4xl font-bold">
+          Why{' '}
+          <span className="relative inline-block">
+            Wandar
+            <div className="w-full h-1 bg-[#F4A261] mt-2 rounded-sm" />
+          </span>{' '}
+          With Us
+        </h2>
+        <p className="mt-4 text-white/80 text-sm md:text-base max-w-2xl mx-auto">
+          We’re reimagining how travelers discover, plan, and book their perfect safari adventure.
+        </p>
       </div>
 
-      {/* Main content */}
-      <div className='flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 max-w-[1500px] mx-auto'>
-        <div className='flex flex-col items-center mb-6 sm:mb-8 md:mb-[4rem]'>
-          <h2
-            className='text-[#2E2E2E] font-semibold text-[2rem] md:text-[3.375rem] leading-[2rem] md:leading-[2.1875rem] text-center'
-            style={{ fontStyle: 'normal' }}
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {features.map((feature) => (
+          <div
+            key={feature.id}
+            className="bg-white/20 text-white border border-white/30 backdrop-blur-sm rounded-xl p-6 flex flex-col justify-between h-full transition duration-300 hover:shadow-md"
           >
-            Why {' '}
-            <span className='relative inline-block'>
-             Wandar 
-              <div className='h-[0.2em] bg-[#F4A261] mx-auto mt-[0.5em] rounded-none' />
-            </span>
-            With Us
-          </h2>
-        </div>
-        {/* Cards Grid Responsive */}
-        <div className='grid grid-cols-1 md:grid-cols-2 xl-1450:grid-cols-4 gap-6 justify-items-center w-full max-w-[95%] mx-auto'>
-          {cards.map((card) => (
-            <Card
-              key={card.id}
-              id={card.id}
-              icon={card.icon}
-              title={card.title}
-              description={card.description}
-              alignment={CARD_ALIGNMENT.CENTER}
-              textColor='text-[#8B6545]'
+            <img
+              src={feature.icon}
+              alt="Icon"
+              className="w-10 h-10 rounded-md bg-[#F4A261] p-2 mb-4"
             />
-          ))}
-        </div>
+            <div>
+              <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+              <p className="text-sm text-white/80 mb-4">{feature.description}</p>
+            </div>
+            <button className="flex items-center gap-2 text-[#F4A261] font-medium mt-auto hover:underline">
+              Learn More <FaArrowRight size={12} />
+            </button>
+          </div>
+        ))}
       </div>
 
-      {/* Right icon */}
-      <div className='self-start pt-[2.3rem]'>
-        <img src={SubtractRight} alt='Subtract Right' />
+      {/* CTA Button */}
+      <div className="text-center mt-12">
+        <button className="bg-[#F4A261] text-[#2E2E2E] font-semibold py-3 px-6 rounded-md hover:opacity-90 flex items-center gap-2 mx-auto">
+          Join Our Beta <FaArrowRight size={14} />
+        </button>
       </div>
-    </div>
+    </section>
   );
 };
 
