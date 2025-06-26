@@ -1,7 +1,8 @@
 import Button from '../../../common/button/button.component';
 import { BUTTON_VARIANT } from '../../../common/button/button.types';
 import UnionIcon from '../../../../assets/icons/Union.svg';
-import { Link as ScrollLink } from  'react-scroll'
+import  {Link} from 'react-scroll'
+
 
 const navItems = [
   { label: 'How it works', to: 'how' },
@@ -22,7 +23,7 @@ const Navbar = () => {
       {/* Navigation Links */}
       <div className="hidden md:flex items-center space-x-8">
         {navItems.map(({ label, to }) => (
-          <ScrollLink
+          <Link
             key={to}
             to={to}
             smooth={true}
@@ -38,7 +39,7 @@ const Navbar = () => {
               hasBorder={false}
               className="text-white hover:text-primary-500 hover:bg-transparent"
             />
-          </ScrollLink>
+          </Link>
         ))}
       </div>
 
