@@ -97,7 +97,7 @@ const Navbar = () => {
               >
                 {/* 大Logo */}
                 <img
-                  src='/Logos/png/ColorLogoNoBackground.png'
+                  src='../../../../assets/icons/Union.svg'
                   className='logo desktop-logo'
                   alt='KulturExplora Logo'
                 />
