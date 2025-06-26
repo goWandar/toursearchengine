@@ -30,7 +30,7 @@ const Footer = () => {
       <div className='container p-4 d-flex  justify-content-between align-items-center flex-column flex-md-row'>
         <div className='d-flex align-items-center flex-column flex-md-row'>
           <h1>
-            <img src='/Logos/png/ColorLogoNoBackground.png' alt='logo' style={{ width: '250px' }} />
+            <img src='../../../../assets/icons/Union.svg' alt='logo' style={{ width: '250px' }} />
             <a href='#' />
           </h1>
           <div className='d-flex flex-column ms-3'>
