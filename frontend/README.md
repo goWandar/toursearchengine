@@ -1,4 +1,4 @@
-# KulturExplora LandingPage
+# Wandar LandingPage
 
 ## React + Vite
 

@@ -1,6 +1,6 @@
-# kulturExplora Backend
+# Wandar Backend
 
-This is the backend for the kulturExplora Tour Search Engine project, built with Node.js, Express.js, and TypeScript. It uses Prisma ORM to manage the database.
+This is the backend for the Wandar Tour Search Engine project, built with Node.js, Express.js, and TypeScript. It uses Prisma ORM to manage the database.
 
 ## Tech Stack
 
@@ -53,7 +53,7 @@ PORT=
 
 **Important Notes**:
 
-- The values required for testing and development environments are available on the KulturExplora Confluence page.
+- The values required for testing and development environments are available on the Wandar Confluence page.
 - Ensure you have the correct access permissions to retrieve these credentials.
 - Never commit your .env file to version control to keep sensitive data secure.
 
