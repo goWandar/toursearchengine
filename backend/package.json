@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "description": "kulturExplora backend",
+  "description": "Wandar backend",
   "main": "src/server.ts",
   "directories": {
     "doc": "docs"
