@@ -1,8 +1,7 @@
 import Button from '../../../common/button/button.component';
 import { BUTTON_VARIANT } from '../../../common/button/button.types';
 import UnionIcon from '../../../../assets/icons/Union.svg';
-import  {Link} from 'react-scroll'
-
+import { Link } from 'react-scroll';
 
 const navItems = [
   { label: 'How it works', to: 'how' },
@@ -10,6 +9,11 @@ const navItems = [
   { label: 'FAQs', to: 'faqs' },
   { label: 'Contact us', to: 'contact' },
 ];
+
+const handleFocusEmail = () => {
+  const emailInput = document.getElementById('email-input') as HTMLInputElement | null;
+  emailInput?.focus();
+};
 
 const Navbar = () => {
   return (
@@ -28,7 +32,7 @@ const Navbar = () => {
             to={to}
             smooth={true}
             duration={600}
-            offset={-80} // adjust based on navbar height
+            offset={-80} // adjust this for sticky navbar height
             spy={true}
             className="cursor-pointer"
           >
@@ -43,15 +47,26 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Join Beta Button */}
-      <div className="flex-shrink-0">
-        <Button
-          id="join-beta-button"
-          label="Join Beta"
-          variant={BUTTON_VARIANT.PRIMARY}
-          className="text-[#2E2E2E]"
-        />
-      </div>
+      {/* Join Beta Button (scrolls to contact) */}
+    <Link
+  to="contact"
+  smooth={true}
+  duration={600}
+  offset={-80}
+  spy={true}
+  onSetActive={handleFocusEmail}
+  className="cursor-pointer"
+>
+  <div>
+    <Button
+      id="join-beta-button"
+      label="Join Beta"
+      variant={BUTTON_VARIANT.PRIMARY}
+      className="text-[#2E2E2E]"
+    />
+  </div>
+</Link>
+
     </nav>
   );
 };

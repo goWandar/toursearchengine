@@ -8,10 +8,11 @@ const JoinWaitlistBox = () => {
         <div className="flex-1">
           <h2 className="text-3xl font-bold text-[#305653] mb-3">Join Our Community</h2>
           <p className="text-[#305653] mb-5 text-sm md:text-base max-w-md">
-            Be among the first to experience Kulturexplora and help shape the future of safari planning.
+            Be among the first to experience Wandar and help shape the future of safari planning.
           </p>
           <form className="flex flex-col sm:flex-row gap-4">
             <input
+             id="email-input"
               type="email"
               placeholder="Your email address"
               className="px-4 py-3 rounded-md w-full sm:w-[280px] bg-white text-[#2E2E2E] outline-none"

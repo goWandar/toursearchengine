@@ -4,11 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const faqData = [
   {
-    question: 'What makes Kulturexplora different from other safari booking platforms?',
-    answer: 'Kulturexplora offers intelligent matching based on your travel persona, ensuring a personalized safari experience with verified partners.',
+    question: 'What makes Wandar different from other safari booking platforms?',
+    answer: 'Wandar offers intelligent matching based on your travel persona, ensuring a personalized safari experience with verified partners.',
   },
   {
-    question: 'Which countries does Kulturexplora currently cover?',
+    question: 'Which countries does Wandar currently cover?',
     answer: 'We currently feature curated safari experiences in Kenya, Tanzania, South Africa, Botswana, and more coming soon.',
   },
   {
@@ -16,11 +16,11 @@ const faqData = [
     answer: 'You’ll answer a few quick questions, and our system will match you with options based on your preferences, comfort level, and budget.',
   },
   {
-    question: 'Does Kulturexplora charge any fees to users?',
-    answer: 'No, Kulturexplora is completely free to use for travelers. We earn through partner commissions, not from your pocket.',
+    question: 'Does Wandar charge any fees to users?',
+    answer: 'No, Wandar is completely free to use for travelers. We earn through partner commissions, not from your pocket.',
   },
   {
-    question: 'When will Kulturexplora be available to the public?',
+    question: 'When will Wandar be available to the public?',
     answer: 'We are currently in beta. Join our waitlist to get early access when we launch publicly later this year.',
   },
 ];
@@ -37,7 +37,7 @@ const FaqLayout = () => {
       <div className="text-center mb-12">
         <h3 className="text-md text-gray-400 mb-2 tracking-wide">— Questions Answered —</h3>
         <h2 className="text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
-        <p className="text-gray-600 mt-2">Everything you need to know about Kulturexplora and planning your safari adventure.</p>
+        <p className="text-gray-600 mt-2">Everything you need to know about Wandar and planning your safari adventure.</p>
       </div>
 
       <div className="max-w-3xl mx-auto space-y-4">
