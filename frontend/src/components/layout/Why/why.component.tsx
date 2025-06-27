@@ -73,7 +73,7 @@ const WhyWandarWithUs = () => {
         {features.map((feature) => (
           <div
             key={feature.id}
-            className="bg-white/20 text-white border border-white/30 backdrop-blur-sm rounded-xl p-6 flex flex-col justify-between h-full transition duration-300 hover:shadow-md"
+            className="bg-white/20 text-white border border-white/30 backdrop-blur-sm rounded-xl p-6 flex flex-col justify-between transition duration-300 hover:shadow-md"
           >
             <img
               src={feature.icon}

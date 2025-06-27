@@ -10,9 +10,17 @@ const navItems = [
   { label: 'Contact us', to: 'contact' },
 ];
 
-const handleFocusEmail = () => {
-  const emailInput = document.getElementById('email-input') as HTMLInputElement | null;
-  emailInput?.focus();
+const handleJoinBetaClick = () => {
+  const section = document.getElementById('contact');
+  const input = document.getElementById('email-input') as HTMLInputElement | null;
+
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Slight delay before focusing the input
+    setTimeout(() => {
+      input?.focus();
+    }, 600);
+  }
 };
 
 const Navbar = () => {
@@ -32,7 +40,7 @@ const Navbar = () => {
             to={to}
             smooth={true}
             duration={600}
-            offset={-80} // adjust this for sticky navbar height
+            offset={-80} // Adjust for sticky navbar if needed
             spy={true}
             className="cursor-pointer"
           >
@@ -47,26 +55,16 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Join Beta Button (scrolls to contact) */}
-    <Link
-  to="contact"
-  smooth={true}
-  duration={600}
-  offset={-80}
-  spy={true}
-  onSetActive={handleFocusEmail}
-  className="cursor-pointer"
->
-  <div>
-    <Button
-      id="join-beta-button"
-      label="Join Beta"
-      variant={BUTTON_VARIANT.PRIMARY}
-      className="text-[#2E2E2E]"
-    />
-  </div>
-</Link>
-
+      {/* Join Beta Button (uses manual scroll for reliability in production) */}
+      <div className="flex-shrink-0">
+        <Button
+          id="join-beta-button"
+          label="Join Beta"
+          variant={BUTTON_VARIANT.PRIMARY}
+          className="text-[#2E2E2E]"
+          onClick={handleJoinBetaClick}
+        />
+      </div>
     </nav>
   );
 };
