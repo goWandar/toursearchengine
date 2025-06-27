@@ -1,5 +1,6 @@
 import { FaArrowRight } from 'react-icons/fa';
-import Icon from '../../../assets/icons/discover-light.svg'; // Use available icon for now
+import { Link } from 'react-scroll';
+import Icon from '../../../assets/icons/discover-light.svg'; // Placeholder icon
 
 const features = [
   {
@@ -12,43 +13,43 @@ const features = [
   {
     id: 2,
     icon: Icon,
-    title: 'Personalized Matching',
+    title: 'Tailored Recommendations',
     description:
-      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+      'Explore curated safari options selected based on your travel personality and goals.',
   },
   {
     id: 3,
     icon: Icon,
-    title: 'Personalized Matching',
+    title: 'Smart Planning Tools',
     description:
-      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+      'Seamlessly build your trip with intuitive tools to customize lodging, dates, and experiences.',
   },
   {
     id: 4,
     icon: Icon,
-    title: 'Personalized Matching',
+    title: 'Real Traveler Insights',
     description:
-      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+      'Get reviews, stories, and insights from like-minded explorers to plan with confidence.',
   },
   {
     id: 5,
     icon: Icon,
-    title: 'Personalized Matching',
+    title: 'Trusted Operators Only',
     description:
-      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+      'We vet every operator to ensure your journey is safe, ethical, and top-quality.',
   },
   {
     id: 6,
     icon: Icon,
-    title: 'Personalized Matching',
+    title: 'Secure Booking Experience',
     description:
-      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+      'Book your trip with full transparency and support from the Wandar team.',
   },
 ];
 
 const WhyWandarWithUs = () => {
   return (
-    <section id='features' className="bg-[#396B6B] text-white py-20 px-4 sm:px-8 md:px-12">
+    <section id="features" className="bg-[#396B6B] text-white py-20 px-4 sm:px-8 md:px-12">
       {/* Header */}
       <div className="text-center mb-12">
         <div className="inline-block bg-[#F4A261] text-[#2E2E2E] font-semibold px-4 py-1 text-sm rounded-full uppercase tracking-wide">
@@ -72,7 +73,7 @@ const WhyWandarWithUs = () => {
         {features.map((feature) => (
           <div
             key={feature.id}
-            className="bg-white/20 text-white border border-white/30 backdrop-blur-sm rounded-xl p-6 flex flex-col justify-between h-full transition duration-300 hover:shadow-md"
+            className="bg-white/20 text-white border border-white/30 backdrop-blur-sm rounded-xl p-6 flex flex-col justify-between transition duration-300 hover:shadow-md"
           >
             <img
               src={feature.icon}
@@ -92,9 +93,26 @@ const WhyWandarWithUs = () => {
 
       {/* CTA Button */}
       <div className="text-center mt-12">
-        <button className="bg-[#F4A261] text-[#2E2E2E] font-semibold py-3 px-6 rounded-md hover:opacity-90 flex items-center gap-2 mx-auto">
-          Join Our Beta <FaArrowRight size={14} />
-        </button>
+        <Link
+          to="contact"
+          smooth={true}
+          duration={600}
+          offset={-80}
+          spy={true}
+          onSetActive={() => {
+            setTimeout(() => {
+              const input = document.getElementById('email-input') as HTMLInputElement | null;
+              input?.focus();
+            }, 100); // delay helps ensure scroll is complete
+          }}
+          className="cursor-pointer"
+        >
+          <div>
+            <button className="bg-[#F4A261] text-[#2E2E2E] font-semibold py-3 px-6 rounded-md hover:opacity-90 flex items-center gap-2 mx-auto">
+              Join Our Beta <FaArrowRight size={14} />
+            </button>
+          </div>
+        </Link>
       </div>
     </section>
   );

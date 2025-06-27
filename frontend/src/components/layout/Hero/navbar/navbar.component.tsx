@@ -1,8 +1,7 @@
 import Button from '../../../common/button/button.component';
 import { BUTTON_VARIANT } from '../../../common/button/button.types';
 import UnionIcon from '../../../../assets/icons/Union.svg';
-import  {Link} from 'react-scroll'
-
+import { Link } from 'react-scroll';
 
 const navItems = [
   { label: 'How it works', to: 'how' },
@@ -10,6 +9,19 @@ const navItems = [
   { label: 'FAQs', to: 'faqs' },
   { label: 'Contact us', to: 'contact' },
 ];
+
+const handleJoinBetaClick = () => {
+  const section = document.getElementById('contact');
+  const input = document.getElementById('email-input') as HTMLInputElement | null;
+
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Slight delay before focusing the input
+    setTimeout(() => {
+      input?.focus();
+    }, 600);
+  }
+};
 
 const Navbar = () => {
   return (
@@ -28,7 +40,7 @@ const Navbar = () => {
             to={to}
             smooth={true}
             duration={600}
-            offset={-80} // adjust based on navbar height
+            offset={-80} // Adjust for sticky navbar if needed
             spy={true}
             className="cursor-pointer"
           >
@@ -43,13 +55,14 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Join Beta Button */}
+      {/* Join Beta Button (uses manual scroll for reliability in production) */}
       <div className="flex-shrink-0">
         <Button
           id="join-beta-button"
           label="Join Beta"
           variant={BUTTON_VARIANT.PRIMARY}
           className="text-[#2E2E2E]"
+          onClick={handleJoinBetaClick}
         />
       </div>
     </nav>
