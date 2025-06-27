@@ -18,19 +18,18 @@ const App = () => {
               <Hero />
               <div className='max-w-[2500px] mx-auto'>
                 <HowWandarWorksLayout />
-              </div> 
+              </div>
               <div className='max-w-[2500px] mx-auto bg-[#396B6B]'>
                 <WhyWandarLayout />
-              </div>         
+              </div>
               <div className='max-w-[2500px] mx-auto'>
                 <FaqLayout />
-              </div>     
-               <div className="relative">
-      <ReachUs />
-      <JoinWaitlistBox />
-
-      <Footer />
-    </div>
+              </div>
+              <div className='relative'>
+                <ReachUs />
+                <JoinWaitlistBox />
+                <Footer />
+              </div>
             </>
           }
         />
