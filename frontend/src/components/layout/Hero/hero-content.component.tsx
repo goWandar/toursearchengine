@@ -1,6 +1,4 @@
-import Button from '../../common/button/button.component';
-import { BUTTON_ICON_POSITION, BUTTON_VARIANT } from '../../common/button/button.types';
-import { BsArrowRight } from 'react-icons/bs';
+
 const HeroContent = () => {
   return (
     <div className='flex flex-col items-center gap-20'>
@@ -13,11 +11,11 @@ const HeroContent = () => {
       </div> */}
 
       {/* Main heading */}
-      <div className='flex flex-col items-center'>
-        <h1 className='text-white text-[7rem] font-semibold capitalize leading-none text-center'>
+      <div className='flex flex-col items-bottom gap-4'>
+        <h1 className='text-white text-[3rem] font-semibold capitalize leading-none text-center'>
           Find the safari that fits without the stress
         </h1>
-        <h1 className='text-[#F4A261] text-[7rem] font-semibold capitalize leading-none text-center'>
+        <h1 className='text-[#F4A261] text-[3rem] font-semibold capitalize leading-none text-center'>
           Most safari sites give you options - Wandar helps you choose
         </h1>
       </div>
