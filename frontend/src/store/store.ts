@@ -24,17 +24,19 @@ export const useStore = create<StoreState>((set) => ({
   resetCursor: () => set({ cursor: 0 }),
 }));
 
-interface TextSearchStore {
+
+// Store for handling selected suggestions in text search
+export interface TextSearchStoreType {
   selectedSuggestionId: number | null,
   selectedSuggestionType: 'park' | 'country' | null,
 
-  setSelectedSuggestionId: (id: TextSearchStore["selectedSuggestionId"]) => void,
-  setSelectedSuggestionType: (type: TextSearchStore["selectedSuggestionType"]) => void,
+  setSelectedSuggestionId: (id: TextSearchStoreType["selectedSuggestionId"]) => void,
+  setSelectedSuggestionType: (type: TextSearchStoreType["selectedSuggestionType"]) => void,
 
   resetSelectedSuggestion: () => void,
 }
 
-export const useTextSearchStore = create<TextSearchStore>((set) => ({
+export const useTextSearchStore = create<TextSearchStoreType>((set) => ({
   selectedSuggestionId: null,
   selectedSuggestionType: null,
 
@@ -51,7 +53,8 @@ export const useTextSearchStore = create<TextSearchStore>((set) => ({
   })
 }))
 
-interface TourStore {
+// Store for handling tour results
+export interface TourStoreType {
   tours: Tour[];
   setTours: (tours: Tour[]) => void;
   addTours: (tours: Tour[]) => void;
@@ -64,12 +67,12 @@ interface TourStore {
     totalPages: number;
     hasMore: boolean;
   };
-  setPagination: (pagination: TourStore["pagination"]) => void;
+  setPagination: (pagination: TourStoreType["pagination"]) => void;
 
   resetTours: () => void;
 }
 
-export const useTourStore = create<TourStore>((set) => ({
+export const useTourStore = create<TourStoreType>((set) => ({
   tours: [],
   setTours: (tours) => set({ tours }),
   addTours: (tours) =>
