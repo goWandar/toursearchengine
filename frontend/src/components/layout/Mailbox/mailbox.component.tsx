@@ -4,7 +4,7 @@ import { subscribeToWaitlist } from '@/api/api';
 
 const JoinWaitlistBox = () => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'invalid'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'invalid' | 'duplicate'>('idle');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,10 +19,14 @@ const JoinWaitlistBox = () => {
       await subscribeToWaitlist(email);
       setStatus('success');
       setEmail('');
-    } catch {
-      setStatus('error');
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        setStatus('duplicate');
+      } else {
+        setStatus('error');
+      }
     }
-  };
+  }
 
   return (
     <div className='absolute left-1/2 bottom-24 sm:bottom-28 md:bottom-32 lg:bottom-40 -translate-x-1/2 z-50 w-full px-4'>
@@ -53,6 +57,11 @@ const JoinWaitlistBox = () => {
           </form>
           {status === 'invalid' && (
             <p className="text-red-700 mt-2 text-sm">Please enter a valid email address.</p>
+          )}
+          {status === 'duplicate' && (
+            <p className="text-red-500 mt-2 text-sm">
+              This email is already on the waitlist.
+            </p>
           )}
           {status === 'success' && (
             <p className="text-green-700 mt-2 text-sm">Thanks for joining the waitlist!</p>
