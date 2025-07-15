@@ -1,10 +1,15 @@
+//  External packages
 import cors from 'cors';
 import 'dotenv/config';
 import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
+import path from 'node:path';
+import fs from 'node:fs';
 
+//  Config
 import corsConfig from './config/cors.js';
 
+// Routes
 import adminRoutes from './routes/admin.routes.js';
 import countryRoutes from './routes/country.routes.js';
 import parkRoutes from './routes/park.routes.js';
@@ -12,6 +17,7 @@ import subscribersRoutes from './routes/subscribers.routes.js';
 import tourRoutes from './routes/tour.routes.js';
 import userRoutes from './routes/user.routes.js';
 
+//  Utils
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -47,6 +53,23 @@ app.use('/api', subscribersRoutes);
 app.use('/api', tourRoutes);
 app.use('/api', countryRoutes);
 app.use('/api', parkRoutes);
+
+// openApi docs:
+const docsPath = path.join(process.cwd(), 'openapi');
+if (fs.existsSync(docsPath)) {
+  console.log('[INFO] Serving docs from:', docsPath);
+
+  app.use(
+    '/docs',
+    express.static(docsPath, {
+      index: 'index.html',
+    }),
+  );
+
+  console.log('[INFO]  Documentation available at: http://localhost:' + port + '/docs');
+} else {
+  console.log('[WARN]  OpenAPI directory not found at:', docsPath);
+}
 
 // 404 handler
 app.use((req, res) => {

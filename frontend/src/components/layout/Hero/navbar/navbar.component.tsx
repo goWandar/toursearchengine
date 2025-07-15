@@ -5,7 +5,7 @@ import { Link } from 'react-scroll';
 
 const navItems = [
   { label: 'How it works', to: 'how' },
-  { label: 'Features', to: 'features' },
+  { label: 'Why Wandar', to: 'features' },
   { label: 'FAQs', to: 'faqs' },
   { label: 'Contact us', to: 'contact' },
 ];
