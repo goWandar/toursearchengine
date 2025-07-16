@@ -32,7 +32,6 @@ model Tour {
   description       String?
   location          String?
   countryId         Int?
-  country           Country?    @relation(fields: [countryId], references: [id])
   durationInDays    Int         @default(0)
   itinerary         String?
   accommodationType String?
@@ -42,12 +41,12 @@ model Tour {
   dateCreated       DateTime    @default(now())
   dateModified      DateTime?   @updatedAt
   archived          Boolean     @default(false)
+  operatorId        Int?
+  tourParks         TourPark[]
   images            TourImage[]
   prices            TourPrice[]
-  operatorId        Int?
-  operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
-
-  tourParks TourPark[]
+  country           Country?    @relation(fields: [countryId], references: [id])
+  operator          Operator?   @relation(fields: [operatorId], references: [id])
 
   @@unique([id, uniqueId])
   @@map("tours")
@@ -82,28 +81,27 @@ model TourPrice {
 }
 
 model Park {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
+  id           Int        @id @default(dbgenerated("'parks_id_seq'::regclass"))
+  name         String     @unique
   type         String
   country      String
   countryCode  String
   keyword      String
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-
-  tourParks TourPark[]
+  dateCreated  DateTime   @default(now())
+  dateModified DateTime?  @updatedAt
+  tourParks    TourPark[]
 
   @@map("parks")
 }
 
 model TourPark {
-  tourId Int
   parkId Int
+  tourId Int
+  park   Park @relation(fields: [parkId], references: [id], onDelete: Cascade, map: "_TourParks_A_fkey")
+  tour   Tour @relation(fields: [tourId], references: [id], onDelete: Cascade, map: "_TourParks_B_fkey")
 
-  tour Tour @relation(fields: [tourId], references: [id])
-  park Park @relation(fields: [parkId], references: [id])
-
-  @@id([tourId, parkId])
+  @@id([parkId, tourId])
+  @@index([tourId], map: "_TourParks_B_index")
   @@map("_TourParks")
 }
 
@@ -125,4 +123,25 @@ model Operator {
   tours        Tour[]
 
   @@map("operators")
+}
+
+model QuizResponse {
+  id               Int      @id @default(autoincrement())
+  userId           Int?
+  sessionId        String
+  quiz1Selection   String   @map("quiz_1_selection")
+  quiz2Selection   String   @map("quiz_2_selection")
+  quiz3Selection   String   @map("quiz_3_selection")
+  quiz4Selection   String   @map("quiz_4_selection")
+  createdAt        DateTime @default(now())
+
+  @@map("quiz_responses")
+}
+
+model QuizConfig {
+  id                       Int     @id @default(autoincrement())
+  mandatoryCategoriesCount Int     @default(2) @map("mandatory_categories_count")
+  isActive                 Boolean @default(true) @map("is_active")
+
+  @@map("quiz_config")
 }
