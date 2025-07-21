@@ -62,6 +62,7 @@ model TourImage {
   tourUniqueId String
   tour         Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
 
+  @@index([tourId, tourUniqueId])
   @@map("tour_images")
 }
 
@@ -78,6 +79,7 @@ model TourPrice {
   tourUniqueId   String
   tour           Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
 
+  @@index([tourId, tourUniqueId])
   @@map("tour_prices")
 }
 
