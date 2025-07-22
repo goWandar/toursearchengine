@@ -9,13 +9,15 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id    String @id @default(dbgenerated("gen_random_uuid()"))
-  name  String
-  email String @unique
-  role  String @default("USER")
+model TourPark {
+  tourId Int
+  parkId Int
 
-  @@map("users")
+  tour   Tour @relation(fields: [tourId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
+
+  @@id([tourId, parkId])
+  @@map("_TourParks")
 }
 
 model BetaSubscribers {
@@ -25,32 +27,39 @@ model BetaSubscribers {
   @@map("beta_subscribers")
 }
 
-model Tour {
-  id                Int         @id @default(autoincrement())
-  uniqueId          String      @unique
-  title             String
-  description       String?
-  location          String?
-  countryId         Int?
-  country           Country?    @relation(fields: [countryId], references: [id])
-  durationInDays    Int         @default(0)
-  itinerary         String?
-  accommodationType String?
-  siteURL           String?
-  included          String?
-  excluded          String?
-  dateCreated       DateTime    @default(now())
-  dateModified      DateTime?   @updatedAt
-  archived          Boolean     @default(false)
-  images            TourImage[]
-  prices            TourPrice[]
-  operatorId        Int?
-  operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+model Country {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("countries")
+}
+
+model Operator {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("operators")
+}
+
+model Park {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  type         String
+  country      String
+  countryCode  String
+  keyword      String
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
 
   tourParks TourPark[]
 
-  @@unique([id, uniqueId])
-  @@map("tours")
+  @@map("parks")
 }
 
 model TourImage {
@@ -83,48 +92,38 @@ model TourPrice {
   @@map("tour_prices")
 }
 
-model Park {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  type         String
-  country      String
-  countryCode  String
-  keyword      String
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
+model Tour {
+  id                Int         @id @default(autoincrement())
+  uniqueId          String      @unique
+  title             String
+  description       String?
+  location          String?
+  countryId         Int?
+  country           Country?    @relation(fields: [countryId], references: [id])
+  durationInDays    Int         @default(0)
+  itinerary         String?
+  accommodationType String?
+  siteURL           String?
+  included          String?
+  excluded          String?
+  dateCreated       DateTime    @default(now())
+  dateModified      DateTime?   @updatedAt
+  archived          Boolean     @default(false)
+  images            TourImage[]
+  prices            TourPrice[]
+  operatorId        Int?
+  operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
 
-  tourParks TourPark[]
-
-  @@map("parks")
+  tourParks         TourPark[]
+  @@unique([id, uniqueId])
+  @@map("tours")
 }
 
-model TourPark {
-  tourId Int
-  parkId Int
+model User {
+  id    String @id @default(dbgenerated("gen_random_uuid()"))
+  name  String
+  email String @unique
+  role  String @default("USER")
 
-  tour Tour @relation(fields: [tourId], references: [id])
-  park Park @relation(fields: [parkId], references: [id])
-
-  @@id([tourId, parkId])
-  @@map("_TourParks")
-}
-
-model Country {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-  tours        Tour[]
-
-  @@map("countries")
-}
-
-model Operator {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-  tours        Tour[]
-
-  @@map("operators")
+  @@map("users")
 }
