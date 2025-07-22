@@ -61,3 +61,6 @@ coverage/
 # Misc
 tmp/
 out/
+
+# Data import
+*.csv
