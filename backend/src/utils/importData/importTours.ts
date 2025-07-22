@@ -1,59 +1,28 @@
-import { PrismaClient } from '@prisma/client';
-import * as fs from 'fs';
-import Papa from 'papaparse';
+import {
+  parseCSV,
+  initializeProgress,
+  logProgress,
+  logSummary,
+  prisma,
+  cleanup,
+  parseDate,
+  cleanString,
+} from './sharedUtils/importDataUtils.js';
 
-const prisma = new PrismaClient();
-
-// Utility: Parse date from string or number
-function parseDate(dateValue: any): Date | null {
-  if (!dateValue) return null;
-  const parsed = new Date(dateValue);
-  return isNaN(parsed.getTime()) ? null : parsed;
-}
-
-// Utility: Clean strings and convert empty to null
-function cleanString(value: any): string | null {
-  if (!value) return null;
-  const cleaned = String(value).trim();
-  return cleaned === '' ? null : cleaned;
-}
-
-// Main import function
 async function importTours() {
-  console.log('Starting Tours import from Tours.csv...');
+  console.log('Starting Tours import...');
 
   try {
-    if (!fs.existsSync('Tours.csv')) {
-      throw new Error('Tours.csv file not found');
-    }
-
-    const csvContent = fs.readFileSync('Tours.csv', 'utf8');
-
-    const parsed = Papa.parse(csvContent, {
-      header: true,
-      dynamicTyping: true,
-      skipEmptyLines: true,
-      delimitersToGuess: [',', '\t', '|', ';'],
-    });
-
-    if (parsed.errors.length > 0) {
-      console.warn('CSV parsing warnings:', parsed.errors);
-    }
-
-    console.log(`Found ${parsed.data.length} tours to import`);
-    console.log(`CSV Headers: ${parsed.meta.fields?.join(', ')}`);
-
-    let successCount = 0;
-    let errorCount = 0;
-    let skippedCount = 0;
+    const parsed = parseCSV('Tours.csv', 'Tours.csv');
+    const counts = initializeProgress();
 
     for (let i = 0; i < parsed.data.length; i++) {
-      const row = parsed.data[i] as any;
+      const row = parsed.data[i] as Record<string, any>;
 
       try {
         // Skip row if required fields are missing
         if (!row.title && !row.uniqueId) {
-          skippedCount++;
+          counts.skipped++;
           continue;
         }
 
@@ -81,10 +50,10 @@ async function importTours() {
         }
 
         await prisma.tour.create({ data: tourData });
-        successCount++;
-        console.log(`[${successCount}] Imported: ${tourData.title}`);
+        counts.success++;
+        logProgress(counts, `Imported: ${tourData.title}`);
       } catch (error) {
-        errorCount++;
+        counts.errors++;
         console.error(`[Row ${i + 1}] Failed to import:`, {
           title: row.title,
           uniqueId: row.uniqueId,
@@ -93,22 +62,19 @@ async function importTours() {
       }
     }
 
-    console.log('\nImport completed');
-    console.log(`Success: ${successCount}`);
-    console.log(`Errors: ${errorCount}`);
-    console.log(`Skipped: ${skippedCount}`);
+    logSummary(counts, 'Tours');
 
     const totalTours = await prisma.tour.count();
     console.log(`Total tours in database: ${totalTours}`);
   } catch (error) {
-    console.error('Import failed:', error);
+    console.error('Tours import failed:', error);
     throw error;
   } finally {
-    await prisma.$disconnect();
+    await cleanup();
   }
 }
 
-// Run only if this file is executed directly
+// ESM-compatible entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
   importTours().catch(console.error);
 }
