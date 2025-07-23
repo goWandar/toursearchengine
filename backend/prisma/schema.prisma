@@ -7,15 +7,19 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas = ["public"]
 }
 
-model User {
-  id    String @id @default(dbgenerated("gen_random_uuid()"))
-  name  String
-  email String @unique
-  role  String @default("USER")
+model TourPark {
+  tourId Int
+  parkId Int
 
-  @@map("users")
+  tour   Tour @relation(fields: [tourId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
+
+  @@id([tourId, parkId])
+  @@map("_TourParks")
+  @@schema("public")
 }
 
 model BetaSubscribers {
@@ -23,6 +27,77 @@ model BetaSubscribers {
   email String @unique
 
   @@map("beta_subscribers")
+  @@schema("public")
+}
+
+model Country {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("countries")
+  @@schema("public")
+}
+
+model Operator {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("operators")
+  @@schema("public")
+}
+
+model Park {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  type         String
+  country      String
+  countryCode  String
+  keyword      String
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+
+  tourParks TourPark[]
+
+  @@map("parks")
+  @@schema("public")
+}
+
+model TourImage {
+  id           Int       @id @default(autoincrement())
+  imageUrls    String
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tourId       Int
+  tourUniqueId String
+  tour         Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
+
+  @@index([tourId, tourUniqueId])
+  @@map("tour_images")
+  @@schema("public")
+}
+
+model TourPrice {
+  id             Int       @id @default(autoincrement())
+  numOfPeople    Int       @default(0)
+  currency       String
+  pricePerPerson Float     @default(0)
+  seasonName     String?
+  seasonPeriod   String?
+  dateCreated    DateTime  @default(now())
+  dateModified   DateTime? @updatedAt
+  tourId         Int
+  tourUniqueId   String
+  tour           Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
+
+  @@index([tourId, tourUniqueId])
+  @@map("tour_prices")
+  @@schema("public")
 }
 
 model Tour {
@@ -47,82 +122,44 @@ model Tour {
   operatorId        Int?
   operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
 
-  tourParks TourPark[]
-
+  tourParks         TourPark[]
   @@unique([id, uniqueId])
   @@map("tours")
+  @@schema("public")
 }
 
-model TourImage {
-  id           Int       @id @default(autoincrement())
-  imageUrls    String
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-  tourId       Int
-  tourUniqueId String
-  tour         Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
+model User {
+  id    String @id @default(dbgenerated("gen_random_uuid()"))
+  name  String
+  email String @unique
+  role  String @default("USER")
+  isEmailVerified  Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  @@map("tour_images")
+  @@map("users")
+  @@schema("public")
 }
 
-model TourPrice {
-  id             Int       @id @default(autoincrement())
-  numOfPeople    Int       @default(0)
-  currency       String
-  pricePerPerson Float     @default(0)
-  seasonName     String?
-  seasonPeriod   String?
-  dateCreated    DateTime  @default(now())
-  dateModified   DateTime? @updatedAt
-  tourId         Int
-  tourUniqueId   String
-  tour           Tour      @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
+model QuizResponse {
+  id               Int      @id @default(autoincrement())
+  userId           Int?
+  sessionId        String
+  quiz1Selection   String   @map("quiz_1_selection")
+  quiz2Selection   String   @map("quiz_2_selection")
+  quiz3Selection   String   @map("quiz_3_selection")
+  quiz4Selection   String   @map("quiz_4_selection")
+  dateCreated        DateTime @default(now())
 
-  @@map("tour_prices")
+  @@map("quiz_responses")
+  @@schema("public")
 }
 
-model Park {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  type         String
-  country      String
-  countryCode  String
-  keyword      String
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
+model QuizConfig {
+  id                       Int     @id @default(autoincrement())
+  mandatoryCategoriesCount Int     @default(2) @map("mandatory_categories_count")
+  isActive                 Boolean @default(true) @map("is_active")
 
-  tourParks TourPark[]
-
-  @@map("parks")
-}
-
-model TourPark {
-  tourId Int
-  parkId Int
-
-  tour Tour @relation(fields: [tourId], references: [id])
-  park Park @relation(fields: [parkId], references: [id])
-
-  @@id([tourId, parkId])
-  @@map("_TourParks")
-}
-
-model Country {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-  tours        Tour[]
-
-  @@map("countries")
-}
-
-model Operator {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-  tours        Tour[]
-
-  @@map("operators")
+  @@map("quiz_config")
+  @@schema("public")
 }
