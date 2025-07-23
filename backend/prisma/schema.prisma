@@ -7,6 +7,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas = ["public"]
 }
 
 model TourPark {
@@ -18,6 +19,7 @@ model TourPark {
 
   @@id([tourId, parkId])
   @@map("_TourParks")
+  @@schema("public")
 }
 
 model BetaSubscribers {
@@ -25,6 +27,7 @@ model BetaSubscribers {
   email String @unique
 
   @@map("beta_subscribers")
+  @@schema("public")
 }
 
 model Country {
@@ -35,6 +38,7 @@ model Country {
   tours        Tour[]
 
   @@map("countries")
+  @@schema("public")
 }
 
 model Operator {
@@ -45,6 +49,7 @@ model Operator {
   tours        Tour[]
 
   @@map("operators")
+  @@schema("public")
 }
 
 model Park {
@@ -60,6 +65,7 @@ model Park {
   tourParks TourPark[]
 
   @@map("parks")
+  @@schema("public")
 }
 
 model TourImage {
@@ -73,6 +79,7 @@ model TourImage {
 
   @@index([tourId, tourUniqueId])
   @@map("tour_images")
+  @@schema("public")
 }
 
 model TourPrice {
@@ -90,6 +97,7 @@ model TourPrice {
 
   @@index([tourId, tourUniqueId])
   @@map("tour_prices")
+  @@schema("public")
 }
 
 model Tour {
@@ -117,6 +125,7 @@ model Tour {
   tourParks         TourPark[]
   @@unique([id, uniqueId])
   @@map("tours")
+  @@schema("public")
 }
 
 model User {
@@ -124,8 +133,12 @@ model User {
   name  String
   email String @unique
   role  String @default("USER")
+  isEmailVerified  Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@map("users")
+  @@schema("public")
 }
 
 model QuizResponse {
@@ -139,6 +152,7 @@ model QuizResponse {
   dateCreated        DateTime @default(now())
 
   @@map("quiz_responses")
+  @@schema("public")
 }
 
 model QuizConfig {
@@ -147,4 +161,5 @@ model QuizConfig {
   isActive                 Boolean @default(true) @map("is_active")
 
   @@map("quiz_config")
+  @@schema("public")
 }
