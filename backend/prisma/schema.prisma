@@ -10,6 +10,28 @@ datasource db {
   schemas   = ["public"]
 }
 
+// Beta Subscribers Model
+model BetaSubscribers {
+  id    String @id @default(uuid())
+  email String @unique
+
+  @@map("beta_subscribers")
+  @@schema("public")
+}
+
+// User Model
+model User {
+  id              String   @id @default(dbgenerated("gen_random_uuid()"))
+  name            String
+  email           String   @unique
+  role            String   @default("USER")
+  isEmailVerified Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("users")
+  @@schema("public")
+}
 
 // Tour Related Models
 model Country {
@@ -120,5 +142,29 @@ model Tour {
 
   @@unique([id, uniqueId])
   @@map("tours")
+  @@schema("public")
+}
+
+// Quiz Related Models
+model QuizResponse {
+  id               Int      @id @default(autoincrement())
+  userId           Int?
+  sessionId        String
+  quiz1Selection   String   @map("quiz_1_selection")
+  quiz2Selection   String   @map("quiz_2_selection")
+  quiz3Selection   String   @map("quiz_3_selection")
+  quiz4Selection   String   @map("quiz_4_selection")
+  dateCreated        DateTime @default(now())
+
+  @@map("quiz_responses")
+  @@schema("public")
+}
+
+model QuizConfig {
+  id                       Int     @id @default(autoincrement())
+  mandatoryCategoriesCount Int     @default(2) @map("mandatory_categories_count")
+  isActive                 Boolean @default(true) @map("is_active")
+
+  @@map("quiz_config")
   @@schema("public")
 }
