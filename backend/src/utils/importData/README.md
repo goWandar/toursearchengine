@@ -42,7 +42,7 @@ The scripts expect the following files to exist:
 
 ```bash
 # Import all CSV files in the correct order
-npx tsx import-all-data.ts
+npx tsx importAllData.ts
 ```
 
 This will automatically:
