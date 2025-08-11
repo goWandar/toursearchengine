@@ -111,10 +111,10 @@ async function importTourPrices(tourPrices: TourPriceCSV[], failedTours: FailedR
         details: error instanceof Error ? error.message : String(error)
       });
       console.error(`  Failed to insert tour price ${priceData.id} for tour ${priceData.tourId}:`, error);
+    }finally {
+      // Clean up after each operation
+      await cleanup();
     }
-
-    // Clean up after each operation
-    await cleanup();
   }
 
   logProgress('Tour Prices', tourPrices.length, tourPricesImported);

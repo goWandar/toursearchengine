@@ -94,10 +94,10 @@ async function importTourImages(tourImages: TourImageCSV[], failedTours: FailedR
         details: error instanceof Error ? error.message : String(error)
       });
       console.error(`  Failed to insert tour image ${imageData.id} for tour ${imageData.tourId}:`, error);
+    } finally {
+      // Clean up after each operation
+      await cleanup();
     }
-
-    // Clean up after each operation
-    await cleanup();
   }
 
   logProgress('Tour Images', tourImages.length, tourImagesImported);

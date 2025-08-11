@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import * as fs from 'fs';
 import Papa from 'papaparse';
 import { readFileSync } from 'fs';
 

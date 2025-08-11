@@ -51,21 +51,6 @@ This will automatically:
 2. Import TourImages second (links to existing tours)
 3. Import TourPrices third (links to existing tours)
 
-### Option 2: Import Individual Files
-
-If you need to import files separately or in case of errors:
-
-```bash
-# Step 1: Import Tours (must run first)
-npx tsx import-tours.ts
-
-# Step 2: Import Tour Images (after tours)
-npx tsx import-tour-images.ts
-
-# Step 3: Import Tour Prices (after tours)
-npx tsx import-tour-prices.ts
-```
-
 **Important**: Tours must be imported first as Images and Prices depend on existing tour records.
 
 ## Expected Results
@@ -73,9 +58,58 @@ npx tsx import-tour-prices.ts
 ### Successful Import Should Show
 
 ```
-Tours: 55 records imported
-Tour Images: 517 records imported  
-Tour Prices: 229 records imported
+================================================================================
+                          FINAL IMPORT SUMMARY
+================================================================================
+
+ TOURS:
+    Successfully imported: 120/120
+    Failed to import: 0
+
+  TOUR IMAGES:
+    Successfully imported: 480/480
+    Failed to import: 0
+
+ TOUR PRICES:
+    Successfully imported: 120/120
+    Failed to import: 0
+
+ OVERALL STATISTICS:
+   Total records processed: 720
+   Total successful imports: 720
+   Total failures: 0
+   Success rate: 100.0%
+================================================================================
+ All records imported successfully!
+================================================================================
+```
+
+### Partial Success Import Should Show
+
+```
+
+ OVERALL STATISTICS:
+   Total records processed: 83
+   Total successful imports: 63
+   Total failures: 20
+   Success rate: 75.9%
+================================================================================
+  Import completed with some failures. Check the details above.
+================================================================================
+```
+
+### 100% Unsuccessful Import Should Show
+
+```
+
+ OVERALL STATISTICS:
+   Total records processed: 801
+   Total successful imports: 0
+   Total failures: 801
+   Success rate: 0.0%
+================================================================================
+ Import failed completely. Please review your data and try again.
+================================================================================
 ```
 
 ### Import Statistics Example
@@ -91,6 +125,33 @@ Price Statistics:
   Min: 665
   Max: 22990
 ```
+## Handling Failed Tours
+
+**NOTE**: If a tour fails its corresponding images and prices will fail as well
+
+When importing tours, failed entries are logged with detailed reasons and stats, for example:
+
+```
+=== STEP 1: Importing Tours ===
+Processing tour: 394 - 4 Days/ 3 Nights Budget Safari
+Skipping tour 394: Already exists with uniqueId post-11086
+
+=== STEP 2: Importing Tour Images ===
+Skipping image 2528: Parent tour 394 failed
+
+=== STEP 3: Importing Tour Prices ===
+Skipping price 754: Parent tour 394 failed
+```
+
+### Failure Reasons
+
+- **Exists** – The record already exists in the database  
+- **Invalid** – Missing one or more required fields  
+- **TourFailed** – Images or prices linked to a tour that failed  
+- **Unexpected** – Any other unhandled error  
+
+After reviewing the logs, you can fix the failed records as needed.  
+Once resolved, rerun the script — previously successful entries will fail(as they should), and only the fixed ones will be processed.
 
 ## Features
 
@@ -186,13 +247,24 @@ To re-import data:
 
 1. **Clear existing data** (if needed):
 
-   ```sql
-   DELETE FROM tour_prices;
-   DELETE FROM tour_images;
-   DELETE FROM tours;
+   This script deletes all tours by calling Prisma’s deleteMany on the Tour model.
+   
+   ```
+   npx tsc deleteAllTours.ts
    ```
 
-2. **Reset sequences**:
+   or
+
+   This script allows you to delete tours by specifying a tour ID or a range of IDs.
+
+   ```
+   npx tsx deleteTours.ts 10          # Deletes tour with ID 10
+   npx tsx deleteTours.ts 10 15       # Deletes tours with IDs from 10 through 15 inclusive
+
+   ```
+
+
+1. **Reset sequences**:
 
    ```sql
    ALTER SEQUENCE tours_id_seq RESTART WITH 1;
@@ -200,7 +272,7 @@ To re-import data:
    ALTER SEQUENCE tour_prices_id_seq RESTART WITH 1;
    ```
 
-3. **Run import scripts** again
+2. **Run import scripts** again
 
 ## Notes
 

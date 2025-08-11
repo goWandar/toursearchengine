@@ -10,6 +10,7 @@ import {
   ImportResult,
 } from './sharedUtils/importDataUtils.js';
 
+// Function from importing multiple tours from CSV files
 async function importTours(tours: TourCSV[]): Promise<ImportResult> {
   let toursImported = 0;
   const failedTours = [];
@@ -87,10 +88,10 @@ async function importTours(tours: TourCSV[]): Promise<ImportResult> {
         details: error instanceof Error ? error.message : String(error)
       });
       console.error(`  Failed to insert tour ${tourData.id} - ${tourData.title}:`, error);
+    } finally {
+      // Clean up after each operation
+      await cleanup();
     }
-
-    // Clean up after each operation
-    await cleanup();
   }
 
   logProgress('Tours', tours.length, toursImported);

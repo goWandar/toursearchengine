@@ -147,14 +147,14 @@ model Tour {
 
 // Quiz Related Models
 model QuizResponse {
-  id               Int      @id @default(autoincrement())
-  userId           Int?
-  sessionId        String
-  quiz1Selection   String   @map("quiz_1_selection")
-  quiz2Selection   String   @map("quiz_2_selection")
-  quiz3Selection   String   @map("quiz_3_selection")
-  quiz4Selection   String   @map("quiz_4_selection")
-  dateCreated        DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  userId         Int?
+  sessionId      String
+  quiz1Selection String   @map("quiz_1_selection")
+  quiz2Selection String   @map("quiz_2_selection")
+  quiz3Selection String   @map("quiz_3_selection")
+  quiz4Selection String   @map("quiz_4_selection")
+  dateCreated    DateTime @default(now())
 
   @@map("quiz_responses")
   @@schema("public")
