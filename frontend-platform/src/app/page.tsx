@@ -1,103 +1,120 @@
-import Image from "next/image";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/accordion/accordion"
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-background text-foreground p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold text-primary">
+            Accordion Component Demo
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Built with Tailwind CSS v4 and your custom design system
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Accordion Demo */}
+        <div className="max-w-2xl mx-auto space-y-8">
+          <div className="bg-card border border-border rounded-lg p-6">
+            <h2 className="text-2xl font-semibold text-card-foreground mb-4">
+              Frequently Asked Questions
+            </h2>
+            
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Is this component accessible?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! This accordion component is built with Radix UI primitives, which means it follows WAI-ARIA design patterns and includes proper keyboard navigation, focus management, and screen reader support.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-2">
+                <AccordionTrigger>How does the styling work?</AccordionTrigger>
+                <AccordionContent>
+                  The component uses your custom Tailwind CSS v4 design system with semantic color tokens like <code className="bg-muted px-1 py-0.5 rounded text-sm">bg-background</code>, <code className="bg-muted px-1 py-0.5 rounded text-sm">text-foreground</code>, and <code className="bg-muted px-1 py-0.5 rounded text-sm">border-border</code> for consistent theming.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-3">
+                <AccordionTrigger>Does it support animations?</AccordionTrigger>
+                <AccordionContent>
+                  Absolutely! The accordion uses your custom <code className="bg-muted px-1 py-0.5 rounded text-sm">animate-accordion-down</code> and <code className="bg-muted px-1 py-0.5 rounded text-sm">animate-accordion-up</code> animations defined in your Tailwind v4 configuration for smooth expand/collapse transitions.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-4">
+                <AccordionTrigger>Can I customize the appearance?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! The component accepts className props for all parts (AccordionItem, AccordionTrigger, AccordionContent) and uses the <code className="bg-muted px-1 py-0.5 rounded text-sm">cn()</code> utility function to merge classes properly with your design system.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-5">
+                <AccordionTrigger>What about dark mode support?</AccordionTrigger>
+                <AccordionContent>
+                  Dark mode is fully supported through your CSS custom properties! The component automatically adapts to light and dark themes using semantic color tokens that change based on the <code className="bg-muted px-1 py-0.5 rounded text-sm">.dark</code> class on the HTML element.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
+          {/* Multiple Accordions Demo */}
+          <div className="bg-card border border-border rounded-lg p-6">
+            <h2 className="text-2xl font-semibold text-card-foreground mb-4">
+              Multiple Selection Example
+            </h2>
+            
+            <Accordion type="multiple" className="w-full">
+              <AccordionItem value="feature-1">
+                <AccordionTrigger>🎨 Design System Integration</AccordionTrigger>
+                <AccordionContent>
+                  Seamlessly integrated with your comprehensive design system including primary, secondary, muted, accent, and destructive color variants.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="feature-2">
+                <AccordionTrigger>⚡ Performance Optimized</AccordionTrigger>
+                <AccordionContent>
+                  Built with React.forwardRef for optimal performance and proper ref forwarding to underlying DOM elements.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="feature-3">
+                <AccordionTrigger>🔧 Highly Customizable</AccordionTrigger>
+                <AccordionContent>
+                  Every part of the accordion can be customized with additional className props while maintaining the base design system styles.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
+          {/* Color Showcase */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-primary text-primary-foreground p-4 rounded-lg">
+              <h3 className="font-semibold">Primary Colors</h3>
+              <p className="text-sm opacity-90">bg-primary & text-primary-foreground</p>
+            </div>
+            <div className="bg-secondary text-secondary-foreground p-4 rounded-lg">
+              <h3 className="font-semibold">Secondary Colors</h3>
+              <p className="text-sm opacity-90">bg-secondary & text-secondary-foreground</p>
+            </div>
+            <div className="bg-muted text-muted-foreground p-4 rounded-lg">
+              <h3 className="font-semibold">Muted Colors</h3>
+              <p className="text-sm opacity-90">bg-muted & text-muted-foreground</p>
+            </div>
+            <div className="bg-accent text-accent-foreground p-4 rounded-lg">
+              <h3 className="font-semibold">Accent Colors</h3>
+              <p className="text-sm opacity-90">bg-accent & text-accent-foreground</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
