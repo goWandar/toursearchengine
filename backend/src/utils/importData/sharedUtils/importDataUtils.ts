@@ -1,111 +1,239 @@
 import { PrismaClient } from '@prisma/client';
-import * as fs from 'fs';
 import Papa from 'papaparse';
+import { readFileSync } from 'fs';
 
 // Shared utilities for CSV import scripts
 export const prisma = new PrismaClient();
 
+// Tour CSV Data Types
+export interface TourCSV {
+  id: string;
+  uniqueId: string;
+  title: string;
+  description: string;
+  location: string;
+  countryId: string;
+  durationInDays: string;
+  itinerary: string;
+  accommodationType: string;
+  included: string;
+  excluded: string;
+  siteURL: string;
+  dateCreated: string;
+  dateModified: string;
+  archived: string;
+  operatorId: string;
+}
+
+export interface TourImageCSV {
+  id: string;
+  imageUrls: string;
+  dateCreated: string;
+  dateModified: string;
+  tourUniqueId: string;
+  tourId: string;
+}
+
+export interface TourPriceCSV {
+  id: string;
+  seasonName: string;
+  seasonPeriod: string;
+  numOfPeople: string;
+  currency: string;
+  pricePerPerson: string;
+  dateCreated: string;
+  dateModified: string;
+  tourUniqueId: string;
+  tourId: string;
+}
+
+// Failed record structure for import results
+export interface FailedRecord {
+  id: string;
+  reason: string; // 'Exists' | 'Invalid' | 'TourFailed' | 'Unexpected'
+  details: string;
+}
+
+// Import result structure
+export interface ImportResult {
+  imported: number;
+  failed: FailedRecord[];
+  total: number;
+}
+
 // Utility: Convert value to Date
-export function parseDate(dateValue: any): Date | null {
-  if (!dateValue) return null;
-  const parsed = new Date(dateValue);
-  return isNaN(parsed.getTime()) ? null : parsed;
+export function parseDate(dateString: string): Date | null {
+  if (!dateString || dateString.trim() === '') return null;
+
+  const date = new Date(dateString);
+  return isNaN(date.getTime()) ? null : date;
 }
 
-// Utility: Trim strings and convert empty to null
-export function cleanString(value: any): string | null {
-  if (!value) return null;
-  const cleaned = String(value).trim();
-  return cleaned === '' ? null : cleaned;
+// Integer parsing utility
+export function parseInteger(value: string): number | null {
+  if (!value || value.trim() === '') return null;
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) ? null : parsed;
 }
 
-// Create tour ID mapping for efficient lookups
-export async function createTourIdMap(): Promise<Map<string, number>> {
-  const existingTours = await prisma.tour.findMany({
-    select: { id: true, uniqueId: true },
-  });
-
-  const tourIdMap = new Map<string, number>();
-  for (const tour of existingTours) {
-    tourIdMap.set(tour.uniqueId, tour.id);
-  }
-
-  console.log(`Mapped ${existingTours.length} existing tours.`);
-  return tourIdMap;
+// Float parsing utility
+export function parseFloat(value: string): number | null {
+  if (!value || value.trim() === '') return null;
+  const parsed = Number.parseFloat(value);
+  return isNaN(parsed) ? null : parsed;
 }
+
+// Boolean parsing utility
+export function parseBoolean(value: string): boolean {
+  return value?.toLowerCase() === 'true';
+}
+
+// Map old tour IDs to new ones: oldId -> { newId, uniqueId }
+export const tourIdMapping = new Map<string, { newId: number; uniqueId: string }>();
 
 // Generic CSV parsing setup
-export function parseCSV(filePath: string, fileName: string) {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`${fileName} file not found`);
+export function parseCSV<T>(filePath: string): T[] {
+  try {
+    const csvContent = readFileSync(filePath, 'utf8');
+    const result = Papa.parse<T>(csvContent, {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: (header) => header.trim(),
+    });
+
+    if (result.errors.length > 0) {
+      console.error(`Errors parsing ${filePath}:`, result.errors);
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error(`Error reading file ${filePath}:`, error);
+    throw error;
+  }
+}
+
+// Log import progress of each CSV file
+export function logProgress(csvType: string, importedResults: Number, csvDataLength: Number) {
+  console.log(`[${csvType}] Imported: ${importedResults}/${csvDataLength}`);
+}
+
+// Log final summary of all imports
+export function logSummary(tourResults: ImportResult,
+  imageResults: ImportResult, priceResults: ImportResult) {
+  console.log('\n'.repeat(2));
+  console.log('='.repeat(80));
+  console.log('                          FINAL IMPORT SUMMARY');
+  console.log('='.repeat(80));
+
+  // Tours Summary
+  console.log('\n TOURS:');
+  console.log(`    Successfully imported: ${tourResults.imported}/${tourResults.total}`);
+  console.log(`    Failed to import: ${tourResults.failed.length}`);
+
+  if (tourResults.failed.length > 0) {
+    const existsCount = tourResults.failed.filter(f => f.reason === 'Exists').length;
+    const invalidCount = tourResults.failed.filter(f => f.reason === 'Invalid').length;
+    const unexpectedCount = tourResults.failed.filter(f => f.reason === 'Unexpected').length;
+
+    console.log(`       Already exists: ${existsCount}`);
+    console.log(`       Invalid data: ${invalidCount}`);
+    console.log(`       Unexpected error: ${unexpectedCount}`);
+
+
+    if (tourResults.failed.length <= 10) {
+      console.log('   Failed Tour IDs:');
+      tourResults.failed.forEach(failed => {
+        console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
+      });
+    } else {
+      console.log(`   (${tourResults.failed.length} failed tours - showing first 10)`);
+      tourResults.failed.slice(0, 10).forEach(failed => {
+        console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
+      });
+    }
   }
 
-  console.log(`Reading: ./${fileName}`);
-  const csvContent = fs.readFileSync(filePath, 'utf8');
+  // Tour Images Summary
+  console.log('\n  TOUR IMAGES:');
+  console.log(`    Successfully imported: ${imageResults.imported}/${imageResults.total}`);
+  console.log(`    Failed to import: ${imageResults.failed.length}`);
 
-  const parsed = Papa.parse(csvContent, {
-    header: true,
-    dynamicTyping: true,
-    skipEmptyLines: true,
-    delimitersToGuess: [',', '\t', '|', ';'],
-  });
+  if (imageResults.failed.length > 0) {
+    const tourFailedCount = imageResults.failed.filter(f => f.reason === 'TourFailed').length;
+    const invalidCount = imageResults.failed.filter(f => f.reason === 'Invalid').length;
+    const unexpectedCount = tourResults.failed.filter(f => f.reason === 'Unexpected').length;
 
-  if (parsed.errors.length > 0) {
-    console.warn('CSV parsing warnings:', parsed.errors);
+    console.log(`       Parent tour failed: ${tourFailedCount}`);
+    console.log(`       Invalid data: ${invalidCount}`);
+    console.log(`       Unexpected error: ${unexpectedCount}`);
+
+    if (imageResults.failed.length <= 10) {
+      console.log('   Failed Image IDs:');
+      imageResults.failed.forEach(failed => {
+        console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
+      });
+    } else {
+      console.log(`   (${imageResults.failed.length} failed images - showing first 10)`);
+      imageResults.failed.slice(0, 10).forEach(failed => {
+        console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
+      });
+    }
   }
 
-  console.log(`Found ${parsed.data.length} rows to import`);
-  console.log(`CSV Headers: ${parsed.meta.fields?.join(', ')}`);
+  // Tour Prices Summary
+  console.log('\n TOUR PRICES:');
+  console.log(`    Successfully imported: ${priceResults.imported}/${priceResults.total}`);
+  console.log(`    Failed to import: ${priceResults.failed.length}`);
 
-  return parsed;
-}
+  if (priceResults.failed.length > 0) {
+    const tourFailedCount = priceResults.failed.filter(f => f.reason === 'TourFailed').length;
+    const invalidCount = priceResults.failed.filter(f => f.reason === 'Invalid').length;
+    const unexpectedCount = tourResults.failed.filter(f => f.reason === 'Unexpected').length;
 
-// Progress tracking interface
-export interface ImportCounts {
-  success: number;
-  errors: number;
-  skipped: number;
-}
+    console.log(`       Parent tour failed: ${tourFailedCount}`);
+    console.log(`       Invalid data: ${invalidCount}`);
+    console.log(`       Unexpected error: ${unexpectedCount}`);
 
-// Initialize progress counters
-export function initializeProgress(): ImportCounts {
-  return { success: 0, errors: 0, skipped: 0 };
-}
-
-// Log progress with counter
-export function logProgress(counts: ImportCounts, message: string) {
-  console.log(`[${counts.success}] ${message}`);
-}
-
-// Log final summary
-export function logSummary(counts: ImportCounts, itemType: string) {
-  console.log(`\n${itemType} import completed.`);
-  console.log(`Success: ${counts.success}`);
-  console.log(`Errors: ${counts.errors}`);
-  console.log(`Skipped: ${counts.skipped}`);
-}
-
-// Generic tour validation
-export function validateTourReference(
-  tourUniqueId: string | null,
-  tourIdMap: Map<string, number>,
-  rowIndex: number,
-): { tourId: number; tourUniqueId: string } | null {
-  if (!tourUniqueId) {
-    console.warn(`[Row ${rowIndex + 1}] Skipped: Missing tourUniqueId`);
-    return null;
+    if (priceResults.failed.length <= 10) {
+      console.log('   Failed Price IDs:');
+      priceResults.failed.forEach(failed => {
+        console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
+      });
+    } else {
+      console.log(`   (${priceResults.failed.length} failed prices - showing first 10)`);
+      priceResults.failed.slice(0, 10).forEach(failed => {
+        console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
+      });
+    }
   }
 
-  const tourId = tourIdMap.get(tourUniqueId);
-  if (!tourId) {
-    console.warn(`[Row ${rowIndex + 1}] Skipped: Unmatched tourUniqueId: ${tourUniqueId}`);
-    return null;
+  // Overall Summary
+  const totalRecords = tourResults.total + imageResults.total + priceResults.total;
+  const totalImported = tourResults.imported + imageResults.imported + priceResults.imported;
+  const totalFailed = tourResults.failed.length + imageResults.failed.length + priceResults.failed.length;
+  const successRate = ((totalImported / totalRecords) * 100).toFixed(1);
+
+  console.log('\n OVERALL STATISTICS:');
+  console.log(`   Total records processed: ${totalRecords}`);
+  console.log(`   Total successful imports: ${totalImported}`);
+  console.log(`   Total failures: ${totalFailed}`);
+  console.log(`   Success rate: ${successRate}%`);
+
+  console.log('='.repeat(80));
+
+  if (totalFailed === 0) {
+    console.log(' All records imported successfully!');
+  } else if (totalImported > 0) {
+    console.log('  Import completed with some failures. Check the details above.');
+  } else {
+    console.log(' Import failed completely. Please review your data and try again.');
   }
 
-  return { tourId, tourUniqueId };
+  console.log('='.repeat(80));
 }
 
 // Cleanup function
 export async function cleanup() {
   await prisma.$disconnect();
 }
+

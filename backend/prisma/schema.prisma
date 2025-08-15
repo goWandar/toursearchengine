@@ -7,21 +7,10 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  schemas = ["public"]
+  schemas   = ["public"]
 }
 
-model TourPark {
-  tourId Int
-  parkId Int
-
-  tour   Tour @relation(fields: [tourId], references: [id])
-  park   Park @relation(fields: [parkId], references: [id])
-
-  @@id([tourId, parkId])
-  @@map("_TourParks")
-  @@schema("public")
-}
-
+// Beta Subscribers Model
 model BetaSubscribers {
   id    String @id @default(uuid())
   email String @unique
@@ -30,6 +19,21 @@ model BetaSubscribers {
   @@schema("public")
 }
 
+// User Model
+model User {
+  id              String   @id @default(dbgenerated("gen_random_uuid()"))
+  name            String
+  email           String   @unique
+  role            String   @default("USER")
+  isEmailVerified Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("users")
+  @@schema("public")
+}
+
+// Tour Related Models
 model Country {
   id           Int       @id @default(autoincrement())
   name         String    @unique
@@ -38,17 +42,6 @@ model Country {
   tours        Tour[]
 
   @@map("countries")
-  @@schema("public")
-}
-
-model Operator {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  dateCreated  DateTime  @default(now())
-  dateModified DateTime? @updatedAt
-  tours        Tour[]
-
-  @@map("operators")
   @@schema("public")
 }
 
@@ -65,6 +58,29 @@ model Park {
   tourParks TourPark[]
 
   @@map("parks")
+  @@schema("public")
+}
+
+model TourPark {
+  tourId Int
+  parkId Int
+
+  tour Tour @relation(fields: [tourId], references: [id])
+  park Park @relation(fields: [parkId], references: [id])
+
+  @@id([tourId, parkId])
+  @@map("_TourParks")
+  @@schema("public")
+}
+
+model Operator {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+  tours        Tour[]
+
+  @@map("operators")
   @@schema("public")
 }
 
@@ -122,34 +138,23 @@ model Tour {
   operatorId        Int?
   operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
 
-  tourParks         TourPark[]
+  tourParks TourPark[]
+
   @@unique([id, uniqueId])
   @@map("tours")
   @@schema("public")
 }
 
-model User {
-  id    String @id @default(dbgenerated("gen_random_uuid()"))
-  name  String
-  email String @unique
-  role  String @default("USER")
-  isEmailVerified  Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  @@map("users")
-  @@schema("public")
-}
-
+// Quiz Related Models
 model QuizResponse {
-  id               Int      @id @default(autoincrement())
-  userId           Int?
-  sessionId        String
-  quiz1Selection   String   @map("quiz_1_selection")
-  quiz2Selection   String   @map("quiz_2_selection")
-  quiz3Selection   String   @map("quiz_3_selection")
-  quiz4Selection   String   @map("quiz_4_selection")
-  dateCreated        DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  userId         Int?
+  sessionId      String
+  quiz1Selection String   @map("quiz_1_selection")
+  quiz2Selection String   @map("quiz_2_selection")
+  quiz3Selection String   @map("quiz_3_selection")
+  quiz4Selection String   @map("quiz_4_selection")
+  dateCreated    DateTime @default(now())
 
   @@map("quiz_responses")
   @@schema("public")

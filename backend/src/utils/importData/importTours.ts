@@ -1,82 +1,106 @@
 import {
-  parseCSV,
-  initializeProgress,
   logProgress,
-  logSummary,
   prisma,
   cleanup,
   parseDate,
-  cleanString,
+  TourCSV,
+  parseInteger,
+  parseBoolean,
+  tourIdMapping,
+  ImportResult,
 } from './sharedUtils/importDataUtils.js';
 
-async function importTours() {
-  console.log('Starting Tours import...');
+// Function from importing multiple tours from CSV files
+async function importTours(tours: TourCSV[]): Promise<ImportResult> {
+  let toursImported = 0;
+  const failedTours = [];
 
-  try {
-    const parsed = parseCSV('Tours.csv', 'Tours.csv');
-    const counts = initializeProgress();
+  console.log('\n=== STEP 1: Importing Tours ===');
 
-    for (let i = 0; i < parsed.data.length; i++) {
-      const row = parsed.data[i] as Record<string, any>;
+  for (const tourData of tours) {
+    try {
+      console.log(` Processing tour: ${tourData.id} - ${tourData.title}`);
 
-      try {
-        // Skip row if required fields are missing
-        if (!row.title && !row.uniqueId) {
-          counts.skipped++;
-          continue;
-        }
-
-        const tourData = {
-          uniqueId: cleanString(row.uniqueId) || `tour-${Date.now()}-${i}`,
-          title: cleanString(row.title) || 'Untitled Tour',
-          description: cleanString(row.description),
-          location: row.location ? String(row.location) : null,
-          countryId: row.countryId ? Math.floor(Number(row.countryId)) : null,
-          durationInDays: Number(row.durationInDays) || 0,
-          itinerary: cleanString(row.itinerary),
-          accommodationType: cleanString(row.accommodationType),
-          siteURL: cleanString(row.siteURL),
-          included: cleanString(row.included),
-          excluded: cleanString(row.excluded),
-          dateCreated: parseDate(row.dateCreated) || new Date(),
-          dateModified: parseDate(row.dateModified),
-          archived: Boolean(row.archived),
-          operatorId:
-            row.operatorId && row.operatorId !== '' ? parseInt(String(row.operatorId)) : null,
-        };
-
-        if (!tourData.uniqueId || !tourData.title) {
-          throw new Error('Missing required fields: uniqueId or title');
-        }
-
-        await prisma.tour.create({ data: tourData });
-        counts.success++;
-        logProgress(counts, `Imported: ${tourData.title}`);
-      } catch (error) {
-        counts.errors++;
-        console.error(`[Row ${i + 1}] Failed to import:`, {
-          title: row.title,
-          uniqueId: row.uniqueId,
-          error: error instanceof Error ? error.message : error,
+      // Validate required fields
+      if (!tourData.uniqueId || !tourData.title) {
+        failedTours.push({
+          id: tourData.id,
+          reason: "Invalid" as const,
+          details: "Missing required fields: uniqueId or title"
         });
+        console.log(`  Skipping tour ${tourData.id}: Missing required fields`);
+        continue;
       }
+
+      // Check if tour already exists by uniqueId
+      const existingTour = await prisma.tour.findUnique({
+        where: { uniqueId: tourData.uniqueId }
+      });
+
+      if (existingTour) {
+        failedTours.push({
+          id: tourData.id,
+          reason: "Exists" as const,
+          details: `Tour with uniqueId ${tourData.uniqueId} already exists`
+        });
+        console.log(`  Skipping tour ${tourData.id}: Already exists with uniqueId ${tourData.uniqueId}`);
+        continue;
+      }
+
+      // Prepare tour data for insertion
+      const tourInsertData = {
+        uniqueId: tourData.uniqueId,
+        title: tourData.title,
+        description: tourData.description || null,
+        location: tourData.location || null,
+        countryId: parseInteger(tourData.countryId),
+        durationInDays: parseInteger(tourData.durationInDays) || 0,
+        itinerary: tourData.itinerary || null,
+        accommodationType: tourData.accommodationType || null,
+        siteURL: tourData.siteURL || null,
+        included: tourData.included || null,
+        excluded: tourData.excluded || null,
+        dateCreated: parseDate(tourData.dateCreated) || new Date(),
+        dateModified: parseDate(tourData.dateModified),
+        archived: parseBoolean(tourData.archived),
+        operatorId: parseInteger(tourData.operatorId),
+      };
+
+      // Insert tour
+      const newTour = await prisma.tour.create({
+        data: tourInsertData,
+      });
+
+      // Map old ID to new ID and uniqueId for related data imports
+      tourIdMapping.set(tourData.id, {
+        newId: newTour.id,
+        uniqueId: newTour.uniqueId
+      });
+
+      toursImported++;
+      console.log(`  Tour imported: Old ID ${tourData.id} -> New ID ${newTour.id}`);
+
+    } catch (error) {
+      // Handle database errors or other unexpected issues
+      failedTours.push({
+        id: tourData.id,
+        reason: "Unexpected" as const,
+        details: error instanceof Error ? error.message : String(error)
+      });
+      console.error(`  Failed to insert tour ${tourData.id} - ${tourData.title}:`, error);
+    } finally {
+      // Clean up after each operation
+      await cleanup();
     }
-
-    logSummary(counts, 'Tours');
-
-    const totalTours = await prisma.tour.count();
-    console.log(`Total tours in database: ${totalTours}`);
-  } catch (error) {
-    console.error('Tours import failed:', error);
-    throw error;
-  } finally {
-    await cleanup();
   }
-}
 
-// ESM-compatible entry point
-if (import.meta.url === `file://${process.argv[1]}`) {
-  importTours().catch(console.error);
+  logProgress('Tours', tours.length, toursImported);
+
+  return {
+    imported: toursImported,
+    failed: failedTours,
+    total: tours.length
+  };
 }
 
 export { importTours };
