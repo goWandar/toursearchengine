@@ -1,7 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Alert, AlertDescription, AlertTitle, type AlertProps } from './alert';
+import { Button } from '../button/button';
 // Top imports: alias the Info icon
-import { AlertCircle, CheckCircle, Info as InfoIcon, AlertTriangle, Terminal } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle,
+  Info as InfoIcon,
+  AlertTriangle,
+  Terminal,
+  X,
+  Download,
+  RefreshCw,
+} from 'lucide-react';
 
 const meta: Meta<AlertProps> = {
   title: 'Components/Alert',
@@ -203,6 +213,211 @@ export const AllVariants: Story = {
   ),
 };
 
-// Replace any remaining JSX usages of the icon:
-// For example, around line ~165 in AllVariants (or similar)
 <InfoIcon className="h-4 w-4" />;
+
+// Update WithDismissButton story
+export const WithDismissButton: Story = {
+  args: {
+    variant: 'info',
+  },
+  render: (args) => (
+    <div style={{ width: '600px' }}>
+      <Alert {...args} className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1">
+          <InfoIcon className="h-4 w-4 mt-0.5" />
+          <div>
+            <AlertTitle>New Feature Available</AlertTitle>
+            <AlertDescription>
+              We've added dark mode support to your dashboard. Try it out in your settings.
+            </AlertDescription>
+          </div>
+        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="flex-shrink-0"
+          aria-label="Close alert"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </Alert>
+    </div>
+  ),
+};
+
+// Update SuccessWithAction story
+export const SuccessWithAction: Story = {
+  args: {
+    variant: 'success',
+  },
+  render: (args) => (
+    <div style={{ width: '600px' }}>
+      <Alert {...args} className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1">
+          <CheckCircle className="h-4 w-4 mt-0.5" />
+          <div>
+            <AlertTitle>File Uploaded Successfully</AlertTitle>
+            <AlertDescription className="mb-3">
+              Your document has been uploaded and is now being processed. You'll receive a notification
+              when it's ready.
+            </AlertDescription>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline">
+                View File
+              </Button>
+              <Button size="sm" variant="ghost">
+                Upload Another
+              </Button>
+            </div>
+          </div>
+        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="flex-shrink-0"
+          aria-label="Close alert"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </Alert>
+    </div>
+  ),
+};
+
+// Update InteractiveAlerts story - specifically the warning alert that has a close button
+export const InteractiveAlerts: Story = {
+  render: () => (
+    <div style={{ width: '700px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <Alert variant="info">
+        <div className="flex items-start gap-3">
+          <InfoIcon className="h-4 w-4 mt-0.5" />
+          <div className="flex-1">
+            <AlertTitle>Cookie Consent</AlertTitle>
+            <AlertDescription className="mb-3">
+              We use cookies to enhance your experience. By continuing to visit this site you agree to
+              our use of cookies.
+            </AlertDescription>
+            <div className="flex gap-2">
+              <Button size="sm" variant="default">
+                Accept All
+              </Button>
+              <Button size="sm" variant="outline">
+                Customize
+              </Button>
+              <Button size="sm" variant="ghost">
+                Decline
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Alert>
+
+      <Alert variant="warning" className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1">
+          <AlertTriangle className="h-4 w-4 mt-0.5" />
+          <div>
+            <AlertTitle>Storage Almost Full</AlertTitle>
+            <AlertDescription className="mb-3">
+              You're using 95% of your storage space. Upgrade your plan or delete some files to
+              continue.
+            </AlertDescription>
+            <div className="flex gap-2">
+              <Button size="sm" variant="default">
+                Upgrade Plan
+              </Button>
+              <Button size="sm" variant="outline">
+                Manage Files
+              </Button>
+            </div>
+          </div>
+        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="flex-shrink-0"
+          aria-label="Close alert"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </Alert>
+
+      <Alert variant="destructive">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="h-4 w-4 mt-0.5" />
+          <div className="flex-1">
+            <AlertTitle>Payment Failed</AlertTitle>
+            <AlertDescription className="mb-3">
+              Your payment could not be processed. Please update your payment method to continue your
+              subscription.
+            </AlertDescription>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline">
+                Update Payment
+              </Button>
+              <Button size="sm" variant="ghost">
+                Contact Support
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Alert>
+    </div>
+  ),
+};
+
+export const WithActionButtons: Story = {
+  args: {
+    variant: 'warning',
+  },
+  render: (args) => (
+    <div style={{ width: '600px' }}>
+      <Alert {...args}>
+        <AlertTriangle className="h-4 w-4" />
+        <div className="flex-1">
+          <AlertTitle>Update Required</AlertTitle>
+          <AlertDescription className="mb-3">
+            A new version is available. Update now to get the latest features and security
+            improvements.
+          </AlertDescription>
+          <div className="flex gap-2">
+            <Button size="sm" variant="default">
+              <Download className="h-4 w-4" />
+              Update Now
+            </Button>
+            <Button size="sm" variant="outline">
+              Remind Later
+            </Button>
+          </div>
+        </div>
+      </Alert>
+    </div>
+  ),
+};
+
+export const ErrorWithRetry: Story = {
+  args: {
+    variant: 'destructive',
+  },
+  render: (args) => (
+    <div style={{ width: '600px' }}>
+      <Alert {...args}>
+        <AlertCircle className="h-4 w-4" />
+        <div className="flex-1">
+          <AlertTitle>Connection Failed</AlertTitle>
+          <AlertDescription className="mb-3">
+            Unable to connect to the server. Please check your internet connection and try again.
+          </AlertDescription>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline">
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </Button>
+            <Button size="sm" variant="ghost">
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      </Alert>
+    </div>
+  ),
+};
