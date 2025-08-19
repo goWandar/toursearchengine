@@ -2,7 +2,7 @@ import { FaInstagram, FaLinkedinIn, FaFacebookF } from 'react-icons/fa6';
 
 const socialIcons = [
   { id: 'instagram', icon: <FaInstagram size={20} />, link: '#' },
-  { id: 'linkedin', icon: <FaLinkedinIn size={20} />, link: '#' },
+  { id: 'linkedin', icon: <FaLinkedinIn size={20} />, link: 'https://www.linkedin.com/company/gowandar/posts/?feedView=all' },
   { id: 'facebook', icon: <FaFacebookF size={20} />, link: '#' },
 ];
 

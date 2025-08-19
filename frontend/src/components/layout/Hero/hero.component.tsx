@@ -4,7 +4,7 @@ import heroVideo from '../../../assets/mp4/heroVideo.mp4';
 
 const Hero = () => {
   return (
-    <div className="relative w-full min-h-screen flex flex-col" style={{ minHeight: "70vh" }}>
+    <div className="relative w-full min-h-screen flex flex-col" style={{ minHeight: "50vh" }}>
       {/* Background video */}
       <video
         autoPlay

@@ -1,46 +1,51 @@
 import { FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-scroll';
-import Icon from '../../../assets/icons/discover-light.svg'; // Replace with real icons if available
+import p from '../../../assets/icons/p.png';
+import c from '../../../assets/icons/c.png';
+import h from '../../../assets/icons/h.png';
+import i from '../../../assets/icons/i.png';
+import d from '../../../assets/icons/d.png';
+import s from '../../../assets/icons/s.png';
 
 const features = [
   {
     id: 1,
-    icon: Icon,
+    icon: p,
     title: 'Personalized Matching',
     description:
       'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
   },
   {
     id: 2,
-    icon: Icon,
+    icon: c,
     title: 'Curated, Not Crowded',
     description:
       'Explore curated safari options selected based on your travel personality and goals.',
   },
   {
     id: 3,
-    icon: Icon,
+    icon: h,
     title: 'Helpful, Not Overwhelming',
     description:
       'Seamlessly build your trip with intuitive tools to customize lodging, dates, and experiences.',
   },
   {
     id: 4,
-    icon: Icon,
+    icon: i,
     title: 'Independent Reviews, All in One Place',
     description:
       'Get reviews, stories, and insights from like-minded explorers to plan with confidence.',
   },
   {
     id: 5,
-    icon: Icon,
+    icon: d,
     title: 'Decision Making Insights',
     description:
       'We vet every operator to ensure your journey is safe, ethical, and top-quality.',
   },
   {
     id: 6,
-    icon: Icon,
+    icon: s,
     title: 'Secure Booking Experience',
     description:
       'Book your trip with full transparency and support from the Wandar team.',

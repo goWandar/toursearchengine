@@ -1,6 +1,24 @@
 import { FaFacebookF, FaLinkedinIn, FaInstagram } from 'react-icons/fa6';
 import Logo from '../../../assets/icons/Union.svg';
 
+const socialLinks = [
+  {
+    id: 'facebook',
+    icon: FaFacebookF,
+    url: 'https://www.facebook.com/YourPageName',
+  },
+  {
+    id: 'linkedin',
+    icon: FaLinkedinIn,
+    url: 'https://www.linkedin.com/company/gowandar/posts/?feedView=all',
+  },
+  {
+    id: 'instagram',
+    icon: FaInstagram,
+    url: 'https://www.instagram.com/yourhandle',
+  },
+];
+
 const Footer = () => {
   return (
     <footer className="bg-[#1E1E1E] pt-40 pb-10 px-4 sm:px-8 md:px-12 text-white relative z-10">
@@ -21,13 +39,13 @@ const Footer = () => {
 
         {/* Social Icons */}
         <div className="flex gap-4">
-          {[FaFacebookF, FaLinkedinIn, FaInstagram].map((Icon, index) => (
+          {socialLinks.map(({ id, icon: Icon, url }) => (
             <a
-              key={index}
-              href="#"
+              key={id}
+              href={url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Wandar on social media"
+              aria-label={`Wandar on ${id}`}
               className="hover:opacity-80 transition"
             >
               <Icon size={20} />
