@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import * as React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,6 +9,7 @@ import {
   DialogTrigger,
 } from './dialog';
 import { Button } from '../button/button';
+import { useState } from 'react';
 
 type DialogProps = React.ComponentProps<typeof Dialog>;
 
@@ -62,7 +62,8 @@ export const Default: Story = {
         </DialogHeader>
         <div className="py-4">
           <p className="text-sm text-muted-foreground">
-            This is the main content area of the dialog. You can place forms, text, or any other components here.
+            This is the main content area of the dialog. You can place forms, text, or any other
+            components here.
           </p>
         </div>
         <DialogFooter>
@@ -85,7 +86,8 @@ export const Confirmation: Story = {
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+            This action cannot be undone. This will permanently delete your account and remove your
+            data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -144,8 +146,8 @@ export const FormDialog: Story = {
 // Controlled Dialog
 export const Controlled: Story = {
   render: () => {
-    const [open, setOpen] = React.useState(false);
-    
+    const [open, setOpen] = useState(false);
+
     return (
       <div className="space-y-4">
         <div className="flex items-center space-x-2">
@@ -154,7 +156,7 @@ export const Controlled: Story = {
             Dialog is {open ? 'open' : 'closed'}
           </span>
         </div>
-        
+
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent>
             <DialogHeader>
@@ -165,7 +167,8 @@ export const Controlled: Story = {
             </DialogHeader>
             <div className="py-4">
               <p className="text-sm">
-                You can control this dialog programmatically using the open prop and onOpenChange callback.
+                You can control this dialog programmatically using the open prop and onOpenChange
+                callback.
               </p>
             </div>
             <DialogFooter>
@@ -191,33 +194,41 @@ export const LargeContent: Story = {
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Terms and Conditions</DialogTitle>
-          <DialogDescription>
-            Please read our terms and conditions carefully.
-          </DialogDescription>
+          <DialogDescription>Please read our terms and conditions carefully.</DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
           <div>
             <h3 className="font-semibold mb-2">1. Acceptance of Terms</h3>
             <p className="text-sm text-muted-foreground">
-              By accessing and using this service, you accept and agree to be bound by the terms and provision of this agreement.
+              By accessing and using this service, you accept and agree to be bound by the terms and
+              provision of this agreement.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">2. Use License</h3>
             <p className="text-sm text-muted-foreground">
-              Permission is granted to temporarily download one copy of the materials on our website for personal, non-commercial transitory viewing only.
+              Permission is granted to temporarily download one copy of the materials on our website
+              for personal, non-commercial transitory viewing only.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">3. Disclaimer</h3>
             <p className="text-sm text-muted-foreground">
-              The materials on our website are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+              The materials on our website are provided on an 'as is' basis. We make no warranties,
+              expressed or implied, and hereby disclaim and negate all other warranties including
+              without limitation, implied warranties or conditions of merchantability, fitness for a
+              particular purpose, or non-infringement of intellectual property or other violation of
+              rights.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">4. Limitations</h3>
             <p className="text-sm text-muted-foreground">
-              In no event shall our company or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website, even if we or our authorized representative has been notified orally or in writing of the possibility of such damage.
+              In no event shall our company or its suppliers be liable for any damages (including,
+              without limitation, damages for loss of data or profit, or due to business
+              interruption) arising out of the use or inability to use the materials on our website,
+              even if we or our authorized representative has been notified orally or in writing of
+              the possibility of such damage.
             </p>
           </div>
         </div>
@@ -254,12 +265,13 @@ export const CustomStyled: Story = {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" className="border-purple-300 text-purple-700 hover:bg-purple-50">
+          <Button
+            variant="outline"
+            className="border-purple-300 text-purple-700 hover:bg-purple-50"
+          >
             Cancel
           </Button>
-          <Button className="bg-purple-600 hover:bg-purple-700">
-            Continue
-          </Button>
+          <Button className="bg-purple-600 hover:bg-purple-700">Continue</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

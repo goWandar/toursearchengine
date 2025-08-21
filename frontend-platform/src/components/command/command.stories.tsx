@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import * as React from 'react';
 import {
   Command,
   CommandDialog,
@@ -26,6 +25,8 @@ import {
   PlusCircle,
 } from 'lucide-react';
 import { Button } from '../button/button';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 const meta: Meta<typeof Command> = {
   title: 'Components/Command',
@@ -87,9 +88,9 @@ export const Default: Story = {
 
 export const WithDialog: Story = {
   render: () => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
       const down = (e: KeyboardEvent) => {
         if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
@@ -177,7 +178,7 @@ export const WithDialog: Story = {
 
 export const SearchExample: Story = {
   render: () => {
-    const [value, setValue] = React.useState('');
+    const [value, setValue] = useState('');
 
     const frameworks = [
       { value: 'next.js', label: 'Next.js', icon: '⚡' },
