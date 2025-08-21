@@ -3,8 +3,8 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsib
 import { Button } from '../button/button';
 import { Card } from '../card/card';
 import { Badge } from '../badge/badge';
-import * as React from 'react';
 import { ChevronDown, ChevronRight, Settings, User, Bell } from 'lucide-react';
+import { useState } from 'react';
 
 const meta: Meta<typeof Collapsible> = {
   title: 'Components/Collapsible',
@@ -72,15 +72,21 @@ export const WithCard: Story = {
             <div className="px-4 pb-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Notifications</span>
-                <Button size="sm" variant="outline">Configure</Button>
+                <Button size="sm" variant="outline">
+                  Configure
+                </Button>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Privacy</span>
-                <Button size="sm" variant="outline">Manage</Button>
+                <Button size="sm" variant="outline">
+                  Manage
+                </Button>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Account</span>
-                <Button size="sm" variant="outline">Edit</Button>
+                <Button size="sm" variant="outline">
+                  Edit
+                </Button>
               </div>
             </div>
           </CollapsibleContent>
@@ -92,22 +98,17 @@ export const WithCard: Story = {
 
 export const ControlledExample: Story = {
   render: () => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
       <div className="w-80 space-y-4">
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            onClick={() => setIsOpen(!isOpen)}
-          >
+          <Button size="sm" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? 'Close' : 'Open'} Externally
           </Button>
-          <Badge variant={isOpen ? 'success' : 'secondary'}>
-            {isOpen ? 'Open' : 'Closed'}
-          </Badge>
+          <Badge variant={isOpen ? 'success' : 'secondary'}>{isOpen ? 'Open' : 'Closed'}</Badge>
         </div>
-        
+
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger asChild>
             <Button variant="outline" className="w-full justify-between">
@@ -117,8 +118,8 @@ export const ControlledExample: Story = {
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-2 p-4 border rounded-md">
             <p className="text-sm">
-              This collapsible is controlled by external state. 
-              Current state: <strong>{isOpen ? 'Open' : 'Closed'}</strong>
+              This collapsible is controlled by external state. Current state:{' '}
+              <strong>{isOpen ? 'Open' : 'Closed'}</strong>
             </p>
           </CollapsibleContent>
         </Collapsible>
@@ -129,49 +130,41 @@ export const ControlledExample: Story = {
 
 export const MultipleCollapsibles: Story = {
   render: () => {
-    const [openItems, setOpenItems] = React.useState<string[]>([]);
-    
+    const [openItems, setOpenItems] = useState<string[]>([]);
+
     const toggleItem = (item: string) => {
-      setOpenItems(prev => 
-        prev.includes(item) 
-          ? prev.filter(i => i !== item)
-          : [...prev, item]
+      setOpenItems((prev) =>
+        prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item],
       );
     };
-    
+
     const sections = [
       { id: 'profile', title: 'Profile Settings', icon: User },
       { id: 'notifications', title: 'Notifications', icon: Bell },
       { id: 'advanced', title: 'Advanced Options', icon: Settings },
     ];
-    
+
     return (
       <div className="w-96 space-y-2">
         {sections.map(({ id, title, icon: Icon }) => (
-          <Collapsible 
-            key={id}
-            open={openItems.includes(id)}
-            onOpenChange={() => toggleItem(id)}
-          >
+          <Collapsible key={id} open={openItems.includes(id)} onOpenChange={() => toggleItem(id)}>
             <CollapsibleTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full justify-between"
-              >
+              <Button variant="outline" className="w-full justify-between">
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4" />
                   {title}
                 </div>
-                {openItems.includes(id) ? 
-                  <ChevronDown className="h-4 w-4" /> : 
+                {openItems.includes(id) ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
                   <ChevronRight className="h-4 w-4" />
-                }
+                )}
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-1 p-3 border rounded-md bg-gray-50">
               <p className="text-sm text-gray-600">
-                Content for {title.toLowerCase()}. This section contains 
-                various options and settings related to {title.toLowerCase()}.
+                Content for {title.toLowerCase()}. This section contains various options and
+                settings related to {title.toLowerCase()}.
               </p>
             </CollapsibleContent>
           </Collapsible>
@@ -193,7 +186,7 @@ export const NestedCollapsibles: Story = {
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2 p-4 border rounded-md space-y-2">
           <p className="text-sm mb-3">This is the main category content.</p>
-          
+
           <Collapsible>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm" className="w-full justify-between">
@@ -202,12 +195,10 @@ export const NestedCollapsibles: Story = {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-1 p-2 bg-gray-100 rounded">
-              <p className="text-xs text-gray-600">
-                Nested content for subcategory 1.
-              </p>
+              <p className="text-xs text-gray-600">Nested content for subcategory 1.</p>
             </CollapsibleContent>
           </Collapsible>
-          
+
           <Collapsible>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm" className="w-full justify-between">
@@ -216,9 +207,7 @@ export const NestedCollapsibles: Story = {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-1 p-2 bg-gray-100 rounded">
-              <p className="text-xs text-gray-600">
-                Nested content for subcategory 2.
-              </p>
+              <p className="text-xs text-gray-600">Nested content for subcategory 2.</p>
             </CollapsibleContent>
           </Collapsible>
         </CollapsibleContent>
@@ -243,7 +232,7 @@ export const DisabledState: Story = {
           </p>
         </CollapsibleContent>
       </Collapsible>
-      
+
       <Collapsible>
         <CollapsibleTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
@@ -274,8 +263,8 @@ export const AnimatedExample: Story = {
         <CollapsibleContent className="mt-2 overflow-hidden transition-all duration-300 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0">
           <div className="p-4 border rounded-md">
             <p className="text-sm text-gray-600">
-              This collapsible has smooth animations when opening and closing.
-              The chevron icon also rotates to indicate the state.
+              This collapsible has smooth animations when opening and closing. The chevron icon also
+              rotates to indicate the state.
             </p>
           </div>
         </CollapsibleContent>

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import * as React from 'react';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +31,7 @@ import {
   Keyboard,
   CreditCard,
 } from 'lucide-react';
+import { useState } from 'react';
 
 type DropdownMenuProps = React.ComponentProps<typeof DropdownMenu>;
 
@@ -202,9 +203,9 @@ export const WithSubmenus: Story = {
 // With Checkboxes
 export const WithCheckboxes: Story = {
   render: () => {
-    const [showStatusBar, setShowStatusBar] = React.useState(true);
-    const [showActivityBar, setShowActivityBar] = React.useState(false);
-    const [showPanel, setShowPanel] = React.useState(false);
+    const [showStatusBar, setShowStatusBar] = useState(true);
+    const [showActivityBar, setShowActivityBar] = useState(false);
+    const [showPanel, setShowPanel] = useState(false);
 
     return (
       <DropdownMenu>
@@ -236,7 +237,7 @@ export const WithCheckboxes: Story = {
 // With Radio Groups
 export const WithRadioGroups: Story = {
   render: () => {
-    const [position, setPosition] = React.useState('bottom');
+    const [position, setPosition] = useState('bottom');
 
     return (
       <DropdownMenu>
@@ -260,7 +261,7 @@ export const WithRadioGroups: Story = {
 // Controlled Example
 export const Controlled: Story = {
   render: () => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     return (
       <div className="space-y-4">
@@ -299,9 +300,9 @@ export const Controlled: Story = {
 // Complex Example with Groups
 export const ComplexExample: Story = {
   render: () => {
-    const [bookmarksChecked, setBookmarksChecked] = React.useState(true);
-    const [urlsChecked, setUrlsChecked] = React.useState(false);
-    const [person, setPerson] = React.useState('pedro');
+    const [bookmarksChecked, setBookmarksChecked] = useState(true);
+    const [urlsChecked, setUrlsChecked] = useState(false);
+    const [person, setPerson] = useState('pedro');
 
     return (
       <DropdownMenu>
