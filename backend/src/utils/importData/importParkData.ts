@@ -27,7 +27,7 @@ async function importParks() {
     for (const parkData of parks) {
         try {
             // Validate required fields
-            const requiredFields = ['name', 'type', 'country', 'countryCode', 'keyword'];
+            const requiredFields = ['name', 'type', 'country', 'keyword'];
             const missingFields = requiredFields.filter(f => !parkData[f as keyof ParkCSV]);
 
             if (missingFields.length > 0) {
