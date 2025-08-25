@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { cloneElement, forwardRef, isValidElement, ReactElement, useEffect } from 'react';
 
 // Button variants using object-based approach instead of class-variance-authority
 const buttonVariants = {
@@ -32,7 +32,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   loading?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
@@ -47,7 +47,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     // Enforce aria-label for icon-only buttons
-    React.useEffect(() => {
+    useEffect(() => {
       if (size === 'icon' && !props['aria-label'] && !props['aria-labelledby']) {
         console.warn(
           'Button with size="icon" should have an aria-label or aria-labelledby for accessibility. ' +
@@ -75,10 +75,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     // Simplified asChild implementation
-    if (asChild && React.isValidElement(children) && !loading) {
-      const childElement = children as React.ReactElement<{ className?: string }>;
+    if (asChild && isValidElement(children) && !loading) {
+      const childElement = children as ReactElement<{ className?: string }>;
 
-      return React.cloneElement(childElement, {
+      return cloneElement(childElement, {
         ...childElement.props,
         className: cn(
           buttonBaseStyles,
