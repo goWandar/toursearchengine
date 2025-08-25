@@ -1,7 +1,7 @@
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { config } from 'dotenv';
-import { prisma, parseCSV, cleanup } from './sharedUtils/importDataUtils.js';
+import { prisma, parseCSV, cleanup } from './utils/importDataUtils.js';
 
 // Load environment variables from the project root
 const __filename = fileURLToPath(import.meta.url);
