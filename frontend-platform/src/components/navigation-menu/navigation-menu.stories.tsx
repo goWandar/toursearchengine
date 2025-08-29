@@ -21,9 +21,9 @@ import {
   MapPin,
   ExternalLink,
 } from 'lucide-react';
-import { forwardRef } from 'react';
+import { ComponentProps, ComponentPropsWithoutRef, ComponentRef, forwardRef } from 'react';
 
-type NavigationMenuProps = React.ComponentProps<typeof NavigationMenu>;
+type NavigationMenuProps = ComponentProps<typeof NavigationMenu>;
 
 const meta: Meta<NavigationMenuProps> = {
   title: 'Components/NavigationMenu',
@@ -56,8 +56,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Helper component for consistent link styling
-const ListItem = forwardRef<React.ComponentRef<'a'>, React.ComponentPropsWithoutRef<'a'>>(
-  ({ className, title, children, ...props }: React.ComponentPropsWithoutRef<'a'>, ref) => {
+const ListItem = forwardRef<ComponentRef<'a'>, ComponentPropsWithoutRef<'a'>>(
+  ({ className, title, children, ...props }: ComponentPropsWithoutRef<'a'>, ref) => {
     return (
       <li>
         <NavigationMenuLink asChild>

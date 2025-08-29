@@ -1,6 +1,6 @@
 import type { Preview } from '@storybook/nextjs-vite';
 import './storybook.css';
-import React from 'react';
+import { createElement, CSSProperties, useEffect } from 'react';
 
 const preview: Preview = {
   parameters: {
@@ -52,19 +52,19 @@ const preview: Preview = {
     (Story, context) => {
       const theme = context.globals.theme || 'light';
 
-      React.useEffect(() => {
+      useEffect(() => {
         const root = document.documentElement;
         const body = document.body;
-        
+
         // Remove existing theme classes
         root.classList.remove('light', 'dark');
         body.classList.remove('light', 'dark');
-        
+
         // Add new theme class
         root.classList.add(theme);
         body.classList.add(theme);
         root.setAttribute('data-theme', theme);
-        
+
         // Force update CSS variables for immediate effect
         if (theme === 'dark') {
           root.style.setProperty('--color-background', 'hsl(0 0% 3.9%)');
@@ -75,23 +75,19 @@ const preview: Preview = {
         }
       }, [theme]);
 
-      return React.createElement(
+      return createElement(
         'div',
-        { 
+        {
           className: `${theme} min-h-screen`,
-          style: { 
+          style: {
             minHeight: '100vh',
             backgroundColor: 'var(--color-background)',
             color: 'var(--color-foreground)',
             '--fallback-bg': theme === 'dark' ? '#0a0a0a' : '#ffffff',
             '--fallback-fg': theme === 'dark' ? '#fafafa' : '#0a0a0a',
-          } as React.CSSProperties
+          } as CSSProperties,
         },
-        React.createElement(
-          'div',
-          { className: 'p-4' },
-          React.createElement(Story, null)
-        )
+        createElement('div', { className: 'p-4' }, createElement(Story, null)),
       );
     },
   ],

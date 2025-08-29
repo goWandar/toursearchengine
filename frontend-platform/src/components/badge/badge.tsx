@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { HTMLAttributes } from 'react';
 
 const badgeVariants = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/80',
@@ -15,7 +16,7 @@ const badgeVariants = {
 const badgeBaseStyles =
   'inline-flex items-center rounded-full border-0 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
   variant?: keyof typeof badgeVariants;
 }
 
