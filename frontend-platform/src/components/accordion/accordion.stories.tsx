@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
+import { ComponentPropsWithoutRef } from 'react';
 
-type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>;
+type AccordionProps = ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>;
 
 const meta: Meta<AccordionProps> = {
   title: 'Components/Accordion',
@@ -112,7 +113,7 @@ export const Multiple: Story = {
         <AccordionItem value="item-2">
           <AccordionTrigger>⚡ Performance</AccordionTrigger>
           <AccordionContent>
-            Optimized with React.forwardRef and efficient re-rendering patterns for smooth user
+            Optimized with forwardRef and efficient re-rendering patterns for smooth user
             interactions.
           </AccordionContent>
         </AccordionItem>

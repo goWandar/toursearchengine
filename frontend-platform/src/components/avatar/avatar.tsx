@@ -1,21 +1,29 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { forwardRef, useEffect, useState } from 'react';
+import {
+  forwardRef,
+  HTMLAttributes,
+  ImgHTMLAttributes,
+  ReactNode,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from 'react';
 
-export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AvatarProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+export interface AvatarImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
   alt?: string;
   className?: string;
 }
 
-export interface AvatarFallbackProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AvatarFallbackProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(({ className, children, ...props }, ref) => {
@@ -41,12 +49,12 @@ const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
       setImageLoaded(false);
     }, [src]);
 
-    const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const handleError = (event: SyntheticEvent<HTMLImageElement, Event>) => {
       setImageLoadError(true);
       onError?.(event);
     };
 
-    const handleLoad = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
       setImageLoaded(true);
       onLoad?.(event);
     };

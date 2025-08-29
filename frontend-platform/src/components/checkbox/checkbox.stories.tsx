@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Checkbox } from './checkbox';
+import { ComponentProps } from 'react';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Components/Checkbox',
@@ -51,7 +52,7 @@ export const DisabledChecked: Story = {
 };
 
 export const WithLabel: Story = {
-  render: (args: React.ComponentProps<typeof Checkbox>) => (
+  render: (args: ComponentProps<typeof Checkbox>) => (
     <div className="flex items-center space-x-2">
       <Checkbox id="terms" {...args} />
       <label

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Label } from './label';
 import { Input } from '../input/input';
 import { Checkbox } from '../checkbox/checkbox';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 const meta: Meta<typeof Label> = {
   title: 'Components/Label',
@@ -72,10 +72,10 @@ export const WithCheckbox: Story = {
 
     return (
       <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="terms" 
-          checked={checked} 
-          onCheckedChange={(value) => setChecked(value === true)} 
+        <Checkbox
+          id="terms"
+          checked={checked}
+          onCheckedChange={(value) => setChecked(value === true)}
         />
         <Label htmlFor="terms">I agree to the terms and conditions</Label>
       </div>
@@ -119,7 +119,7 @@ export const FormExample: Story = {
       newsletter: false,
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: FormEvent) => {
       e.preventDefault();
       alert(`Form submitted: ${JSON.stringify(formData, null, 2)}`);
     };

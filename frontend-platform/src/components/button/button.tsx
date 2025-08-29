@@ -1,7 +1,14 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { cloneElement, forwardRef, isValidElement, ReactElement, useEffect } from 'react';
+import {
+  ButtonHTMLAttributes,
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  ReactElement,
+  useEffect,
+} from 'react';
 
 // Button variants using object-based approach instead of class-variance-authority
 const buttonVariants = {
@@ -25,7 +32,7 @@ const buttonSizes = {
 const buttonBaseStyles =
   'inline-flex items-center justify-center gap-0.5 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof buttonVariants;
   size?: keyof typeof buttonSizes;
   asChild?: boolean;

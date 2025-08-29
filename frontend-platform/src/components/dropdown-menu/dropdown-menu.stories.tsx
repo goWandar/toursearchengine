@@ -31,9 +31,9 @@ import {
   Keyboard,
   CreditCard,
 } from 'lucide-react';
-import { useState } from 'react';
+import { ComponentProps, useState } from 'react';
 
-type DropdownMenuProps = React.ComponentProps<typeof DropdownMenu>;
+type DropdownMenuProps = ComponentProps<typeof DropdownMenu>;
 
 const meta: Meta<DropdownMenuProps> = {
   title: 'Components/DropdownMenu',

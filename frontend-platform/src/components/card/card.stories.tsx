@@ -6,11 +6,13 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardMedia,
 } from './card';
 import { Button } from '../button/button';
 import { Badge } from '../badge/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '../avatar/avatar';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../accordion/accordion';
+import { AspectRatio } from '../aspect-ratio/aspect-ratio';
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Card',
@@ -402,6 +404,201 @@ export const SafariCard: Story = {
           </Button>
         </div>
       </CardContent>
+    </Card>
+  ),
+};
+
+// Enhanced Safari Tour Card with AspectRatio
+export const SafariTourWithAspectRatio: Story = {
+  render: () => (
+    <Card className="w-[400px] overflow-hidden">
+      {/* Consistent 16:9 aspect ratio for tour image */}
+      <CardMedia>
+        <AspectRatio ratio={16 / 9}>
+          <div className="relative w-full h-full bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center">
+            {/* Safari badges overlay */}
+            <div className="absolute top-4 left-4 flex items-center gap-2 bg-white px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+              <span>🦁 Safari</span>
+            </div>
+            <div className="absolute top-4 right-4 flex items-center gap-1 bg-white px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+              <span className="text-yellow-500">★</span>
+              <span>4.8 (247)</span>
+            </div>
+            
+            {/* Placeholder safari scene */}
+            <div className="text-center">
+              <div className="w-20 h-20 bg-amber-300 rounded-full flex items-center justify-center mb-2 mx-auto">
+                <span className="text-3xl">🦒</span>
+              </div>
+              <p className="text-amber-800 font-medium">Maasai Mara</p>
+            </div>
+          </div>
+        </AspectRatio>
+      </CardMedia>
+
+      <CardContent className="p-6">
+        <CardTitle className="text-xl font-bold mb-2">Maasai Mara Classic Safari</CardTitle>
+        <div className="flex items-center gap-2 text-gray-600 mb-3">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Maasai Mara National Reserve, Kenya</span>
+        </div>
+
+        <p className="text-gray-600 text-sm mb-4">
+          Experience the world-famous Maasai Mara with incredible wildlife viewing and rich cultural experiences.
+        </p>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Badge variant="secondary" className="text-xs">Big 5</Badge>
+          <Badge variant="secondary" className="text-xs">Great Migration</Badge>
+          <Badge variant="secondary" className="text-xs">Cultural Experience</Badge>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-2xl font-bold">$350-450/day</div>
+            <div className="text-sm text-gray-600">per person</div>
+          </div>
+          <Button className="bg-teal-500 hover:bg-teal-600 text-white">
+            View Details
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  ),
+};
+
+// Responsive Safari Tour Grid with consistent aspect ratios
+export const SafariTourGrid: Story = {
+  render: () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
+      {/* Tour 1 - Maasai Mara */}
+      <Card className="overflow-hidden">
+        <CardMedia>
+          <AspectRatio ratio={4 / 3}>
+            <div className="relative w-full h-full bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center">
+              <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded-full text-xs font-medium">
+                🦁 Safari
+              </div>
+              <span className="text-4xl">🦒</span>
+            </div>
+          </AspectRatio>
+        </CardMedia>
+        <CardContent className="p-4">
+          <CardTitle className="text-lg mb-2">Maasai Mara</CardTitle>
+          <CardDescription className="mb-3">Classic wildlife safari experience</CardDescription>
+          <div className="flex items-center justify-between">
+            <span className="font-bold">$350/day</span>
+            <Button size="sm">Book Now</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tour 2 - Serengeti */}
+      <Card className="overflow-hidden">
+        <CardMedia>
+          <AspectRatio ratio={4 / 3}>
+            <div className="relative w-full h-full bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center">
+              <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded-full text-xs font-medium">
+                🌍 Safari
+              </div>
+              <span className="text-4xl">🦓</span>
+            </div>
+          </AspectRatio>
+        </CardMedia>
+        <CardContent className="p-4">
+          <CardTitle className="text-lg mb-2">Serengeti</CardTitle>
+          <CardDescription className="mb-3">Great migration spectacle</CardDescription>
+          <div className="flex items-center justify-between">
+            <span className="font-bold">$420/day</span>
+            <Button size="sm">Book Now</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tour 3 - Ngorongoro */}
+      <Card className="overflow-hidden">
+        <CardMedia>
+          <AspectRatio ratio={4 / 3}>
+            <div className="relative w-full h-full bg-gradient-to-br from-blue-100 to-cyan-200 flex items-center justify-center">
+              <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded-full text-xs font-medium">
+                🏔️ Safari
+              </div>
+              <span className="text-4xl">🦏</span>
+            </div>
+          </AspectRatio>
+        </CardMedia>
+        <CardContent className="p-4">
+          <CardTitle className="text-lg mb-2">Ngorongoro</CardTitle>
+          <CardDescription className="mb-3">Crater wildlife sanctuary</CardDescription>
+          <div className="flex items-center justify-between">
+            <span className="font-bold">$380/day</span>
+            <Button size="sm">Book Now</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  ),
+  parameters: {
+    layout: 'padded',
+  },
+};
+
+// Safari Operator Profile with AspectRatio
+export const SafariOperatorProfile: Story = {
+  render: () => (
+    <Card className="w-[450px] overflow-hidden">
+      {/* Operator banner with consistent aspect ratio */}
+      <CardMedia>
+        <AspectRatio ratio={3 / 1}>
+          <div className="relative w-full h-full bg-gradient-to-r from-teal-400 to-emerald-500 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/20"></div>
+            <div className="relative text-center text-white">
+              <h2 className="text-2xl font-bold">African Safari Co.</h2>
+              <p className="text-sm opacity-90">Premium Safari Experiences</p>
+            </div>
+          </div>
+        </AspectRatio>
+      </CardMedia>
+
+      <CardContent className="p-6">
+        <div className="flex items-center gap-4 mb-4">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src="https://github.com/shadcn.png" alt="Safari Guide" />
+            <AvatarFallback>SG</AvatarFallback>
+          </Avatar>
+          <div>
+            <CardTitle className="text-xl">John Safari</CardTitle>
+            <CardDescription>Lead Safari Guide & Operator</CardDescription>
+            <div className="flex gap-2 mt-2">
+              <Badge variant="secondary">15+ Years</Badge>
+              <Badge variant="secondary">Big 5 Expert</Badge>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Tours Completed:</span>
+            <span className="font-medium">500+</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Rating:</span>
+            <span className="font-medium">4.9/5 ⭐</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Specialization:</span>
+            <span className="font-medium">Wildlife Photography</span>
+          </div>
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex gap-2">
+        <Button className="flex-1">View Profile</Button>
+        <Button variant="outline" className="flex-1">Contact</Button>
+      </CardFooter>
     </Card>
   ),
 };

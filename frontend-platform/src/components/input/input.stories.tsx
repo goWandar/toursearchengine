@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Input } from './input';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 const meta: Meta<typeof Input> = {
   title: 'Components/Input',
@@ -9,7 +9,8 @@ const meta: Meta<typeof Input> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A flexible input component built with forwardRef for form integration and accessibility.',
+        component:
+          'A flexible input component built with forwardRef for form integration and accessibility.',
       },
     },
   },
@@ -17,7 +18,18 @@ const meta: Meta<typeof Input> = {
   argTypes: {
     type: {
       control: 'select',
-      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search', 'date', 'time', 'file'],
+      options: [
+        'text',
+        'email',
+        'password',
+        'number',
+        'tel',
+        'url',
+        'search',
+        'date',
+        'time',
+        'file',
+      ],
       description: 'The type of input',
     },
     placeholder: {
@@ -118,7 +130,7 @@ export const WithValue: Story = {
 export const Controlled: Story = {
   render: () => {
     const [value, setValue] = useState('');
-    
+
     return (
       <div className="space-y-2">
         <Input
@@ -126,9 +138,7 @@ export const Controlled: Story = {
           onChange={(e) => setValue(e.target.value)}
           placeholder="Type something..."
         />
-        <p className="text-sm text-muted-foreground">
-          Current value: {value || '(empty)'}
-        </p>
+        <p className="text-sm text-muted-foreground">Current value: {value || '(empty)'}</p>
       </div>
     );
   },
@@ -143,7 +153,7 @@ export const FormExample: Story = {
       age: '',
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: FormEvent) => {
       e.preventDefault();
       alert(`Form submitted: ${JSON.stringify(formData, null, 2)}`);
     };
@@ -163,7 +173,7 @@ export const FormExample: Story = {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
         </div>
-        
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium mb-1">
             Email *
@@ -177,7 +187,7 @@ export const FormExample: Story = {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </div>
-        
+
         <div>
           <label htmlFor="age" className="block text-sm font-medium mb-1">
             Age
@@ -192,7 +202,7 @@ export const FormExample: Story = {
             onChange={(e) => setFormData({ ...formData, age: e.target.value })}
           />
         </div>
-        
+
         <button
           type="submit"
           className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
@@ -216,16 +226,13 @@ export const ValidationStates: Story = {
         />
         <p className="text-sm text-green-600 mt-1">✓ This field is valid</p>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium mb-1">Invalid Input</label>
-        <Input
-          placeholder="Invalid input"
-          className="border-red-500 focus-visible:ring-red-500"
-        />
+        <Input placeholder="Invalid input" className="border-red-500 focus-visible:ring-red-500" />
         <p className="text-sm text-red-600 mt-1">✗ This field has an error</p>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium mb-1">Warning Input</label>
         <Input
@@ -244,23 +251,17 @@ export const Sizes: Story = {
     <div className="space-y-4 w-80">
       <div>
         <label className="block text-sm font-medium mb-1">Small</label>
-        <Input
-          placeholder="Small input"
-          className="h-8 px-2 text-xs"
-        />
+        <Input placeholder="Small input" className="h-8 px-2 text-xs" />
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium mb-1">Default</label>
         <Input placeholder="Default input" />
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium mb-1">Large</label>
-        <Input
-          placeholder="Large input"
-          className="h-12 px-4 text-base"
-        />
+        <Input placeholder="Large input" className="h-12 px-4 text-base" />
       </div>
     </div>
   ),

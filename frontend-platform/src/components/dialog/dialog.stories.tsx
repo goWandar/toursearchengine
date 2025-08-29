@@ -9,9 +9,9 @@ import {
   DialogTrigger,
 } from './dialog';
 import { Button } from '../button/button';
-import { useState } from 'react';
+import { ComponentProps, useState } from 'react';
 
-type DialogProps = React.ComponentProps<typeof Dialog>;
+type DialogProps = ComponentProps<typeof Dialog>;
 
 const meta: Meta<DialogProps> = {
   title: 'Components/Dialog',
