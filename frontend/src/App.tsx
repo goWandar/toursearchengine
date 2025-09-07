@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Hero from './components/layout/Hero';
-import HowWandarWorksLayout from './components/layout/How';
+// import Hero from './components/layout/Hero';
+// import HowWandarWorksLayout from './components/layout/How';
 import WhyWandarLayout from './components/layout/Why';
 import FaqLayout from './components/layout/FAQ';
 import ReachUs from './components/layout/ReachUs';
