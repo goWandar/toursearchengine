@@ -13,35 +13,35 @@ const features = [
     icon: p,
     title: 'Personalized Matching',
     description:
-      'Our intelligent quiz identifies your safari persona and matches you with experiences that fit your travel style, comfort level, and interests.',
+      'Our Safari Persona Quiz helps us understand what matters to you, so every recommendation feels tailored, not random.',
   },
   {
     id: 2,
     icon: c,
     title: 'Curated, Not Crowded',
     description:
-      'Explore curated safari options selected based on your travel personality and goals.',
+      'We handpick a focused list of safari options. They’re not perfect, but they meet essential standards and cover a range of budgets and travel styles.',
   },
   {
     id: 3,
     icon: h,
     title: 'Helpful, Not Overwhelming',
     description:
-      'Seamlessly build your trip with intuitive tools to customize lodging, dates, and experiences.',
+      'Our prep tools give you just what you need to move forward – without the endless tabs or information overload.',
   },
   {
     id: 4,
     icon: i,
     title: 'Independent Reviews, All in One Place',
     description:
-      'Get reviews, stories, and insights from like-minded explorers to plan with confidence.',
+      'We pull reviews from multiple trusted sources to give you a fuller picture of each operator, so you’re not relying on just one website.',
   },
   {
     id: 5,
     icon: d,
     title: 'Decision Making Insights',
     description:
-      'We vet every operator to ensure your journey is safe, ethical, and top-quality.',
+      'We surface key insights from wildlife viewing chances to the best months to visit, so you can plan better, not perfectly.',
   },
   {
     id: 6,
