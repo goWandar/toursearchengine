@@ -1,0 +1,1 @@
+export { ModernSearch } from './modern-search';
