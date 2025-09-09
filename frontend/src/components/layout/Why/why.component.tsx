@@ -46,9 +46,9 @@ const features = [
   {
     id: 6,
     icon: s,
-    title: 'Secure Booking Experience',
+    title: 'Built for Real Planning',
     description:
-      'Book your trip with full transparency and support from the Wandar team.',
+      'Whether you are dreaming or deciding, Wandar meets you where you are with guidance that makes planning easier, not heavier.',
   },
 ];
 
