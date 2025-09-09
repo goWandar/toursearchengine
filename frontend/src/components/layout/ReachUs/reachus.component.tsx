@@ -1,5 +1,5 @@
 import { FaTiktok } from 'react-icons/fa';
-import { FaInstagram, FaLinkedinIn, FaFacebookF } from 'react-icons/fa6';
+import { FaInstagram, FaLinkedinIn } from 'react-icons/fa6';
 
 const socialIcons = [
   { id: 'instagram', icon: <FaInstagram size={20} />, link: 'https://www.instagram.com/wandarofficial?igsh=MXBucmsybGhpbDhjeg%3D%3D&utm_source=qr' },
