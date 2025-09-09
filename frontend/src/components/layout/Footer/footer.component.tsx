@@ -1,11 +1,11 @@
-import { FaFacebookF, FaLinkedinIn, FaInstagram } from 'react-icons/fa6';
+import { FaLinkedinIn, FaInstagram, FaTiktok } from 'react-icons/fa6';
 import Logo from '../../../assets/icons/Union.svg';
 
 const socialLinks = [
   {
-    id: 'facebook',
-    icon: FaFacebookF,
-    url: 'https://www.facebook.com/YourPageName',
+    id: 'tiktok',
+    icon: FaTiktok,
+    url: 'http://www.tiktok.com/@wandarofficial',
   },
   {
     id: 'linkedin',
@@ -15,7 +15,7 @@ const socialLinks = [
   {
     id: 'instagram',
     icon: FaInstagram,
-    url: 'https://www.instagram.com/yourhandle',
+    url: 'https://www.instagram.com/wandarofficial?igsh=MXBucmsybGhpbDhjeg%3D%3D&utm_source=qr',
   },
 ];
 

@@ -1,9 +1,10 @@
+import { FaTiktok } from 'react-icons/fa';
 import { FaInstagram, FaLinkedinIn, FaFacebookF } from 'react-icons/fa6';
 
 const socialIcons = [
-  { id: 'instagram', icon: <FaInstagram size={20} />, link: '#' },
+  { id: 'instagram', icon: <FaInstagram size={20} />, link: 'https://www.instagram.com/wandarofficial?igsh=MXBucmsybGhpbDhjeg%3D%3D&utm_source=qr' },
   { id: 'linkedin', icon: <FaLinkedinIn size={20} />, link: 'https://www.linkedin.com/company/gowandar/posts/?feedView=all' },
-  { id: 'facebook', icon: <FaFacebookF size={20} />, link: '#' },
+  { id: 'facebook', icon: <FaTiktok size={20} />, link: 'http://www.tiktok.com/@wandarofficial' },
 ];
 
 const ReachUs = () => {
