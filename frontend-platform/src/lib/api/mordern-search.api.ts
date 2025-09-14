@@ -1,30 +1,17 @@
-import { CountrySearchType, ParkSearchType, TourSearchResponse } from '@/types/types';
+import { CountrySearchType, ParksCountriesType, ParkSearchType, TourSearchResponse } from '@/types/types';
 import axios from 'axios';
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:30001";
+const baseUrl = "http://localhost:3000";
 
 
-// Get All Parks
-export const getAllParks = async (): Promise<ParkSearchType[]> => {
+// Get All Parks and Countries Suggestions
+export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
     try {
-        console.log("Fetching all parks...");
-        const response = await axios.get(`${baseUrl}/api/parks`);
-        console.log("Parks fetched:", response.data);
-        const parks = response.data
-        return parks.data;
-    } catch (error) {
-        return [];
-    }
-}
+        const response = await axios.get(`${baseUrl}/api/tours/country-park/suggestions`);
 
-// Get All Countries
-export const getAllCountries = async (): Promise<CountrySearchType[]> => {
-    try {
-        const response = await axios.get(`${baseUrl}/api/countries`);
-        const countries = response.data
-        return countries.data;
+        return response.data.data;
     } catch (error) {
-        return [];
+        throw new Error('Failed to fetch parks and countries');
     }
 }
 

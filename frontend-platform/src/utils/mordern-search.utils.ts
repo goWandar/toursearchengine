@@ -1,5 +1,5 @@
-import { getAllCountries, getAllParks } from "@/lib/api/mordern-search.api";
-import { CountrySearchType, ParksCountriesType, ParkSearchType } from "@/types/types";
+import { getParksAndCountries } from "@/lib/api/mordern-search.api";
+import { CountrySearchType, ParkSearchType } from "@/types/types";
 
 // Fetch Parks and Countries from DB
 const fetchParksCountries = async (
@@ -7,17 +7,11 @@ const fetchParksCountries = async (
     setSearchCountriesList: (countries: CountrySearchType[]) => void
 ) => {
     try {
-        const parks = await getAllParks();
-        const countries = await getAllCountries();
+        const parksCountries = await getParksAndCountries();
 
-        const combined: ParksCountriesType = {
-            parks,
-            countries,
-        };
-
-        setSearchParksList(parks);
-        setSearchCountriesList(countries);
-        return combined;
+        setSearchParksList(parksCountries.parks);
+        setSearchCountriesList(parksCountries.countries);
+        return parksCountries;
 
     } catch (error) {
         console.error("Failed to fetch parks or countries", error);

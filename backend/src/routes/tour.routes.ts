@@ -13,4 +13,8 @@ router.get('/tours/park/:parkId', async (req: Request, res: Response) => {
   await TourService.getToursByParkId(req, res);
 });
 
+router.get('/tours/country-park/suggestions', async (req: Request, res: Response) => {
+  await TourService.getAllParksAndCountries(req, res);
+});
+
 export default router;

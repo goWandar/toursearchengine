@@ -26,7 +26,7 @@ export const TourService = {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
-  
+
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: { countryId, archived: false },
@@ -50,17 +50,17 @@ export const TourService = {
           where: { countryId, archived: false },
         }),
       ]);
-  
+
       if (!tours.length) {
         return notFound(res, 'No tours found for this country');
       }
-  
+
       //Flatten parks array for each tour
-      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[]; [key: string]: any }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[];[key: string]: any }) => ({
         ...rest,
         parks: tourParks.map(tp => tp.park),
       }));
-  
+
       return success(res, 'Tours fetched successfully', {
         tours: formattedTours,
         pagination: {
@@ -90,7 +90,7 @@ export const TourService = {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 8;
       const skip = (page - 1) * limit;
-  
+
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: {
@@ -123,19 +123,19 @@ export const TourService = {
           },
         }),
       ]);
-  
+
       if (!tours.length) {
         return notFound(res, 'No tours found for this park');
       }
-  
+
       // Flatten parks and remove the one used for filtering
-      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[]; [key: string]: any }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[];[key: string]: any }) => ({
         ...rest,
         parks: tourParks
           .filter(tp => tp.park.id !== parkId)
           .map(tp => tp.park),
       }));
-  
+
       return success(res, 'Tours fetched successfully', {
         tours: formattedTours,
         pagination: {
@@ -151,6 +151,56 @@ export const TourService = {
         res,
         'Failed to fetch tours by park ID',
         error instanceof Error ? error : new Error(String(error))
+      );
+    }
+  },
+
+  // Get parks and tours suggestions
+  async getAllParksAndCountries(req: Request, res: Response): Promise<Response> {
+    try {
+      // Fetch parks
+      const parks = await prisma.park.findMany({
+        select: {
+          id: true,
+          name: true,
+          keyword: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      const parksWithType = parks.map(park => ({
+        ...park,
+        type: 'park',
+      }));
+
+      // Fetch countries
+      const countries = await prisma.country.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      const countriesWithType = countries.map(country => ({
+        ...country,
+        type: 'country',
+      }));
+
+      // Return both in one response
+      return success(res, 'Parks and countries fetched successfully', {
+        parks: parksWithType,
+        countries: countriesWithType,
+      });
+    } catch (error) {
+      return serverError(
+        res,
+        'Failed to fetch parks and countries',
+        error instanceof Error ? error : new Error(String(error)),
       );
     }
   }
