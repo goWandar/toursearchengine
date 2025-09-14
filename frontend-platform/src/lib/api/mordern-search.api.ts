@@ -1,13 +1,15 @@
 import { CountrySearchType, ParkSearchType, TourSearchResponse } from '@/types/types';
 import axios from 'axios';
 
-const baseUrl = "http://localhost:3000";
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:30001";
 
 
 // Get All Parks
 export const getAllParks = async (): Promise<ParkSearchType[]> => {
     try {
+        console.log("Fetching all parks...");
         const response = await axios.get(`${baseUrl}/api/parks`);
+        console.log("Parks fetched:", response.data);
         const parks = response.data
         return parks.data;
     } catch (error) {

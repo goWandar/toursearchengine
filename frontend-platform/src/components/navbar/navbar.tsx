@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BookOpen, Menu } from 'lucide-react';
@@ -32,7 +31,7 @@ export function Navbar() {
 
           {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8 lg:mx-12">
-            <ModernSearch 
+            <ModernSearch
               onDestinationSelect={handleDestinationSelect}
               placeholder="Search destinations"
             />
@@ -68,7 +67,7 @@ export function Navbar() {
                 <div className="flex flex-col space-y-4 mt-6">
                   {/* Mobile Search */}
                   <div className="md:hidden">
-                    <ModernSearch 
+                    <ModernSearch
                       onDestinationSelect={handleDestinationSelect}
                       placeholder="Search destinations"
                     />
