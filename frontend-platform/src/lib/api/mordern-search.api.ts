@@ -1,7 +1,7 @@
 import { CountrySearchType, ParksCountriesType, ParkSearchType, TourSearchResponse } from '@/types/types';
 import axios from 'axios';
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+const baseUrl = "http://localhost:3000";
 
 
 // Get All Parks and Countries Suggestions

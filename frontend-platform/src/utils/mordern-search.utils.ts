@@ -1,16 +1,22 @@
 import { getParksAndCountries } from "@/lib/api/mordern-search.api";
-import { CountrySearchType, ParkSearchType } from "@/types/types";
+import { SuggestionType } from "@/types/types";
+
+
 
 // Fetch Parks and Countries from DB
 const fetchParksCountries = async (
-    setSearchParksList: (parks: ParkSearchType[]) => void,
-    setSearchCountriesList: (countries: CountrySearchType[]) => void
+    setSuggestionsList: (suggestions: SuggestionType[]) => void,
 ) => {
     try {
         const parksCountries = await getParksAndCountries();
 
-        setSearchParksList(parksCountries.parks);
-        setSearchCountriesList(parksCountries.countries);
+        const combined: SuggestionType[] = [
+            ...parksCountries.parks,
+            ...parksCountries.countries,
+        ];
+
+        setSuggestionsList(combined);
+
         return parksCountries;
 
     } catch (error) {
@@ -20,22 +26,28 @@ const fetchParksCountries = async (
 
 // Get Parks and Countries Search Suggestions
 export const getSearchSuggestions = async (
-    setSearchParksList: (parks: ParkSearchType[]) => void,
-    setSearchCountriesList: (countries: CountrySearchType[]) => void
+    setSuggestionsList: (suggestions: SuggestionType[]) => void,
 ) => {
     try {
         const cachedSuggestions = localStorage.getItem("parksAndCountries");
 
+        // First Check in Local Storage
         if (cachedSuggestions) {
             const parsedData = JSON.parse(cachedSuggestions);
-            setSearchParksList(parsedData.parks || []);
-            setSearchCountriesList(parsedData.countries || []);
+            console.log("Parsed Data:", parsedData);
+
+            const combined: SuggestionType[] = [
+                ...(parsedData.parks ?? []),
+                ...(parsedData.countries ?? []),
+            ];
+
+            setSuggestionsList(combined || []);
             return;
         }
 
+        // Fetch from DB
         const parksCountries = await fetchParksCountries(
-            setSearchParksList,
-            setSearchCountriesList
+            setSuggestionsList
         );
 
         if (parksCountries) {
@@ -43,7 +55,6 @@ export const getSearchSuggestions = async (
         }
     } catch (error) {
         console.error("Failed to get search suggestions", error);
-        setSearchParksList([]);
-        setSearchCountriesList([]);
+        setSuggestionsList([]);
     }
 };

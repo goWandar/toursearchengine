@@ -11,7 +11,7 @@ import {
   CommandItem,
 } from '@/recipes/command/command';
 import { getSearchSuggestions } from '@/utils/mordern-search.utils';
-import { CountrySearchType, ParkSearchType } from '@/types/types';
+import { CountrySearchType, ParkSearchType, SuggestionType } from '@/types/types';
 
 // Popular Parks data structure
 const popularParks = [
@@ -51,8 +51,7 @@ export function ModernSearch({
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
-  const [searchParksList, setSearchParksList] = useState<ParkSearchType[]>([]);
-  const [searchCountriesList, setSearchCountriesList] = useState<CountrySearchType[]>([]);
+  const [suggestionsList, setSuggestionsList] = useState<SuggestionType[]>([])
 
 
   const handleClose = () => {
@@ -82,7 +81,7 @@ export function ModernSearch({
 
   // Fetch Countries and Parks suggestions on mount
   useEffect(() => {
-    getSearchSuggestions(setSearchParksList, setSearchCountriesList)
+    getSearchSuggestions(setSuggestionsList)
   }, []);
 
   const handleDestinationSelect = (destination: string) => {

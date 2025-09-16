@@ -96,6 +96,8 @@ export interface ParksCountriesType {
     countries: CountrySearchType[];
 };
 
+export type SuggestionType = ParkSearchType | CountrySearchType;
+
 export interface TourSearchResponse {
     tours: Tour[];
     pagination: {
