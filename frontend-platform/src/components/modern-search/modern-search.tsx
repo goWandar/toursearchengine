@@ -12,6 +12,7 @@ import {
 } from '@/recipes/command/command';
 import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
 import { SuggestionType } from '@/types/types';
+import { useRouter } from 'next/navigation'
 
 // Popular Parks data structure
 const popularParks = [
@@ -45,7 +46,6 @@ interface ModernSearchProps {
 export function ModernSearch({
   className = '',
   placeholder = 'Search destinations',
-  onDestinationSelect
 }: ModernSearchProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -53,6 +53,7 @@ export function ModernSearch({
   const searchRef = useRef<HTMLDivElement>(null);
   const [suggestionsList, setSuggestionsList] = useState<SuggestionType[]>([])
   const [filteredSuggestions, setFilteredSuggestions] = useState<SuggestionType[]>([])
+  const router = useRouter();
 
   const handleClose = () => {
     setIsAnimating(true);
@@ -89,10 +90,12 @@ export function ModernSearch({
     handleSearch(searchValue, suggestionsList, setFilteredSuggestions)
   }, [searchValue]);
 
-  const handleDestinationSelect = (destination: string) => {
-    setSearchValue(destination);
+  const handleDestinationSelect = (type: string, id: number) => {
     handleClose();
-    onDestinationSelect?.(destination);
+    setFilteredSuggestions([]);
+
+    // Redirect using id and type in URL params
+    router.push(`/tours?id=${id}&type=${type}`);
   };
 
 
@@ -130,7 +133,7 @@ export function ModernSearch({
                       {filteredSuggestions.map((suggestion, idx) => (
                         <CommandItem
                           key={idx}
-                          onSelect={() => handleDestinationSelect(suggestion.name)}
+                          onSelect={() => handleDestinationSelect(suggestion.type, suggestion.id)}
                           className="cursor-pointer flex flex-col items-start px-4 py-3"
                         >
                           <div className="flex items-center font-medium text-gray-900">
@@ -157,7 +160,7 @@ export function ModernSearch({
                             {popularParks.map((park) => (
                               <CommandItem
                                 key={park.name}
-                                onSelect={() => handleDestinationSelect(park.name)}
+                                onSelect={() => { }}
                                 className="cursor-pointer flex flex-col items-start px-4 py-3"
                               >
                                 <div className="font-medium text-gray-900">{park.name}</div>
@@ -177,7 +180,7 @@ export function ModernSearch({
                                 {trendingDestinations.map((destination) => (
                                   <button
                                     key={destination}
-                                    onClick={() => handleDestinationSelect(destination)}
+                                    onClick={() => { }}
                                     className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
                                   >
                                     {destination}
