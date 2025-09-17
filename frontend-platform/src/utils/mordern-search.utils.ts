@@ -1,7 +1,6 @@
 import { getParksAndCountries } from "@/lib/api/mordern-search.api";
 import { SuggestionType } from "@/types/types";
-
-
+import Fuse from "fuse.js";
 
 // Fetch Parks and Countries from DB
 const fetchParksCountries = async (
@@ -34,7 +33,6 @@ export const getSearchSuggestions = async (
         // First Check in Local Storage
         if (cachedSuggestions) {
             const parsedData = JSON.parse(cachedSuggestions);
-            console.log("Parsed Data:", parsedData);
 
             const combined: SuggestionType[] = [
                 ...(parsedData.parks ?? []),
@@ -58,3 +56,29 @@ export const getSearchSuggestions = async (
         setSuggestionsList([]);
     }
 };
+
+// Handle Parks and Countries Search
+export const handleSearch = (
+    searchValue: string,
+    suggestionsList: SuggestionType[],
+    setFilteredSuggestions: React.Dispatch<React.SetStateAction<(SuggestionType[])>>,
+) => {
+
+    if (!searchValue.trim()) {
+        setFilteredSuggestions([]);
+        return;
+    }
+
+    // Fuse options
+    const suggestionsOptions = {
+        keys: ["name", "keyword"],
+        threshold: 0.4,
+    };
+
+    const suggestionsFuse = new Fuse(suggestionsList, suggestionsOptions);
+
+    const filteredResults = suggestionsFuse.search(searchValue).slice(0, 5).map((result) => result.item);
+
+    // Set Filtered Suggestions
+    setFilteredSuggestions(filteredResults);
+}

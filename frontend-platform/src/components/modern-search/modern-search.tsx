@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, TrendingUp } from 'lucide-react';
+import { Search, MapPin, TrendingUp, Palmtree, Globe2Icon } from 'lucide-react';
 import { Input } from '@/recipes/input/input';
 import {
   Command,
@@ -10,12 +10,12 @@ import {
   CommandGroup,
   CommandItem,
 } from '@/recipes/command/command';
-import { getSearchSuggestions } from '@/utils/mordern-search.utils';
-import { CountrySearchType, ParkSearchType, SuggestionType } from '@/types/types';
+import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
+import { SuggestionType } from '@/types/types';
 
 // Popular Parks data structure
 const popularParks = [
-  { name: 'Maasai Mara', country: 'Kenya' },
+  { name: 'Masai Mara', country: 'Kenya' },
   { name: 'Serengeti', country: 'Tanzania' },
   { name: 'Okavango Delta', country: 'Botswana' },
   { name: 'Kruger Park', country: 'South Africa' },
@@ -52,7 +52,7 @@ export function ModernSearch({
   const [searchValue, setSearchValue] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
   const [suggestionsList, setSuggestionsList] = useState<SuggestionType[]>([])
-
+  const [filteredSuggestions, setFilteredSuggestions] = useState<SuggestionType[]>([])
 
   const handleClose = () => {
     setIsAnimating(true);
@@ -84,27 +84,18 @@ export function ModernSearch({
     getSearchSuggestions(setSuggestionsList)
   }, []);
 
+  // Handle Suggestions Search
+  useEffect(() => {
+    handleSearch(searchValue, suggestionsList, setFilteredSuggestions)
+  }, [searchValue]);
+
   const handleDestinationSelect = (destination: string) => {
     setSearchValue(destination);
     handleClose();
     onDestinationSelect?.(destination);
   };
 
-  // Filter destinations based on search value - show all if no search value
-  const filteredParks = searchValue
-    ? popularParks.filter((park) =>
-      park.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      park.country.toLowerCase().includes(searchValue.toLowerCase())
-    )
-    : popularParks;
 
-  const filteredTrending = searchValue
-    ? trendingDestinations.filter((destination) =>
-      destination.toLowerCase().includes(searchValue.toLowerCase())
-    )
-    : trendingDestinations;
-
-  const hasResults = filteredParks.length > 0 || filteredTrending.length > 0;
 
   return (
     <div ref={searchRef} className={`relative w-full ${className}`}>
@@ -127,52 +118,76 @@ export function ModernSearch({
           }`}>
           <Command className="rounded-md border-0">
             <CommandList className="max-h-[400px] overflow-y-auto overflow-x-hidden">
-              {!hasResults && searchValue && (
-                <CommandEmpty>No destinations found.</CommandEmpty>
-              )}
-
-              {/* Popular Parks Section */}
-              {filteredParks.length > 0 && (
-                <CommandGroup>
-                  <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
-                    <MapPin className="h-4 w-4 text-teal-600" />
-                    Popular Parks
-                  </div>
-                  {filteredParks.map((park) => (
-                    <CommandItem
-                      key={park.name}
-                      onSelect={() => handleDestinationSelect(park.name)}
-                      className="cursor-pointer flex flex-col items-start px-4 py-3"
-                    >
-                      <div className="font-medium text-gray-900">{park.name}</div>
-                      <div className="text-sm text-gray-500">{park.country}</div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-
-              {/* Trending Section */}
-              {filteredTrending.length > 0 && (
-                <CommandGroup>
-                  <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
-                    <TrendingUp className="h-4 w-4 text-orange-600" />
-                    Trending
-                  </div>
-                  <div className="px-2 pb-2">
-                    <div className="flex flex-wrap gap-2">
-                      {filteredTrending.map((destination) => (
-                        <button
-                          key={destination}
-                          onClick={() => handleDestinationSelect(destination)}
-                          className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
+              {filteredSuggestions.length > 0 ?
+                (
+                  <>
+                    {/* Suggestion Section */}
+                    <CommandGroup>
+                      <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
+                        <MapPin className="h-4 w-4 text-teal-600" />
+                        Destinations
+                      </div>
+                      {filteredSuggestions.map((suggestion, idx) => (
+                        <CommandItem
+                          key={idx}
+                          onSelect={() => handleDestinationSelect(suggestion.name)}
+                          className="cursor-pointer flex flex-col items-start px-4 py-3"
                         >
-                          {destination}
-                        </button>
+                          <div className="flex items-center font-medium text-gray-900">
+                            {suggestion.type === "park" ? <Palmtree className="h-4 w-4 text-gray-400 mr-2" /> : <Globe2Icon className="h-4 w-4 text-gray-400 mr-2" />}
+                            {suggestion.name}
+                          </div>
+                        </CommandItem>
                       ))}
-                    </div>
-                  </div>
-                </CommandGroup>
-              )}
+                    </CommandGroup>
+                  </>
+                ) : (
+                  <>
+                    {searchValue ? (
+                      <CommandEmpty>No destinations found.</CommandEmpty>
+                    ) :
+                      (
+                        <>
+                          {/* Popular Parks Section */}
+                          <CommandGroup>
+                            <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
+                              <MapPin className="h-4 w-4 text-teal-600" />
+                              Popular Parks
+                            </div>
+                            {popularParks.map((park) => (
+                              <CommandItem
+                                key={park.name}
+                                onSelect={() => handleDestinationSelect(park.name)}
+                                className="cursor-pointer flex flex-col items-start px-4 py-3"
+                              >
+                                <div className="font-medium text-gray-900">{park.name}</div>
+                                <div className="text-sm text-gray-500">{park.country}</div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+
+                          {/* Trending Section */}
+                          <CommandGroup>
+                            <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
+                              <TrendingUp className="h-4 w-4 text-orange-600" />
+                              Trending
+                            </div>
+                            <div className="px-2 pb-2">
+                              <div className="flex flex-wrap gap-2">
+                                {trendingDestinations.map((destination) => (
+                                  <button
+                                    key={destination}
+                                    onClick={() => handleDestinationSelect(destination)}
+                                    className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
+                                  >
+                                    {destination}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </CommandGroup>
+                        </>)}
+                  </>)}
             </CommandList>
           </Command>
         </div>
