@@ -69,7 +69,7 @@ export function Navbar() {
                   <div className="md:hidden">
                     <ModernSearch
                       onDestinationSelect={handleDestinationSelect}
-                      placeholder="Search destinations"
+                      placeholder="Search destinations and parks"
                     />
                   </div>
 

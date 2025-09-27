@@ -45,7 +45,7 @@ interface ModernSearchProps {
 
 export function ModernSearch({
   className = '',
-  placeholder = 'Search destinations',
+  placeholder = 'Search destinations and parks',
 }: ModernSearchProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -128,7 +128,7 @@ export function ModernSearch({
                     <CommandGroup>
                       <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
                         <MapPin className="h-4 w-4 text-teal-600" />
-                        Destinations
+                        Parks & Countries
                       </div>
                       {filteredSuggestions.map((suggestion, idx) => (
                         <CommandItem
@@ -137,7 +137,8 @@ export function ModernSearch({
                           className="cursor-pointer flex flex-col items-start px-4 py-3"
                         >
                           <div className="flex items-center font-medium text-gray-900">
-                            {suggestion.type === "park" ? <Palmtree className="h-4 w-4 text-gray-400 mr-2" /> : <Globe2Icon className="h-4 w-4 text-gray-400 mr-2" />}
+                            {suggestion.type === "park" ? <Palmtree className="h-4 w-4 text-gray-400 mr-2" /> 
+                            : <Globe2Icon className="h-4 w-4 text-gray-400 mr-2" />}
                             {suggestion.name}
                           </div>
                         </CommandItem>
@@ -173,7 +174,7 @@ export function ModernSearch({
                           <CommandGroup>
                             <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
                               <TrendingUp className="h-4 w-4 text-orange-600" />
-                              Trending
+                              Trending Searches
                             </div>
                             <div className="px-2 pb-2">
                               <div className="flex flex-wrap gap-2">
