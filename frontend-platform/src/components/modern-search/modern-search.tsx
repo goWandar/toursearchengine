@@ -13,6 +13,8 @@ import {
 import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
 import { SuggestionType } from '@/types/types';
 import { useRouter } from 'next/navigation'
+import { Skeleton } from '@/recipes/skeleton/skeleton';
+import { SearchSuggestions } from './search-suggestions';
 
 // Popular Parks data structure
 const popularParks = [
@@ -49,6 +51,7 @@ export function ModernSearch({
 }: ModernSearchProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
   const [suggestionsList, setSuggestionsList] = useState<SuggestionType[]>([])
@@ -82,7 +85,7 @@ export function ModernSearch({
 
   // Fetch Countries and Parks suggestions on mount
   useEffect(() => {
-    getSearchSuggestions(setSuggestionsList)
+    getSearchSuggestions(setSuggestionsList, setIsLoading);
   }, []);
 
   // Handle Suggestions Search
@@ -119,81 +122,14 @@ export function ModernSearch({
           ? 'opacity-100 translate-y-0 scale-100'
           : 'opacity-0 -translate-y-2 scale-95'
           }`}>
-          <Command className="rounded-md border-0">
-            <CommandList className="max-h-[400px] overflow-y-auto overflow-x-hidden">
-              {filteredSuggestions.length > 0 ?
-                (
-                  <>
-                    {/* Suggestion Section */}
-                    <CommandGroup>
-                      <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
-                        <MapPin className="h-4 w-4 text-teal-600" />
-                        Parks & Countries
-                      </div>
-                      {filteredSuggestions.map((suggestion, idx) => (
-                        <CommandItem
-                          key={idx}
-                          onSelect={() => handleDestinationSelect(suggestion.type, suggestion.id)}
-                          className="cursor-pointer flex flex-col items-start px-4 py-3"
-                        >
-                          <div className="flex items-center font-medium text-gray-900">
-                            {suggestion.type === "park" ? <Palmtree className="h-4 w-4 text-gray-400 mr-2" /> 
-                            : <Globe2Icon className="h-4 w-4 text-gray-400 mr-2" />}
-                            {suggestion.name}
-                          </div>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </>
-                ) : (
-                  <>
-                    {searchValue ? (
-                      <CommandEmpty>No destinations found.</CommandEmpty>
-                    ) :
-                      (
-                        <>
-                          {/* Popular Parks Section */}
-                          <CommandGroup>
-                            <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
-                              <MapPin className="h-4 w-4 text-teal-600" />
-                              Popular Parks
-                            </div>
-                            {popularParks.map((park) => (
-                              <CommandItem
-                                key={park.name}
-                                onSelect={() => { }}
-                                className="cursor-pointer flex flex-col items-start px-4 py-3"
-                              >
-                                <div className="font-medium text-gray-900">{park.name}</div>
-                                <div className="text-sm text-gray-500">{park.country}</div>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-
-                          {/* Trending Section */}
-                          <CommandGroup>
-                            <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
-                              <TrendingUp className="h-4 w-4 text-orange-600" />
-                              Trending Searches
-                            </div>
-                            <div className="px-2 pb-2">
-                              <div className="flex flex-wrap gap-2">
-                                {trendingDestinations.map((destination) => (
-                                  <button
-                                    key={destination}
-                                    onClick={() => { }}
-                                    className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
-                                  >
-                                    {destination}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </CommandGroup>
-                        </>)}
-                  </>)}
-            </CommandList>
-          </Command>
+          <SearchSuggestions
+            isLoading={isLoading}
+            filteredSuggestions={filteredSuggestions}
+            searchValue={searchValue}
+            popularParks={popularParks}
+            trendingDestinations={trendingDestinations}
+            handleDestinationSelect={handleDestinationSelect}
+          />
         </div>
       )}
     </div>

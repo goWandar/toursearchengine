@@ -26,8 +26,10 @@ const fetchParksCountries = async (
 // Get Parks and Countries Search Suggestions
 export const getSearchSuggestions = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
+    setIsLoading: (isLoading: boolean) => void
 ) => {
     try {
+        setIsLoading(true);
         const cachedSuggestions = localStorage.getItem("parksAndCountries");
 
         // First Check in Local Storage
@@ -54,6 +56,8 @@ export const getSearchSuggestions = async (
     } catch (error) {
         console.error("Failed to get search suggestions", error);
         setSuggestionsList([]);
+    } finally {
+        setIsLoading(false);
     }
 };
 
@@ -72,7 +76,7 @@ export const handleSearch = (
     // Fuse options
     const suggestionsOptions = {
         keys: ["name", "keyword"],
-        threshold: 0.4,
+        threshold: 0.3,
     };
 
     const suggestionsFuse = new Fuse(suggestionsList, suggestionsOptions);

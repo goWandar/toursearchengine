@@ -32,8 +32,7 @@ export function Navbar() {
           {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8 lg:mx-12">
             <ModernSearch
-              onDestinationSelect={handleDestinationSelect}
-              placeholder="Search destinations"
+              placeholder="Search destinations and parks"
             />
           </div>
 
