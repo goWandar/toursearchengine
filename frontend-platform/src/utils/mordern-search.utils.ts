@@ -76,7 +76,7 @@ export const handleSearch = (
     // Fuse options
     const suggestionsOptions = {
         keys: ["name", "keyword"],
-        threshold: 0.3,
+        threshold: 0.25,
     };
 
     const suggestionsFuse = new Fuse(suggestionsList, suggestionsOptions);

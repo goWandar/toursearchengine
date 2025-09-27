@@ -1,13 +1,10 @@
 import { ParksCountriesType, TourSearchResponse } from '@/types/types';
-import axios from 'axios';
-
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
-
+import axiosClient from '@/utils/axios-retry-client';
 
 // Get All Parks and Countries Suggestions
 export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
     try {
-        const response = await axios.get(`${baseUrl}/api/tours/country-park/suggestions`);
+        const response = await axiosClient.get(`/api/tours/country-park/suggestions`);
 
         return response.data.data;
     } catch (error) {
@@ -22,8 +19,8 @@ export const getToursByCountryId = async (
     limit = 10
 ): Promise<TourSearchResponse> => {
     try {
-        const response = await axios.get<{ data: TourSearchResponse }>(
-            `${baseUrl}/api/tours/country/${countryId}`,
+        const response = await axiosClient.get<{ data: TourSearchResponse }>(
+            `/api/tours/country/${countryId}`,
             {
                 params: { page, limit },
             }
@@ -42,8 +39,8 @@ export const getToursByParkId = async (
     limit = 10
 ): Promise<TourSearchResponse> => {
     try {
-        const response = await axios.get<{ data: TourSearchResponse }>(
-            `${baseUrl}/api/tours/park/${parkId}`,
+        const response = await axiosClient.get<{ data: TourSearchResponse }>(
+            `/api/tours/park/${parkId}`,
             {
                 params: { page, limit },
             }
