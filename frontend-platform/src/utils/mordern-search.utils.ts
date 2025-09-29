@@ -102,6 +102,7 @@ export const fetchTours = async (
             return toursByPark;
         } else if (type === 'country') {
             const toursByCountry = await getToursByCountryId(id, paginationMeta);
+            console.log(toursByCountry);
             setTourResults(toursByCountry.tours);
             setPaginationMeta(toursByCountry.pagination);
             return toursByCountry;
