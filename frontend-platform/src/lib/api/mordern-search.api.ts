@@ -1,4 +1,4 @@
-import { ParksCountriesType, TourSearchResponse } from '@/types/types';
+import { paginationType, ParksCountriesType, TourSearchResponse } from '@/types/types';
 import axiosClient from '@/utils/axios-retry-client';
 
 // Get All Parks and Countries Suggestions
@@ -15,14 +15,16 @@ export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
 // Get Tours by Country ID
 export const getToursByCountryId = async (
     countryId: number,
-    page = 1,
-    limit = 10
+    paginationMeta: paginationType
 ): Promise<TourSearchResponse> => {
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
             `/api/tours/country/${countryId}`,
             {
-                params: { page, limit },
+                params: {
+                    page: paginationMeta.page,
+                    limit: paginationMeta.limit
+                }
             }
         );
 
@@ -35,14 +37,16 @@ export const getToursByCountryId = async (
 // Get Tours by Park ID
 export const getToursByParkId = async (
     parkId: number,
-    page = 1,
-    limit = 10
+    paginationMeta: paginationType
 ): Promise<TourSearchResponse> => {
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
             `/api/tours/park/${parkId}`,
             {
-                params: { page, limit },
+                params: {
+                    page: paginationMeta.page,
+                    limit: paginationMeta.limit
+                }
             }
         );
 

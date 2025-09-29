@@ -98,13 +98,15 @@ export interface ParksCountriesType {
 
 export type SuggestionType = ParkSearchType | CountrySearchType;
 
+export interface paginationType {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+};
+
 export interface TourSearchResponse {
     tours: Tour[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-        hasMore: boolean;
-    };
+    pagination: paginationType;
 }

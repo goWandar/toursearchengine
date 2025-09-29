@@ -98,7 +98,7 @@ export function ModernSearch({
     setFilteredSuggestions([]);
 
     // Redirect using id and type in URL params
-    router.push(`/tours?id=${id}&type=${type}`);
+    router.push(`/search?id=${id}&type=${type}`);
   };
 
 

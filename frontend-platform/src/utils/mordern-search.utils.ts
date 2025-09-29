@@ -1,8 +1,8 @@
-import { getParksAndCountries } from "@/lib/api/mordern-search.api";
-import { SuggestionType } from "@/types/types";
+import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
+import { paginationType, SuggestionType, Tour } from "@/types/types";
 import Fuse from "fuse.js";
 
-// Fetch Parks and Countries from DB
+// GET Parks and Countries Search Suggestions from DB
 const fetchParksCountries = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
 ) => {
@@ -23,7 +23,7 @@ const fetchParksCountries = async (
     }
 };
 
-// Get Parks and Countries Search Suggestions
+// GET Parks and Countries Search Suggestions
 export const getSearchSuggestions = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
     setIsLoading: (isLoading: boolean) => void
@@ -86,3 +86,28 @@ export const handleSearch = (
     // Set Filtered Suggestions
     setFilteredSuggestions(filteredResults);
 }
+
+// GET Park's/Countries Tour Results
+export const fetchTours = async (
+    id: number, type: string, paginationMeta: paginationType,
+    setTourResults: React.Dispatch<React.SetStateAction<Tour[]>>,
+    setPaginationMeta: React.Dispatch<React.SetStateAction<paginationType>>,
+) => {
+    try {
+        // Fetch from DB
+        if (type === 'park') {
+            const toursByPark = await getToursByParkId(id, paginationMeta);
+            setTourResults(toursByPark.tours);
+            setPaginationMeta(toursByPark.pagination);
+            return toursByPark;
+        } else if (type === 'country') {
+            const toursByCountry = await getToursByCountryId(id, paginationMeta);
+            setTourResults(toursByCountry.tours);
+            setPaginationMeta(toursByCountry.pagination);
+            return toursByCountry;
+        }
+
+    } catch (error) {
+        console.error("Failed to fetch parks or countries", error);
+    }
+};
