@@ -17,7 +17,7 @@ interface SearchSuggestionsProps {
     searchValue: string;
     popularParks: { name: string; country: string }[];
     trendingDestinations: string[];
-    handleDestinationSelect: (type: string, id: number) => void;
+    handleDestinationSelect: (type: string, id: number, name: string) => void;
 }
 
 export function SearchSuggestions({
@@ -76,7 +76,7 @@ export function SearchSuggestions({
                                 <CommandItem
                                     key={idx}
                                     onSelect={() =>
-                                        handleDestinationSelect(suggestion.type, suggestion.id)
+                                        handleDestinationSelect(suggestion.type, suggestion.id, suggestion.name)
                                     }
                                     className="cursor-pointer flex flex-col items-start px-4 py-3"
                                 >

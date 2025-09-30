@@ -89,26 +89,38 @@ export const handleSearch = (
 
 // GET Park's/Countries Tour Results
 export const fetchTours = async (
-    id: number, type: string, paginationMeta: paginationType,
+    id: number,
+    type: string,
+    paginationMeta: paginationType,
     setTourResults: React.Dispatch<React.SetStateAction<Tour[]>>,
     setPaginationMeta: React.Dispatch<React.SetStateAction<paginationType>>,
+    isLoadMore: boolean = false
 ) => {
     try {
-        // Fetch from DB
-        if (type === 'park') {
-            const toursByPark = await getToursByParkId(id, paginationMeta);
-            setTourResults(toursByPark.tours);
-            setPaginationMeta(toursByPark.pagination);
-            return toursByPark;
-        } else if (type === 'country') {
-            const toursByCountry = await getToursByCountryId(id, paginationMeta);
-            console.log(toursByCountry);
-            setTourResults(toursByCountry.tours);
-            setPaginationMeta(toursByCountry.pagination);
-            return toursByCountry;
-        }
+        // Determine page for this fetch
+        const pageToFetch = isLoadMore ? paginationMeta.page + 1 : paginationMeta.page;
+        const updatedPaginationMeta = { ...paginationMeta, page: pageToFetch };
 
+        let fetchedTours: { tours: Tour[]; pagination: paginationType };
+
+        if (type === 'park') {
+            fetchedTours = await getToursByParkId(id, updatedPaginationMeta);
+        } else if (type === 'country') {
+            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta);
+        } else {
+            throw new Error(`Unknown type: ${type}`);
+        }
+        console.log("Fetched Tours:", fetchedTours);
+        // Append or replace results
+        setTourResults(prev =>
+            isLoadMore ? [...prev, ...fetchedTours.tours] : fetchedTours.tours
+        );
+
+        // Update pagination meta
+        setPaginationMeta(fetchedTours.pagination);
+
+        return fetchedTours;
     } catch (error) {
-        console.error("Failed to fetch parks or countries", error);
+        console.error("Failed to fetch tours", error);
     }
 };

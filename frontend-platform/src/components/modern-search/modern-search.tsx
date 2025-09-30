@@ -93,12 +93,12 @@ export function ModernSearch({
     handleSearch(searchValue, suggestionsList, setFilteredSuggestions)
   }, [searchValue]);
 
-  const handleDestinationSelect = (type: string, id: number) => {
+  const handleDestinationSelect = (type: string, id: number, name: string) => {
     handleClose();
     setFilteredSuggestions([]);
 
     // Redirect using id and type in URL params
-    router.push(`/search?id=${id}&type=${type}`);
+    router.push(`/search/${name}/?id=${id}&type=${type}`);
   };
 
 
