@@ -35,6 +35,7 @@ export const TourService = {
           orderBy: { dateCreated: 'asc' },
           include: {
             operator: { select: { id: true, name: true } },
+            country: { select: { id: true, name: true } },
             images: true,
             prices: true,
             tourParks: {
