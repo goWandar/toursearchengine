@@ -105,6 +105,7 @@ export const TourService = {
           include: {
             operator: { select: { id: true, name: true } },
             country: { select: { id: true, name: true } },
+            images: true,
             tourParks: {
               include: {
                 park: {
