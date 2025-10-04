@@ -194,10 +194,28 @@ export const TourService = {
         type: 'country',
       }));
 
-      // Return both in one response
+      // Popular Parks hardcoded data(temporary)
+      const popularParks = [
+        { country: "Kenya", id: 64, keyword: "masai mara", name: "Masai Mara National Reserve", type: "park" },
+        { country: "Tanzania", id: 103, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
+        { country: "Botswana", id: 116, keyword: "okavango", name: "Okavango Delta ", type: "park" },
+        { country: "South Africa", id: 20, keyword: "kruger", name: "Kruger National Park", type: "park" },
+      ];
+
+      // Trending Searches hardcoded data(temporary)
+      const trendingSearches = [
+        { country: "Tanzania", id: 82, keyword: "arusha", name: "Arusha National Park", type: "park" },
+        { id: 1, name: "Tanzania", type: "country" },
+        { country: "Tanzania", id: 103, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
+        { country: "Tanzania", id: 88, keyword: "kilimanjaro", name: "Kilimanjaro National Park", type: "park" },
+      ];
+
+      // Return all in one response
       return success(res, 'Parks and countries fetched successfully', {
         parks: parksWithType,
         countries: countriesWithType,
+        popularParks,
+        trendingSearches,
       });
     } catch (error) {
       return serverError(
