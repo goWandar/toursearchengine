@@ -70,7 +70,8 @@ export const SearchResults = () => {
                         loading={isLoadingMore}
                         disabled={isLoadingMore}
                     >
-                        {isLoadingMore ? "Loading..." : "Load More"} <ChevronDown className="ml-2" />
+                        {!isLoadingMore && <ChevronDown className="mr-2" />}
+                        {isLoadingMore ? "Loading..." : "Load More"}
                     </Button>
                 )}
             </div>

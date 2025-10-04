@@ -5,6 +5,7 @@ import { Card, CardContent, CardTitle } from '@/recipes/card/card';
 import { Tour } from '@/types/types';
 import Image from 'next/image';
 import React from 'react'
+import ImageSlider from './image-slider';
 
 const ModernSafariCard = ({
     data
@@ -12,23 +13,17 @@ const ModernSafariCard = ({
     return (
         <Card className="w-full overflow-hidden">
             {/* Header with image placeholder and rating */}
-            <div className="relative h-48 bg-gray-200 flex items-center justify-center">
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-white px-3 py-1 rounded-full text-sm font-medium">
+            <div className="relative h-52 bg-gray-200 flex items-center justify-center">
+                {/* <div className="absolute top-4 left-4 flex items-center gap-2 bg-white px-3 py-1 rounded-full text-sm font-medium">
                     <span>Safari</span>
                 </div>
                 <div className="absolute top-4 right-4 flex items-center gap-1 bg-white px-3 py-1 rounded-full text-sm font-medium">
                     <span className="text-yellow-500">★</span>
                     <span>4.8 (247)</span>
-                </div>
+                </div> */}
                 {/* Image placeholder */}
                 {data.images?.length > 0 ? (
-                    <Image
-                        src={data.images[0].imageUrls}
-                        alt={data.title}
-                        width={600}
-                        height={380}
-                        className="w-full h-full object-cover rounded-lg"
-                    />
+                    <ImageSlider images={data.images} title={data.title} />
                 )
                     :
                     (<div className="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center">
@@ -52,20 +47,6 @@ const ModernSafariCard = ({
             <CardContent className="p-6">
                 {/* Title and Location */}
                 <CardTitle className="text-xl font-bold mb-2">{data.title}</CardTitle>
-                <div className="flex items-center gap-2 text-gray-600 mb-3">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>{data.location && `${data.location},`} {data.country.name}</span>
-                </div>
-
-                {/* Description */}
-                {data.description &&
-                    (<p className="text-gray-600 text-sm mb-4">
-                        {data.description.length > 80 ? `${data.description.substring(0, 80)}...` : data.description}
-                    </p>)}
-
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     <Badge variant="info" className="text-xs">Big 5</Badge>
@@ -135,13 +116,14 @@ const ModernSafariCard = ({
                     </Accordion>
                 </div>
 
-                {/* Pricing and CTA */}
+                {/* Operator Site & Operator Profile Redirection */}
                 <div className="flex items-end justify-between">
-                    <div>
+                    {/* <div>
                         <div className="text-2xl font-bold">$350-450/day</div>
                         <div className="text-sm text-gray-600">per person</div>
-                    </div>
-                    <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white px-6">
+                    </div> */}
+
+                    <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white px-5">
                         <a href={data.siteURL!} target="_blank" rel="noopener noreferrer" className="flex items-center">
                             <svg
                                 className="w-4 h-4 mr-2"
@@ -159,6 +141,38 @@ const ModernSafariCard = ({
                             Operator Profile
                         </a>
                     </Button>
+                    <Button asChild className="bg-white text-black px-5 border" variant="link">
+                        <a
+                            href={data.siteURL!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center"
+                        >
+                            <svg
+                                className="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                {/* Box */}
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
+                                />
+                                {/* Arrow */}
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M14 3h7v7m0-7L10 14"
+                                />
+                            </svg>
+                            Visit Site
+                        </a>
+                    </Button>
+
                 </div>
             </CardContent>
         </Card>
