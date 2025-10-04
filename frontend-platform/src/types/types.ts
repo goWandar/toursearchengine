@@ -81,6 +81,7 @@ export interface Operator {
 export interface ParkSearchType {
     id: number;
     name: string;
+    country: string;
     keyword: string;
     type: string;
 };

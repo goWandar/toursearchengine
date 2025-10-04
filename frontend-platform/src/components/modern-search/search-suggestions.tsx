@@ -88,6 +88,9 @@ export function SearchSuggestions({
                                         )}
                                         {suggestion.name}
                                     </div>
+                                    {suggestion.type === 'park' && 'country' in suggestion ? (
+                                        <div className="pl-6 text-sm text-gray-500">{suggestion.country}</div>
+                                    ) : null}
                                 </CommandItem>
                             ))}
                         </CommandGroup>
