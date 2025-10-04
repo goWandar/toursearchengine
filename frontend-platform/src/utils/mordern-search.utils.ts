@@ -1,10 +1,12 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { paginationType, SuggestionType, Tour } from "@/types/types";
+import { paginationType, ParkSearchType, SuggestionType, Tour } from "@/types/types";
 import Fuse from "fuse.js";
 
 // GET Parks and Countries Search Suggestions from DB
 const fetchParksCountries = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
+    setPopularParks: (parks: ParkSearchType[]) => void,
+    setTrendingSearches: (searches: SuggestionType[]) => void,
 ) => {
     try {
         const parksCountries = await getParksAndCountries();
@@ -14,6 +16,11 @@ const fetchParksCountries = async (
             ...parksCountries.countries,
         ];
 
+        const popularParks: ParkSearchType[] = parksCountries.popularParks ?? [];
+        const trendingSearches: SuggestionType[] = parksCountries.trendingSearches ?? [];
+
+        setPopularParks(popularParks || []);
+        setTrendingSearches(trendingSearches || []);
         setSuggestionsList(combined);
 
         return parksCountries;
@@ -26,6 +33,8 @@ const fetchParksCountries = async (
 // GET Parks and Countries Search Suggestions
 export const getSearchSuggestions = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
+    setPopularParks: (parks: ParkSearchType[]) => void,
+    setTrendingSearches: (searches: SuggestionType[]) => void,
     setIsLoading: (isLoading: boolean) => void
 ) => {
     try {
@@ -41,13 +50,20 @@ export const getSearchSuggestions = async (
                 ...(parsedData.countries ?? []),
             ];
 
+            const popularParks: ParkSearchType[] = parsedData.popularParks ?? [];
+            const trendingSearches: SuggestionType[] = parsedData.trendingSearches ?? [];
+
+            setPopularParks(popularParks);
+            setTrendingSearches(trendingSearches);
             setSuggestionsList(combined || []);
             return;
         }
 
         // Fetch from DB
         const parksCountries = await fetchParksCountries(
-            setSuggestionsList
+            setSuggestionsList,
+            setPopularParks,
+            setTrendingSearches
         );
 
         if (parksCountries) {

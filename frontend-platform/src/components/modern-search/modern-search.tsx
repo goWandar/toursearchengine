@@ -1,38 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, TrendingUp, Palmtree, Globe2Icon } from 'lucide-react';
+import { Search} from 'lucide-react';
 import { Input } from '@/recipes/input/input';
-import {
-  Command,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from '@/recipes/command/command';
 import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
-import { SuggestionType } from '@/types/types';
+import { ParkSearchType, SuggestionType } from '@/types/types';
 import { useRouter } from 'next/navigation'
-import { Skeleton } from '@/recipes/skeleton/skeleton';
 import { SearchSuggestions } from './search-suggestions';
-
-// Popular Parks data structure
-const popularParks = [
-  { name: 'Masai Mara', country: 'Kenya' },
-  { name: 'Serengeti', country: 'Tanzania' },
-  { name: 'Okavango Delta', country: 'Botswana' },
-  { name: 'Kruger Park', country: 'South Africa' },
-];
-
-// Trending destinations
-const trendingDestinations = [
-  'Great Migration',
-  'Big 5 Safari',
-  'Luxury Tented Camps',
-  'Family Safari',
-  'Photography Safari',
-  'Honeymoon Safari',
-];
 
 // TODO: Add logic to track popular destinations from user interactions
 // TODO: Add logic to track trending destinations based on search patterns
@@ -54,8 +28,10 @@ export function ModernSearch({
   const [isLoading, setIsLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
-  const [suggestionsList, setSuggestionsList] = useState<SuggestionType[]>([])
-  const [filteredSuggestions, setFilteredSuggestions] = useState<SuggestionType[]>([])
+  const [suggestionsList, setSuggestionsList] = useState<SuggestionType[]>([]);
+  const [popularParks, setPopularParks] = useState<ParkSearchType[]>([]);
+  const [trendingSearches, setTrendingSearches] = useState<SuggestionType[]>([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<SuggestionType[]>([]);
   const router = useRouter();
 
   const handleClose = () => {
@@ -85,7 +61,7 @@ export function ModernSearch({
 
   // Fetch Countries and Parks suggestions on mount
   useEffect(() => {
-    getSearchSuggestions(setSuggestionsList, setIsLoading);
+    getSearchSuggestions(setSuggestionsList, setPopularParks, setTrendingSearches, setIsLoading);
   }, []);
 
   // Handle Suggestions Search
@@ -127,7 +103,7 @@ export function ModernSearch({
             filteredSuggestions={filteredSuggestions}
             searchValue={searchValue}
             popularParks={popularParks}
-            trendingDestinations={trendingDestinations}
+            trendingSearches={trendingSearches}
             handleDestinationSelect={handleDestinationSelect}
           />
         </div>

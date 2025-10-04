@@ -95,7 +95,9 @@ export interface CountrySearchType {
 export interface ParksCountriesType {
     parks: ParkSearchType[];
     countries: CountrySearchType[];
-};
+    popularParks: ParkSearchType[];
+    trendingSearches: SuggestionType[];
+}
 
 export type SuggestionType = ParkSearchType | CountrySearchType;
 
