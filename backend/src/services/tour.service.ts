@@ -165,6 +165,7 @@ export const TourService = {
         select: {
           id: true,
           name: true,
+          country: true,
           keyword: true,
         },
         orderBy: {
