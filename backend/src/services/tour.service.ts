@@ -114,6 +114,7 @@ export const TourService = {
                 },
               },
             },
+            prices: true,
           },
         }),
         prisma.tour.count({
