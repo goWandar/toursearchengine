@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-async function main() {
+async function main(): Promise<void> {
   console.log("Adding/Updating Mock Categories & Conflict Groups...");
 
   // create "conflict groups" as categories if not exist
@@ -39,14 +39,14 @@ async function main() {
     { name: "Culture", description: "Local traditions and people" },
     { name: "Small Groups", description: "2–8 people", conflictGroupId: groupSize.id },
     { name: "Large Groups", description: "9+ people", conflictGroupId: groupSize.id },
-  ];
+  ] as const;
 
   for (const category of categories) {
     await prisma.category.upsert({
       where: { name: category.name },
       update: {
         description: category.description,
-        conflictGroupId: category.conflictGroupId || null
+        conflictGroupId: 'conflictGroupId' in category ? category.conflictGroupId : null
       },
       create: category,
     });
@@ -56,8 +56,8 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error("Mock category seed failed:", e);
+  .catch((err: Error) => {
+    console.error("Mock category seed failed:", err);
     process.exit(1);
   })
   .finally(async () => {
