@@ -1,32 +1,30 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/recipes/accordion/accordion';
 import { Badge } from '@/recipes/badge/badge';
 import { Button } from '@/recipes/button/button';
-import { Card, CardContent, CardTitle } from '@/recipes/card/card';
+import { Card, CardContent, CardDescription, CardTitle } from '@/recipes/card/card';
 import { Tour } from '@/types/types';
-import Image from 'next/image';
-import React from 'react'
+import React, { useState } from 'react'
 import ImageSlider from './image-slider';
+import { GroupSizeSelector } from './group-size-selector';
+import { filterPricesBySeason, formatSeasonPeriod, getPriceForGroupSize, getUniqueSeasons } from '@/utils/mordern-search.utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/recipes/select/select';
 
-const ModernSafariCard = ({
-    data
-}: { data: Tour }) => {
+const ModernSafariCard = ({ data }: { data: Tour }) => {
+    const [groupSize, setGroupSize] = useState([1]);
+    const uniqueSeasons = getUniqueSeasons(data.prices);
+    const [season, setSeason] = useState<string | null>(uniqueSeasons[0] ?? null)
+    const seasonFilteredPrices = filterPricesBySeason(data.prices, season);
+    const currentPrice = getPriceForGroupSize(seasonFilteredPrices, groupSize[0]);
+
     return (
         <Card className="w-full overflow-hidden">
-            {/* Header with image placeholder and rating */}
+            {/* Header with image placeholder*/}
             <div className="relative h-52 bg-gray-200 flex items-center justify-center">
-                {/* <div className="absolute top-4 left-4 flex items-center gap-2 bg-white px-3 py-1 rounded-full text-sm font-medium">
-                    <span>Safari</span>
-                </div>
-                <div className="absolute top-4 right-4 flex items-center gap-1 bg-white px-3 py-1 rounded-full text-sm font-medium">
-                    <span className="text-yellow-500">★</span>
-                    <span>4.8 (247)</span>
-                </div> */}
                 {/* Image placeholder */}
                 {data.images?.length > 0 ? (
                     <ImageSlider images={data.images} title={data.title} />
-                )
-                    :
-                    (<div className="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center">
+                ) : (
+                    <div className="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center">
 
                         <svg
                             className="w-8 h-8 text-gray-400"
@@ -46,13 +44,55 @@ const ModernSafariCard = ({
 
             <CardContent className="p-6">
                 {/* Title and Location */}
-                <CardTitle className="text-xl font-bold mb-2">{data.title}</CardTitle>
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge variant="info" className="text-xs">Big 5</Badge>
-                    <Badge variant="info" className="text-xs">Great Migration</Badge>
-                    <Badge variant="info" className="text-xs">Cultural Experience</Badge>
+                <CardTitle className="text-xl font-bold mb-4">{data.title}</CardTitle>
+                <div className="grid grid-cols-[70%_30%] mb-4">
+                    {/* Experiences / Tags */}
+                    <div className="flex flex-wrap gap-2">
+                        <Badge variant="info" className="text-xs">Big 5</Badge>
+                        <Badge variant="info" className="text-xs">Great Migration</Badge>
+                        <Badge variant="info" className="text-xs">Cultural Experience</Badge>
+                    </div>
+                    {/* Pricing */}
+                    <div className='flex flex-col justify-end items-end'>
+                        {currentPrice &&
+                            <div className="text-2xl font-bold text-green-800">
+                                ${currentPrice.pricePerPerson.toLocaleString()}
+                            </div>}
+                        <div className="text-sm text-gray-600">per person</div>
+                    </div>
                 </div>
+
+                {/* Safari Seasons */}
+                <div className="flex flex-col mb-4 justify-center">
+
+                    {uniqueSeasons.length > 0 && (
+                        <Select
+                            onValueChange={(value) => setSeason(value)}
+                            value={season ?? ""}
+                        >
+                            <SelectTrigger className="w-full font-medium">
+                                <SelectValue placeholder="Select season" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {uniqueSeasons.map((s) => {
+                                    const seasonData = data.prices.find((p) => p.seasonName === s)
+                                    const formatted = formatSeasonPeriod(seasonData?.seasonPeriod ?? "")
+                                    return (
+                                        <SelectItem key={s} value={s ?? ""}>
+                                            {s} ({formatted})
+                                        </SelectItem>
+                                    )
+                                })}
+                            </SelectContent>
+                        </Select>
+                    )
+                    }
+                </div>
+
+                {/* Group Size Selector */}
+                <GroupSizeSelector pricingData={data.prices} groupSize={groupSize}
+                    onGroupSizeChange={setGroupSize}
+                />
 
                 {/* Duration and Accommodation */}
                 <div className="flex items-center gap-6 mb-4 text-sm">
@@ -118,61 +158,37 @@ const ModernSafariCard = ({
 
                 {/* Operator Site & Operator Profile Redirection */}
                 <div className="flex items-end justify-between">
-                    {/* <div>
-                        <div className="text-2xl font-bold">$350-450/day</div>
-                        <div className="text-sm text-gray-600">per person</div>
-                    </div> */}
-
                     <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white px-5">
-                        <a href={data.siteURL!} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                            <svg
-                                className="w-4 h-4 mr-2"
-                                fill="none"
-                                stroke="currentColor"
+                        <a target="_blank" rel="noopener noreferrer" className="flex items-center">
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                    strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                 />
                             </svg>
                             Operator Profile
                         </a>
                     </Button>
+
                     <Button asChild className="bg-white text-black px-5 border" variant="link">
-                        <a
-                            href={data.siteURL!}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <a href={data.siteURL!} target="_blank" rel="noopener noreferrer"
                             className="flex items-center"
                         >
-                            <svg
-                                className="w-4 h-4 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                             >
                                 {/* Box */}
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
+                                <path strokeLinecap="round" strokeLinejoin="round"
                                     d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
                                 />
                                 {/* Arrow */}
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M14 3h7v7m0-7L10 14"
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M14 3h7v7m0-7L10 14"
                                 />
                             </svg>
                             Visit Site
                         </a>
                     </Button>
-
                 </div>
             </CardContent>
         </Card>

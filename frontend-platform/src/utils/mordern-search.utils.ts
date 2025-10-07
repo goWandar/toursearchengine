@@ -1,5 +1,5 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { paginationType, ParkSearchType, SuggestionType, Tour } from "@/types/types";
+import { paginationType, ParkSearchType, Price, SuggestionType, Tour } from "@/types/types";
 import Fuse from "fuse.js";
 
 // GET Parks and Countries Search Suggestions from DB
@@ -103,7 +103,7 @@ export const handleSearch = (
     setFilteredSuggestions(filteredResults);
 }
 
-// GET Park's/Countries Tour Results
+// GET Park's/Countries Tour Results (search-results.tsx)
 export const fetchTours = async (
     id: number,
     type: string,
@@ -126,7 +126,9 @@ export const fetchTours = async (
         } else {
             throw new Error(`Unknown type: ${type}`);
         }
+
         console.log("Fetched Tours:", fetchedTours);
+
         // Append or replace results
         setTourResults(prev =>
             isLoadMore ? [...prev, ...fetchedTours.tours] : fetchedTours.tours
@@ -140,3 +142,49 @@ export const fetchTours = async (
         console.error("Failed to fetch tours", error);
     }
 };
+
+
+// Get price of selected group size (modern-safari-card.tsx)
+export const getPriceForGroupSize = (
+    prices: Price[],
+    groupSize: number
+): Price | undefined => {
+    const sorted = [...prices].sort((a, b) => a.numOfPeople - b.numOfPeople);
+    return (
+        sorted.find(p => p.numOfPeople === groupSize) ??
+        [...sorted].reverse().find(p => p.numOfPeople <= groupSize) ??
+        sorted[0]
+    );
+};
+
+// Format season period from "1,2,3\n6,7,8" to "Jan–Mar & Jun–Aug" (modern-safari-card.tsx)
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export const formatSeasonPeriod = (period: string | null): string => {
+    if (!period) return "";
+
+    // Split by \n or commas
+    const groups = period.split("\n").map(g => g.split(",").map(n => parseInt(n.trim(), 10)));
+
+    const formattedRanges = groups.map(group => {
+        if (group.length === 1) return monthNames[group[0] - 1];
+        const sorted = group.sort((a, b) => a - b);
+        const start = monthNames[sorted[0] - 1];
+        const end = monthNames[sorted[sorted.length - 1] - 1];
+        return `${start}–${end}`;
+    });
+
+    return formattedRanges.join(" & ");
+};
+
+// Filter prices by selected season (modern-safari-card.tsx)
+export const filterPricesBySeason = (prices: Price[], season: string | null): Price[] => {
+    return season
+      ? prices.filter((p) => p.seasonName === season)
+      : prices;
+  };
+
+//  Extracts unique season names from price data (modern-safari-card.tsx)
+export const getUniqueSeasons = (prices: Price[]): string[] => {
+    return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
+  };
