@@ -154,7 +154,6 @@ model ConflictGroup {
   name        String    @unique
   description String?
   dateCreated DateTime  @default(now())
-
   // Relations
   categories  Category[]
 
@@ -171,7 +170,6 @@ model Category {
   conflictGroup    ConflictGroup? @relation(fields: [conflictGroupId], references: [id])
   dateCreated      DateTime  @default(now())
   dateModified     DateTime? @updatedAt
-
   // Relations
   tourCategories   TourCategory[]
   quizOptions      QuizOption[]
@@ -186,7 +184,6 @@ model TourCategory {
   categoryId    Int
   weight        Float      @default(1.0)
   dateCreated   DateTime   @default(now())
-
   // Relations
   tour          Tour       @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
   category      Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
