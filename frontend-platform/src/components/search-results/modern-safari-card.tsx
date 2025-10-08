@@ -1,15 +1,21 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/recipes/accordion/accordion';
 import { Badge } from '@/recipes/badge/badge';
 import { Button } from '@/recipes/button/button';
-import { Card, CardContent, CardDescription, CardTitle } from '@/recipes/card/card';
+import { Card, CardContent, CardTitle } from '@/recipes/card/card';
 import { Tour } from '@/types/types';
 import React, { useState } from 'react'
-import ImageSlider from './image-slider';
 import { GroupSizeSelector } from './group-size-selector';
 import { filterPricesBySeason, formatSeasonPeriod, getPriceForGroupSize, getUniqueSeasons } from '@/utils/mordern-search.utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/recipes/select/select';
+import ImageCarousel from './image-carousel';
+import Image from 'next/image';
 
-const ModernSafariCard = ({ data }: { data: Tour }) => {
+interface ModernSafariCardProps {
+    data: Tour;
+    showCarousel: boolean;
+};
+
+const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps) => {
     const [groupSize, setGroupSize] = useState([1]);
     const uniqueSeasons = getUniqueSeasons(data.prices);
     const [season, setSeason] = useState<string | null>(uniqueSeasons[0] ?? null)
@@ -22,7 +28,22 @@ const ModernSafariCard = ({ data }: { data: Tour }) => {
             <div className="relative h-52 bg-gray-200 flex items-center justify-center">
                 {/* Image placeholder */}
                 {data.images?.length > 0 ? (
-                    <ImageSlider images={data.images} title={data.title} />
+                    showCarousel ?
+                        (<ImageCarousel images={data.images} title={data.title} />) :
+                        (
+                            <div
+                                className="w-full h-full cursor-pointer"
+                            >
+                                <Image
+                                    src={data.images[0].imageUrls}
+                                    alt={data.title}
+                                    width={600}
+                                    height={380}
+                                    className="w-full h-full object-cover rounded-lg transition-all duration-300"
+                                    quality={100}
+                                />
+                            </div>
+                        )
                 ) : (
                     <div className="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center">
 
@@ -62,7 +83,7 @@ const ModernSafariCard = ({ data }: { data: Tour }) => {
                     </div>
                 </div>
 
-                {/* Safari Seasons */}
+                {/* Safari Seasons Select*/}
                 <div className="flex flex-col mb-4 justify-center">
 
                     {uniqueSeasons.length > 0 && (
@@ -112,7 +133,7 @@ const ModernSafariCard = ({ data }: { data: Tour }) => {
                     </div>
                 </div>
 
-                {/* what&apos;s Included/Excluded using Accordion */}
+                {/* What's Included/Excluded using Accordion */}
                 <div className="mb-4">
                     <Accordion type="multiple" className="w-full">
                         <AccordionItem value="included" className="border border-green-200 rounded-lg mb-2 bg-green-50">

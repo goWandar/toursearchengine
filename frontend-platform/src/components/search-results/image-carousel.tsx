@@ -5,12 +5,12 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/recipes/button/button";
 
-interface ImageSliderProps {
+interface ImageCarouselProps {
     images: { imageUrls: string }[];
     title: string;
 }
 
-export default function ImageSlider({ images, title }: ImageSliderProps) {
+export default function ImageCarousel({ images, title }: ImageCarouselProps) {
     const [current, setCurrent] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
 
