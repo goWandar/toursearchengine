@@ -16,10 +16,12 @@ interface ModernSafariCardProps {
 };
 
 const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps) => {
-    const [groupSize, setGroupSize] = useState([1]);
     const uniqueSeasons = getUniqueSeasons(data.prices);
     const [season, setSeason] = useState<string | null>(uniqueSeasons[0] ?? null)
     const seasonFilteredPrices = filterPricesBySeason(data.prices, season);
+    const minPeople = Math.min(...data.prices.map(p => p.numOfPeople));
+    const maxPeople = Math.max(...data.prices.map(p => p.numOfPeople));
+    const [groupSize, setGroupSize] = useState([minPeople]);
     const currentPrice = getPriceForGroupSize(seasonFilteredPrices, groupSize[0]);
 
     return (
@@ -112,8 +114,8 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                 </div>
 
                 {/* Group Size Selector */}
-                <GroupSizeSelector pricingData={data.prices} groupSize={groupSize}
-                    onGroupSizeChange={setGroupSize}
+                <GroupSizeSelector groupSize={groupSize}
+                    onGroupSizeChange={setGroupSize} minPeople={minPeople} maxPeople={maxPeople}
                 />
 
                 {/* Duration and Accommodation */}
@@ -157,7 +159,7 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
 
                             </AccordionContent>
                         </AccordionItem>
-                        
+
                         {/* What's Excluded */}
                         <AccordionItem value="excluded" className="border border-red-200 rounded-lg bg-red-50">
                             <AccordionTrigger className="px-3 py-2 text-red-700 font-medium hover:no-underline">

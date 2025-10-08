@@ -6,18 +6,18 @@ import { Price } from '@/types/types';
 import React from 'react';
 
 interface GroupSizeSelectorProps {
-    pricingData: Price[];
     groupSize: number[];
     onGroupSizeChange: (value: number[]) => void;
+    minPeople: number;
+    maxPeople: number;
 }
 
 export const GroupSizeSelector = ({
-    pricingData,
     groupSize,
     onGroupSizeChange,
+    minPeople,
+    maxPeople
 }: GroupSizeSelectorProps) => {
-    const minPeople = Math.min(...pricingData.map(p => p.numOfPeople));
-    const maxPeople = Math.max(...pricingData.map(p => p.numOfPeople));
 
     return (
         <div className="mb-6 space-y-3">
