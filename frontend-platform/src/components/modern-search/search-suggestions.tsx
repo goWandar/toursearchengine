@@ -1,13 +1,7 @@
 'use client';
 
 import { MapPin, Palmtree, Globe2Icon, TrendingUp } from 'lucide-react';
-import {
-    CommandGroup,
-    CommandItem,
-    CommandList,
-    CommandEmpty,
-    Command,
-} from '@/recipes/command/command';
+import { CommandGroup, CommandItem, CommandList, CommandEmpty, Command, } from '@/recipes/command/command';
 import { ParkSearchType, SuggestionType } from '@/types/types';
 import { Skeleton } from '@/recipes/skeleton/skeleton';
 
@@ -130,7 +124,7 @@ export function SearchSuggestions({
                             ))}
                         </CommandGroup>
 
-                        {/* Trending Section */}
+                        {/* Trending Searches Section */}
                         <CommandGroup>
                             <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
                                 <TrendingUp className="h-4 w-4 text-orange-600" />

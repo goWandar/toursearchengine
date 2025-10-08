@@ -27,6 +27,7 @@ export const SearchResults = () => {
     const [activeTab, setActiveTab] = useState("all")
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+    // Fetch tours on component mount or when id/type changes
     useEffect(() => {
         const tourFetcher = async () => {
             try {
@@ -46,6 +47,7 @@ export const SearchResults = () => {
         tourFetcher();
     }, [id, type]);
 
+    // Load more tours
     const loadMore = async () => {
         if (!paginationMeta.hasMore) return;
 

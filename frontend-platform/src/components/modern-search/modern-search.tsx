@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search} from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/recipes/input/input';
 import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
 import { ParkSearchType, SuggestionType } from '@/types/types';
@@ -16,7 +16,6 @@ import { SearchSuggestions } from './search-suggestions';
 interface ModernSearchProps {
   className?: string;
   placeholder?: string;
-  onDestinationSelect?: (destination: string) => void;
 }
 
 export function ModernSearch({

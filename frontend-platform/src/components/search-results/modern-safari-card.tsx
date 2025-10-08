@@ -24,9 +24,8 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
 
     return (
         <Card className="w-full overflow-hidden">
-            {/* Header with image placeholder*/}
+            {/* Tour Images*/}
             <div className="relative h-52 bg-gray-200 flex items-center justify-center">
-                {/* Image placeholder */}
                 {data.images?.length > 0 ? (
                     showCarousel ?
                         (<ImageCarousel images={data.images} title={data.title} />) :
@@ -45,6 +44,7 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                             </div>
                         )
                 ) : (
+                    // Image Placeholder
                     <div className="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center">
 
                         <svg
@@ -63,8 +63,9 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                     </div>)}
             </div>
 
+            {/* Main Tour Content */}
             <CardContent className="p-6">
-                {/* Title and Location */}
+                {/* Title */}
                 <CardTitle className="text-xl font-bold mb-4">{data.title}</CardTitle>
                 <div className="grid grid-cols-[70%_30%] mb-4">
                     {/* Experiences / Tags */}
@@ -135,6 +136,7 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
 
                 {/* What's Included/Excluded using Accordion */}
                 <div className="mb-4">
+                    {/* What's Included */}
                     <Accordion type="multiple" className="w-full">
                         <AccordionItem value="included" className="border border-green-200 rounded-lg mb-2 bg-green-50">
                             <AccordionTrigger className="px-3 py-2 text-green-700 font-medium hover:no-underline">
@@ -155,7 +157,8 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
 
                             </AccordionContent>
                         </AccordionItem>
-
+                        
+                        {/* What's Excluded */}
                         <AccordionItem value="excluded" className="border border-red-200 rounded-lg bg-red-50">
                             <AccordionTrigger className="px-3 py-2 text-red-700 font-medium hover:no-underline">
                                 <div className="flex items-center gap-2">
@@ -177,8 +180,8 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                     </Accordion>
                 </div>
 
-                {/* Operator Site & Operator Profile Redirection */}
                 <div className="flex items-end justify-between">
+                    {/* Operator Profile Redirection Button */}
                     <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white px-5">
                         <a target="_blank" rel="noopener noreferrer" className="flex items-center">
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
@@ -192,6 +195,7 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                         </a>
                     </Button>
 
+                    {/* Tour Site Redirection Button */}
                     <Button asChild className="bg-white text-black px-5 border" variant="link">
                         <a href={data.siteURL!} target="_blank" rel="noopener noreferrer"
                             className="flex items-center"

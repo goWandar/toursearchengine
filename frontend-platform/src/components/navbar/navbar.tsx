@@ -8,10 +8,7 @@ import { ModernSearch } from '@/components/modern-search';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/recipes/sheet/sheet';
 
 export function Navbar() {
-  const handleDestinationSelect = (destination: string) => {
-    // TODO: Add navigation logic or search analytics here
-    console.log('Selected destination:', destination);
-  };
+
 
   return (
     <header className="bg-white border-b sticky top-0 z-50 backdrop-blur-sm ">
@@ -67,7 +64,6 @@ export function Navbar() {
                   {/* Mobile Search */}
                   <div className="md:hidden">
                     <ModernSearch
-                      onDestinationSelect={handleDestinationSelect}
                       placeholder="Search destinations and parks"
                     />
                   </div>

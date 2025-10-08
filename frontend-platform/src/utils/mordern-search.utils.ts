@@ -30,7 +30,7 @@ const fetchParksCountries = async (
     }
 };
 
-// GET Parks and Countries Search Suggestions
+// GET Parks and Countries Search Suggestions (modern-search.tsx)
 export const getSearchSuggestions = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
     setPopularParks: (parks: ParkSearchType[]) => void,
@@ -77,7 +77,7 @@ export const getSearchSuggestions = async (
     }
 };
 
-// Handle Parks and Countries Search
+// Handle Parks and Countries Search (modern-search.tsx)
 export const handleSearch = (
     searchValue: string,
     suggestionsList: SuggestionType[],
@@ -157,7 +157,7 @@ export const getPriceForGroupSize = (
     );
 };
 
-// Format season period from "1,2,3\n6,7,8" to "Jan–Mar & Jun–Aug" (modern-safari-card.tsx)
+// Format season period from e.g "1,2,3\n6,7,8" to "Jan–Mar & Jun–Aug" (modern-safari-card.tsx)
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export const formatSeasonPeriod = (period: string | null): string => {
