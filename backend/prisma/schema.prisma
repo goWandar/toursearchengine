@@ -161,6 +161,16 @@ model ConflictGroup {
   @@schema("public")
 }
 
+model Tag {
+  id       Int    @id @default(autoincrement())
+  key      String @unique
+  label    String
+  category String
+
+  @@map("tags")
+  @@schema("public")
+}
+
 model Category {
   id               Int       @id @default(autoincrement())
   name             String    @unique
