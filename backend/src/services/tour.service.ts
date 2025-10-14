@@ -26,7 +26,7 @@ export const TourService = {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
-  
+
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: { countryId, archived: false },
@@ -35,6 +35,7 @@ export const TourService = {
           orderBy: { dateCreated: 'asc' },
           include: {
             operator: { select: { id: true, name: true } },
+            country: { select: { id: true, name: true } },
             images: true,
             prices: true,
             tourParks: {
@@ -50,17 +51,17 @@ export const TourService = {
           where: { countryId, archived: false },
         }),
       ]);
-  
+
       if (!tours.length) {
         return notFound(res, 'No tours found for this country');
       }
-  
+
       //Flatten parks array for each tour
-      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[]; [key: string]: any }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[];[key: string]: any }) => ({
         ...rest,
         parks: tourParks.map(tp => tp.park),
       }));
-  
+
       return success(res, 'Tours fetched successfully', {
         tours: formattedTours,
         pagination: {
@@ -90,7 +91,7 @@ export const TourService = {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 8;
       const skip = (page - 1) * limit;
-  
+
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: {
@@ -105,6 +106,7 @@ export const TourService = {
           include: {
             operator: { select: { id: true, name: true } },
             country: { select: { id: true, name: true } },
+            images: true,
             tourParks: {
               include: {
                 park: {
@@ -112,6 +114,7 @@ export const TourService = {
                 },
               },
             },
+            prices: true,
           },
         }),
         prisma.tour.count({
@@ -123,19 +126,19 @@ export const TourService = {
           },
         }),
       ]);
-  
+
       if (!tours.length) {
         return notFound(res, 'No tours found for this park');
       }
-  
+
       // Flatten parks and remove the one used for filtering
-      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[]; [key: string]: any }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[];[key: string]: any }) => ({
         ...rest,
         parks: tourParks
           .filter(tp => tp.park.id !== parkId)
           .map(tp => tp.park),
       }));
-  
+
       return success(res, 'Tours fetched successfully', {
         tours: formattedTours,
         pagination: {
@@ -151,6 +154,75 @@ export const TourService = {
         res,
         'Failed to fetch tours by park ID',
         error instanceof Error ? error : new Error(String(error))
+      );
+    }
+  },
+
+  // Get parks and tours suggestions
+  async getAllParksAndCountries(req: Request, res: Response): Promise<Response> {
+    try {
+      // Fetch parks
+      const parks = await prisma.park.findMany({
+        select: {
+          id: true,
+          name: true,
+          country: true,
+          keyword: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      const parksWithType = parks.map(park => ({
+        ...park,
+        type: 'park',
+      }));
+
+      // Fetch countries
+      const countries = await prisma.country.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      const countriesWithType = countries.map(country => ({
+        ...country,
+        type: 'country',
+      }));
+
+      // Popular Parks hardcoded data(temporary)
+      const popularParks = [
+        { country: "Kenya", id: 64, keyword: "masai mara", name: "Masai Mara National Reserve", type: "park" },
+        { country: "Tanzania", id: 103, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
+        { country: "Botswana", id: 116, keyword: "okavango", name: "Okavango Delta ", type: "park" },
+        { country: "South Africa", id: 20, keyword: "kruger", name: "Kruger National Park", type: "park" },
+      ];
+
+      // Trending Searches hardcoded data(temporary)
+      const trendingSearches = [
+        { country: "Tanzania", id: 82, keyword: "arusha", name: "Arusha National Park", type: "park" },
+        { id: 1, name: "Tanzania", type: "country" },
+        { country: "Tanzania", id: 103, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
+        { country: "Tanzania", id: 88, keyword: "kilimanjaro", name: "Kilimanjaro National Park", type: "park" },
+      ];
+
+      // Return all in one response
+      return success(res, 'Parks and countries fetched successfully', {
+        parks: parksWithType,
+        countries: countriesWithType,
+        popularParks,
+        trendingSearches,
+      });
+    } catch (error) {
+      return serverError(
+        res,
+        'Failed to fetch parks and countries',
+        error instanceof Error ? error : new Error(String(error)),
       );
     }
   }
