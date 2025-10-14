@@ -3,7 +3,7 @@ import { Badge } from '@/recipes/badge/badge';
 import { Button } from '@/recipes/button/button';
 import { Card, CardContent, CardTitle } from '@/recipes/card/card';
 import { Tour } from '@/types/types';
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { GroupSizeSelector } from './group-size-selector';
 import { filterPricesBySeason, formatSeasonPeriod, getPriceForGroupSize, getUniqueSeasons } from '@/utils/mordern-search.utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/recipes/select/select';

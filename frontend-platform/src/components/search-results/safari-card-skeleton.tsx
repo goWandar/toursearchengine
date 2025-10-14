@@ -1,5 +1,4 @@
 import { Card, CardContent, CardTitle } from '@/recipes/card/card';
-import React from 'react';
 import { Skeleton } from '@/recipes/skeleton/skeleton';
 
 const SafariCardSkeleton = () => {

@@ -1,5 +1,4 @@
 "use client";
-import React from 'react'
 import { paginationType, Tour } from "@/types/types";
 import { fetchTours } from "@/utils/mordern-search.utils";
 import { useParams, useSearchParams } from "next/navigation";
