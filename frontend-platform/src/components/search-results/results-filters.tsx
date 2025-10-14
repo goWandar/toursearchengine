@@ -4,14 +4,25 @@ import { Button } from "@/recipes/button/button";
 import { Filter, ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
+import { TourFiltersType } from "@/types/types";
+import { Slider } from "@/recipes/slider/slider";
 
 interface ResultsFiltersProps {
     name?: string;
     isLoading: boolean;
     totalResults: number;
+    filters: TourFiltersType;
+    setFilters: React.Dispatch<React.SetStateAction<TourFiltersType>>;
+    applyFilters: () => void;
 }
 
-const ResultsFilters = ({ name, isLoading, totalResults }: ResultsFiltersProps) => {
+const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters }
+    : ResultsFiltersProps) => {
+    const accommodationTypes = [
+        { displayName: "Mixed", name: "mixed" },
+        { displayName: "Lodge", name: "lodge" },
+        { displayName: "Camp", name: "camp" },];
+
     return (
         <div className="flex items-center justify-between mb-8">
             <div>
@@ -53,7 +64,18 @@ const ResultsFilters = ({ name, isLoading, totalResults }: ResultsFiltersProps) 
                                 <h4 className="font-medium text-sm text-gray-700">
                                     Duration (days)
                                 </h4>
-                                {/* slider here later */}
+                                <Slider
+                                    value={filters.duration}
+                                    onValueChange={(value) => setFilters({ ...filters, duration: [value[0], value[1]] })}
+                                    max={14}
+                                    min={1}
+                                    step={1}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-sm text-gray-500">
+                                    <span>{filters.duration[0]} days</span>
+                                    <span>{filters.duration[1]} days</span>
+                                </div>
                             </div>
 
                             {/* Accommodation Filter */}
@@ -61,7 +83,36 @@ const ResultsFilters = ({ name, isLoading, totalResults }: ResultsFiltersProps) 
                                 <h4 className="font-medium text-sm text-gray-700">
                                     Accommodation Type
                                 </h4>
-                                {/* checkboxes here later */}
+                                <div className="space-y-2">
+                                    {accommodationTypes.map((type) => (
+                                        <div key={type.displayName} className="flex items-center space-x-2">
+                                            <input
+                                                type="checkbox"
+                                                id={type.displayName}
+                                                checked={filters.accommodation.includes(type.name)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setFilters({ ...filters, accommodation: [...filters.accommodation, type.name] })
+                                                    } else {
+                                                        setFilters({
+                                                            ...filters,
+                                                            accommodation: filters.accommodation.filter((a) => a !== type.name),
+                                                        })
+                                                    }
+                                                }}
+                                                className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                                            />
+                                            <label htmlFor={type.displayName} className="text-sm cursor-pointer">
+                                                {type.displayName}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <Button onClick={() => applyFilters()}>
+                                    Apply Filters
+                                </Button>
                             </div>
                         </div>
                     </PopoverContent>

@@ -113,3 +113,9 @@ export interface TourSearchResponse {
     tours: Tour[];
     pagination: paginationType;
 }
+
+export interface TourFiltersType {
+    accommodation: string[];
+    // budgetRange: [number, number];
+    duration: [number, number];
+}

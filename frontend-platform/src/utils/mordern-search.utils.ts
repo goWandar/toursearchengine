@@ -1,5 +1,5 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { paginationType, ParkSearchType, Price, SuggestionType, Tour } from "@/types/types";
+import { paginationType, ParkSearchType, Price, SuggestionType, Tour, TourFiltersType } from "@/types/types";
 import Fuse from "fuse.js";
 
 // GET Parks and Countries Search Suggestions from DB
@@ -110,7 +110,8 @@ export const fetchTours = async (
     paginationMeta: paginationType,
     setTourResults: React.Dispatch<React.SetStateAction<Tour[]>>,
     setPaginationMeta: React.Dispatch<React.SetStateAction<paginationType>>,
-    isLoadMore: boolean = false
+    isLoadMore: boolean = false,
+    filters: TourFiltersType
 ) => {
     try {
         // Determine page for this fetch
@@ -120,9 +121,9 @@ export const fetchTours = async (
         let fetchedTours: { tours: Tour[]; pagination: paginationType };
 
         if (type === 'park') {
-            fetchedTours = await getToursByParkId(id, updatedPaginationMeta);
+            fetchedTours = await getToursByParkId(id, updatedPaginationMeta, filters);
         } else if (type === 'country') {
-            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta);
+            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta, filters);
         } else {
             throw new Error(`Unknown type: ${type}`);
         }
@@ -180,11 +181,11 @@ export const formatSeasonPeriod = (period: string | null): string => {
 // Filter prices by selected season (modern-safari-card.tsx)
 export const filterPricesBySeason = (prices: Price[], season: string | null): Price[] => {
     return season
-      ? prices.filter((p) => p.seasonName === season)
-      : prices;
-  };
+        ? prices.filter((p) => p.seasonName === season)
+        : prices;
+};
 
 //  Extracts unique season names from price data (modern-safari-card.tsx)
 export const getUniqueSeasons = (prices: Price[]): string[] => {
     return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
-  };
+};

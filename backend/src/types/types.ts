@@ -88,3 +88,8 @@ export interface Operator {
 export type ServiceError = { success: false; error: string };
 
 export type ServiceResponse<T> = { success: true; data: T } | ServiceError;
+
+export type TourFiltersType = {
+  accommodation?: string[];
+  duration?: [number, number];
+};
