@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popov
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
 import { TourFiltersType } from "@/types/types";
 import { Slider } from "@/recipes/slider/slider";
+import { useState } from "react";
 
 interface ResultsFiltersProps {
     name?: string;
@@ -18,6 +19,7 @@ interface ResultsFiltersProps {
 
 const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters }
     : ResultsFiltersProps) => {
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const accommodationTypes = [
         { displayName: "Mixed", name: "mixed" },
         { displayName: "Lodge", name: "lodge" },
@@ -36,9 +38,11 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
 
             {/* Compact Modern Filter */}
             <div className="flex items-center space-x-4">
-                <Popover>
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
                         <Button
+                            onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                            disabled={isLoading}
                             variant="outline"
                             className="flex items-center space-x-2 bg-white shadow-sm border-gray-200 hover:bg-gray-50 rounded-full px-6"
                         >
@@ -110,7 +114,10 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
                                 </div>
                             </div>
                             <div>
-                                <Button onClick={() => applyFilters()}>
+                                <Button onClick={() => {
+                                    applyFilters();
+                                    setIsPopoverOpen(false);
+                                }}>
                                     Apply Filters
                                 </Button>
                             </div>

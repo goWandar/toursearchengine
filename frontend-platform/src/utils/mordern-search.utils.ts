@@ -1,6 +1,7 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
 import { paginationType, ParkSearchType, Price, SuggestionType, Tour, TourFiltersType } from "@/types/types";
 import Fuse from "fuse.js";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // GET Parks and Countries Search Suggestions from DB
 const fetchParksCountries = async (
@@ -128,8 +129,6 @@ export const fetchTours = async (
             throw new Error(`Unknown type: ${type}`);
         }
 
-        console.log("Fetched Tours:", fetchedTours);
-
         // Append or replace results
         setTourResults(prev =>
             isLoadMore ? [...prev, ...fetchedTours.tours] : fetchedTours.tours
@@ -189,3 +188,50 @@ export const filterPricesBySeason = (prices: Price[], season: string | null): Pr
 export const getUniqueSeasons = (prices: Price[]): string[] => {
     return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
 };
+
+// Update URL with filters and reset pagination (results-filters.tsx)
+export function applyFiltersHelper({
+    filters,
+    searchParams,
+    router,
+    setPaginationMeta,
+    setTourResults,
+}: {
+    filters: TourFiltersType;
+    searchParams: URLSearchParams;
+    router: AppRouterInstance;
+    setPaginationMeta: (pagination: paginationType) => void;
+    setTourResults: React.Dispatch<React.SetStateAction<any[]>>;
+}) {
+    // Reset pagination
+    const resetPagination: paginationType = {
+        page: 1,
+        limit: 12,
+        total: 0,
+        totalPages: 0,
+        hasMore: false,
+    };
+    setPaginationMeta(resetPagination);
+    setTourResults([]);
+
+    // Create a modifiable copy of the URLSearchParams
+    const params = new URLSearchParams(searchParams.toString());
+
+    // 1. Accommodation filter
+    if (filters.accommodation.length > 0) {
+        params.set("acc", filters.accommodation.join("|"));
+    } else {
+        params.delete("acc");
+    }
+
+    // 2. Duration filter
+    const [minDur, maxDur] = filters.duration;
+    if (!(minDur === 1 && maxDur === 14)) {
+        params.set("dur", `${minDur}-${maxDur}`);
+    } else {
+        params.delete("dur");
+    }
+
+    // 3. Update URL without reloading
+    router.replace(`?${params.toString()}`);
+}

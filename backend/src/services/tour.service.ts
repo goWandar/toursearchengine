@@ -1,54 +1,39 @@
 import { Request, Response } from 'express';
-import {
-  notFound,
-  serverError,
-  success
-} from '../utils/genericResponseHandler.js';
+import { notFound, serverError, success } from '../utils/genericResponseHandler.js';
 
 import { prisma } from '../db/prisma.js';
-
-import { Tour, TourFiltersType } from '../types/types.js';
-import { buildTourWhereFilters } from '../utils/tourSearch.js';
-
-type GetToursResponse = {
-  tours: Tour[];
-  cursor: number | null;
-};
 
 export const TourService = {
 
   // Get tours by country ID
-  async getToursByCountryId(
-    req: Request,
-    res: Response
-  ): Promise<Response> {
+  async getToursByCountryId(req: Request, res: Response): Promise<Response> {
     try {
       const countryId = parseInt(req.params.countryId);
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
-      // Restrucure accommodation and duration filters
-      const accommodationRaw = req.query.accommodation as string[] | string | undefined;
-      const accommodation = accommodationRaw
-        ? Array.isArray(accommodationRaw)
-          ? accommodationRaw
-          : [accommodationRaw]
-        : undefined;
 
-      let duration: [number, number] = [1, 14];
-      const durationRaw = req.query.duration as string[] | undefined;
+      // Extract and normalize filters
+      const accommodationParam = req.query.accommodation;
+      const accommodation = Array.isArray(accommodationParam)
+        ? accommodationParam.map(String)
+        : accommodationParam
+          ? [String(accommodationParam)]
+          : [];
 
-      if (durationRaw && durationRaw.length === 2) {
-        const [min, max] = durationRaw.map(n => parseInt(n, 10));
-        duration = [min, max];
-      }
-
-      const filters: TourFiltersType = { accommodation, duration };
-      const baseFilter = buildTourWhereFilters(filters);
+      const durationRaw = req.query.duration as string[]; // always sent from frontend
+      const duration: [number, number] = durationRaw.map(Number) as [number, number];
 
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
-          where: { ...baseFilter, countryId, archived: false },
+          where: {
+            countryId,
+            archived: false,
+            ...(accommodation.length
+              ? { accommodationType: { in: accommodation } }
+              : {}),
+            durationInDays: { gte: duration[0], lte: duration[1] },
+          },
           skip,
           take: limit,
           orderBy: { dateCreated: 'asc' },
@@ -58,25 +43,26 @@ export const TourService = {
             images: true,
             prices: true,
             tourParks: {
-              select: {
-                park: {
-                  select: { id: true, name: true },
-                },
-              },
+              include: { park: { select: { id: true, name: true } } },
             },
           },
         }),
         prisma.tour.count({
-          where: { countryId, archived: false },
+          where: {
+            countryId,
+            archived: false,
+            ...(accommodation.length
+              ? { accommodationType: { in: accommodation } }
+              : {}),
+            durationInDays: { gte: duration[0], lte: duration[1] },
+          },
         }),
       ]);
 
-      if (!tours.length) {
-        return notFound(res, 'No tours found for this country');
-      }
+      if (!tours.length) return notFound(res, 'No tours found for this country');
 
-      //Flatten parks array for each tour
-      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[];[key: string]: any }) => ({
+      // Flatten parks array for each tour
+      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
         ...rest,
         parks: tourParks.map(tp => tp.park),
       }));
@@ -100,43 +86,35 @@ export const TourService = {
     }
   },
 
+
   // Get tours by park ID
-  async getToursByParkId(
-    req: Request,
-    res: Response
-  ): Promise<Response> {
+  async getToursByParkId(req: Request, res: Response): Promise<Response> {
     try {
       const parkId = parseInt(req.params.parkId);
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 8;
       const skip = (page - 1) * limit;
-      // Restrucure accommodation and duration filters
-      const accommodationRaw = req.query.accommodation as string[] | string | undefined;
-      const accommodation = accommodationRaw
-        ? Array.isArray(accommodationRaw)
-          ? accommodationRaw
-          : [accommodationRaw]
-        : undefined;
 
-      let duration: [number, number] = [1, 14];
-      const durationRaw = req.query.duration as string[] | undefined;
+      // Extract and normalize filters
+      const accommodationParam = req.query.accommodation;
+      const accommodation = Array.isArray(accommodationParam)
+        ? accommodationParam.map(String)
+        : accommodationParam
+          ? [String(accommodationParam)]
+          : [];
 
-      if (durationRaw && durationRaw.length === 2) {
-        const [min, max] = durationRaw.map(n => parseInt(n, 10));
-        duration = [min, max];
-      }
-
-      const filters: TourFiltersType = { accommodation, duration };
-      const baseFilter = buildTourWhereFilters(filters);
+      const durationRaw = req.query.duration as string[]; // always sent from frontend
+      const duration: [number, number] = durationRaw.map(Number) as [number, number];
 
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: {
-            ...baseFilter,
-            tourParks: {
-              some: { parkId },
-            },
+            tourParks: { some: { parkId } },
             archived: false,
+            ...(accommodation.length
+              ? { accommodationType: { in: accommodation } }
+              : {}),
+            durationInDays: { gte: duration[0], lte: duration[1] },
           },
           skip,
           take: limit,
@@ -145,33 +123,28 @@ export const TourService = {
             operator: { select: { id: true, name: true } },
             country: { select: { id: true, name: true } },
             images: true,
-            tourParks: {
-              include: {
-                park: {
-                  select: { id: true, name: true },
-                },
-              },
-            },
             prices: true,
+            tourParks: {
+              include: { park: { select: { id: true, name: true } } },
+            },
           },
         }),
         prisma.tour.count({
           where: {
-            tourParks: {
-              some: { parkId },
-            },
+            tourParks: { some: { parkId } },
             archived: false,
+            ...(accommodation.length
+              ? { accommodationType: { in: accommodation } }
+              : {}),
+            durationInDays: { gte: duration[0], lte: duration[1] },
           },
         }),
       ]);
 
-      console.log('Fetched tours:', tours);
-      if (!tours.length) {
-        return notFound(res, 'No tours found for this park');
-      }
+      if (!tours.length) return notFound(res, 'No tours found for this park');
 
       // Flatten parks and remove the one used for filtering
-      const formattedTours = tours.map(({ tourParks, ...rest }: { tourParks: { park: { id: number; name: string } }[];[key: string]: any }) => ({
+      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
         ...rest,
         parks: tourParks
           .filter(tp => tp.park.id !== parkId)

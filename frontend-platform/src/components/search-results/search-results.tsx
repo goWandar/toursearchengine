@@ -1,6 +1,6 @@
 "use client";
 import { TourFiltersType, paginationType, Tour } from "@/types/types";
-import { fetchTours } from "@/utils/mordern-search.utils";
+import { applyFiltersHelper, fetchTours } from "@/utils/mordern-search.utils";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from '@/recipes/button/button';
@@ -30,7 +30,7 @@ export const SearchResults = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("all")
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [isFiltersApplied, setIsFiltersApplied] = useState(false);
+
 
     // Fetch tours on component mount or when id/type changes
     useEffect(() => {
@@ -53,34 +53,24 @@ export const SearchResults = () => {
         tourFetcher();
     }, [id, type]);
 
+    // Apply filters
     const applyFilters = async () => {
         try {
-            console.log("Applying Filters:", filters);
-            const params = new URLSearchParams(searchParams.toString());
+            setIsLoading(true);
 
-            // Accommodation
-            if (filters.accommodation.length > 0) {
-                params.set("acc", filters.accommodation.join("|"));
-            } else {
-                params.delete("acc");
-            }
+            // Update URL with filters and reset pagination
+            applyFiltersHelper(
+                { filters, searchParams, router, setPaginationMeta, setTourResults }
+            )
 
-            // Duration
-            const [minDur, maxDur] = filters.duration;
-            if (!(minDur === 1 && maxDur === 14)) {
-                params.set("dur", `${minDur}-${maxDur}`);
-            } else {
-                params.delete("dur");
-            }
-
-            // Update the URL without refreshing
-            router.replace(`?${params.toString()}`);
-
+            // Fetch Filtered Tours
             await fetchTours(id, type, paginationMeta, setTourResults,
-                setPaginationMeta, true, filters);
+                setPaginationMeta, false, filters);
         }
         catch (error) {
             console.error("Error applying filters:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
