@@ -24,6 +24,9 @@ export const TourService = {
       const durationRaw = req.query.duration as string[]; // always sent from frontend
       const duration: [number, number] = durationRaw.map(Number) as [number, number];
 
+      const budgetRaw = req.query.budget as string[]; // always sent from frontend
+      const budget: [number, number] = budgetRaw.map(Number) as [number, number];
+
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: {
@@ -33,6 +36,18 @@ export const TourService = {
               ? { accommodationType: { in: accommodation } }
               : {}),
             durationInDays: { gte: duration[0], lte: duration[1] },
+            ...(budget
+              ? {
+                prices: {
+                  some: {
+                    pricePerPerson: {
+                      gte: budget[0],
+                      lte: budget[1],
+                    },
+                  },
+                },
+              }
+              : {}),
           },
           skip,
           take: limit,
@@ -47,6 +62,7 @@ export const TourService = {
             },
           },
         }),
+
         prisma.tour.count({
           where: {
             countryId,
@@ -55,6 +71,18 @@ export const TourService = {
               ? { accommodationType: { in: accommodation } }
               : {}),
             durationInDays: { gte: duration[0], lte: duration[1] },
+            ...(budget
+              ? {
+                prices: {
+                  some: {
+                    pricePerPerson: {
+                      gte: budget[0],
+                      lte: budget[1],
+                    },
+                  },
+                },
+              }
+              : {}),
           },
         }),
       ]);

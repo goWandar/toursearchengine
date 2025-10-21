@@ -18,6 +18,7 @@ export const getToursByCountryId = async (
     paginationMeta: paginationType,
     filters: TourFiltersType
 ): Promise<TourSearchResponse> => {
+    console.log("Filters: ", filters)
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
             `/api/tours/country/${countryId}`,
@@ -26,7 +27,8 @@ export const getToursByCountryId = async (
                     page: paginationMeta.page,
                     limit: paginationMeta.limit,
                     duration: filters.duration,
-                    accommodation: filters.accommodation
+                    accommodation: filters.accommodation,
+                    budget: filters.budget
                 }
             }
         );

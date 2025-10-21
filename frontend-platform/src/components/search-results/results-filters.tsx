@@ -57,10 +57,19 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
 
                             {/* Budget Filter */}
                             <div className="space-y-3">
-                                <h4 className="font-medium text-sm text-gray-700">
-                                    Budget (USD/day)
-                                </h4>
-                                {/* slider here later */}
+                                <h4 className="font-medium text-sm text-gray-700">Budget (USD/person)</h4>
+                                <Slider
+                                    value={filters.budget}
+                                    onValueChange={(value) => setFilters({ ...filters, budget: [value[0], value[1]] })}
+                                    max={20000}
+                                    min={100}
+                                    step={100}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-sm text-gray-500">
+                                    <span>${filters.budget[0]}</span>
+                                    <span>${filters.budget[1]}</span>
+                                </div>
                             </div>
 
                             {/* Duration Filter */}

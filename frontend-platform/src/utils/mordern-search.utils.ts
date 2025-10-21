@@ -234,6 +234,14 @@ export function applyFiltersHelper({
         params.delete("dur");
     }
 
+    // 2. Duration filter
+    const [minBudget, maxBudget] = filters.budget;
+    if (!(minBudget === 100 && maxBudget === 20000)) {
+        params.set("bud", `${minBudget}-${maxBudget}`);
+    } else {
+        params.delete("bud");
+    }
+
     // 3. Update URL without reloading
     router.replace(`?${params.toString()}`);
 }

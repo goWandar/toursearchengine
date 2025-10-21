@@ -116,6 +116,6 @@ export interface TourSearchResponse {
 
 export interface TourFiltersType {
     accommodation: string[];
-    // budgetRange: [number, number];
+    budget: [number, number];
     duration: [number, number];
 }

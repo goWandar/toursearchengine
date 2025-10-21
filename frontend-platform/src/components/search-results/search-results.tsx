@@ -18,6 +18,7 @@ export const SearchResults = () => {
     const typeParam = (searchParams?.get("type")) ?? "";
     const accommodationParam = searchParams.get("acc");
     const durationParam = searchParams.get("dur");
+    const budgetParam = searchParams.get("bud");
     const [paginationMeta, setPaginationMeta] = useState<paginationType>({
         page: 1,
         limit: 12,
@@ -27,6 +28,7 @@ export const SearchResults = () => {
     });
     const [filters, setFilters] = useState<TourFiltersType>({
         accommodation: [],
+        budget: [100, 20000],
         duration: [1, 14],
     })
     const [isLoading, setIsLoading] = useState(false);
@@ -41,10 +43,14 @@ export const SearchResults = () => {
                 ? (durationParam.split("-").map(Number).slice(0, 2) as [number, number])
                 : ([1, 14] as [number, number]);
 
-            const dynamicFIlter = { accommodation: acc, duration: dur }
+            const bud = budgetParam
+                ? (budgetParam.split("-").map(Number).slice(0, 2) as [number, number])
+                : ([100, 20000] as [number, number]);
+
+            const dynamicFIlter: TourFiltersType = { accommodation: acc, duration: dur, budget: bud }
 
             if (accommodationParam || durationParam) {
-                setFilters({ accommodation: acc, duration: dur });
+                setFilters({ accommodation: acc, duration: dur, budget: bud});
             }
             try {
                 if (idParam && typeParam) {
