@@ -212,6 +212,8 @@ export function applyFiltersHelper({
         hasMore: false,
     };
     setPaginationMeta(resetPagination);
+
+    // Reset Tour Results
     setTourResults([]);
 
     // Create a modifiable copy of the URLSearchParams

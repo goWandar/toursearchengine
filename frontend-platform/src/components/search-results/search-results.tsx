@@ -14,8 +14,10 @@ export const SearchResults = () => {
     const router = useRouter();
     const [tourResults, setTourResults] = useState<Tour[]>([]);
     const name = decodeURIComponent(params.name as string);
-    const id = Number(searchParams?.get("id"));
-    const type = (searchParams?.get("type")) ?? "";
+    const idParam = Number(searchParams?.get("id"));
+    const typeParam = (searchParams?.get("type")) ?? "";
+    const accommodationParam = searchParams.get("acc");
+    const durationParam = searchParams.get("dur");
     const [paginationMeta, setPaginationMeta] = useState<paginationType>({
         page: 1,
         limit: 12,
@@ -31,17 +33,26 @@ export const SearchResults = () => {
     const [activeTab, setActiveTab] = useState("all")
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-
     // Fetch tours on component mount or when id/type changes
     useEffect(() => {
         const tourFetcher = async () => {
+            const acc = accommodationParam ? accommodationParam.split("|") : [];
+            const dur = durationParam
+                ? (durationParam.split("-").map(Number).slice(0, 2) as [number, number])
+                : ([1, 14] as [number, number]);
+
+            const dynamicFIlter = { accommodation: acc, duration: dur }
+
+            if (accommodationParam || durationParam) {
+                setFilters({ accommodation: acc, duration: dur });
+            }
             try {
-                if (id && type) {
+                if (idParam && typeParam) {
                     setIsLoading(true);
                     await fetchTours(
-                        id, type, paginationMeta,
+                        idParam, typeParam, paginationMeta,
                         setTourResults, setPaginationMeta, false,
-                        filters
+                        dynamicFIlter
                     );
                 }
             } catch (error) {
@@ -51,7 +62,7 @@ export const SearchResults = () => {
             }
         };
         tourFetcher();
-    }, [id, type]);
+    }, [idParam, typeParam, durationParam, accommodationParam]);
 
     // Apply filters
     const applyFilters = async () => {
@@ -64,7 +75,7 @@ export const SearchResults = () => {
             )
 
             // Fetch Filtered Tours
-            await fetchTours(id, type, paginationMeta, setTourResults,
+            await fetchTours(idParam, typeParam, paginationMeta, setTourResults,
                 setPaginationMeta, false, filters);
         }
         catch (error) {
@@ -80,7 +91,7 @@ export const SearchResults = () => {
             if (!paginationMeta.hasMore) return;
 
             setIsLoadingMore(true);
-            await fetchTours(id, type, paginationMeta, setTourResults,
+            await fetchTours(idParam, typeParam, paginationMeta, setTourResults,
                 setPaginationMeta, true, filters);
         } catch (error) {
             console.error("Error loading more tours:", error);
