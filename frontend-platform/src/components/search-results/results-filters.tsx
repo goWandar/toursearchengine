@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/recipes/button/button";
-import { Filter, ChevronDown } from "lucide-react";
+import { Filter, ChevronDown, RotateCcw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
 import { TourFiltersType } from "@/types/types";
@@ -15,9 +15,10 @@ interface ResultsFiltersProps {
     filters: TourFiltersType;
     setFilters: React.Dispatch<React.SetStateAction<TourFiltersType>>;
     applyFilters: () => void;
+    resetFilters: () => void;
 }
 
-const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters }
+const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters, resetFilters }
     : ResultsFiltersProps) => {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const accommodationTypes = [
@@ -122,12 +123,25 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
                                     ))}
                                 </div>
                             </div>
-                            <div>
-                                <Button onClick={() => {
-                                    applyFilters();
-                                    setIsPopoverOpen(false);
-                                }}>
-                                    Apply Filters
+                            <div className="flex justify-between">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        resetFilters();
+                                        setIsPopoverOpen(false);
+                                    }}>
+                                    <RotateCcw className="mr-2 h-4 w-4" />
+                                    Reset
+                                </Button>
+
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        applyFilters();
+                                        setIsPopoverOpen(false);
+                                    }}>
+                                    <Filter className="mr-2 h-4 w-4" />
+                                    Apply
                                 </Button>
                             </div>
                         </div>

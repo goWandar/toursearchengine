@@ -53,7 +53,8 @@ export const getToursByParkId = async (
                     page: paginationMeta.page,
                     limit: paginationMeta.limit,
                     duration: filters.duration,
-                    accommodation: filters.accommodation
+                    accommodation: filters.accommodation,
+                    budget: filters.budget
                 }
             }
         );

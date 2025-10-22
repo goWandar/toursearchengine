@@ -1,6 +1,6 @@
 "use client";
 import { TourFiltersType, paginationType, Tour } from "@/types/types";
-import { applyFiltersHelper, fetchTours } from "@/utils/mordern-search.utils";
+import { applyFiltersHelper, fetchTours, resetFiltersHelper } from "@/utils/mordern-search.utils";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from '@/recipes/button/button';
@@ -50,7 +50,7 @@ export const SearchResults = () => {
             const dynamicFIlter: TourFiltersType = { accommodation: acc, duration: dur, budget: bud }
 
             if (accommodationParam || durationParam) {
-                setFilters({ accommodation: acc, duration: dur, budget: bud});
+                setFilters({ accommodation: acc, duration: dur, budget: bud });
             }
             try {
                 if (idParam && typeParam) {
@@ -70,19 +70,68 @@ export const SearchResults = () => {
         tourFetcher();
     }, [idParam, typeParam, durationParam, accommodationParam]);
 
-    // Apply filters
+    // Apply results filters
     const applyFilters = async () => {
         try {
             setIsLoading(true);
 
+            const resetMeta = {
+                page: 1,
+                limit: 12,
+                total: 0,
+                totalPages: 0,
+                hasMore: false,
+            };
+
+            // Update UI immediately
+            setPaginationMeta(resetMeta);
+            setTourResults([]);
+
+            // Update URL filters
+            applyFiltersHelper({ filters, searchParams, router });
+
+            // Fetch tours with reset pagination
+            await fetchTours(idParam, typeParam, resetMeta, setTourResults, setPaginationMeta, false, filters);
+        } catch (error) {
+            console.error("Error applying filters:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Reset results filters
+    const resetFilters = async () => {
+        try {
+            setIsLoading(true);
+
+            const resetMeta = {
+                page: 1,
+                limit: 12,
+                total: 0,
+                totalPages: 0,
+                hasMore: false,
+            };
+
+            const resetFilters: TourFiltersType = {
+                accommodation: [],
+                budget: [100, 20000],
+                duration: [1, 14],
+            }
+
+            // Update UI immediately
+            setPaginationMeta(resetMeta);
+            setTourResults([]);
+            setFilters(resetFilters);
+            
+
             // Update URL with filters and reset pagination
-            applyFiltersHelper(
-                { filters, searchParams, router, setPaginationMeta, setTourResults }
+            resetFiltersHelper(
+                { searchParams, router, }
             )
 
             // Fetch Filtered Tours
             await fetchTours(idParam, typeParam, paginationMeta, setTourResults,
-                setPaginationMeta, false, filters);
+                setPaginationMeta, false, resetFilters);
         }
         catch (error) {
             console.error("Error applying filters:", error);
@@ -105,11 +154,12 @@ export const SearchResults = () => {
             setIsLoadingMore(false);
         }
     };
+
     return (
         <div className='container mx-auto px-6 py-12'>
             {/* Search Results Header */}
             <ResultsFilters name={name} isLoading={isLoading} totalResults={paginationMeta.total}
-                filters={filters} setFilters={setFilters} applyFilters={applyFilters}
+                filters={filters} setFilters={setFilters} applyFilters={applyFilters} resetFilters={resetFilters}
             />
 
             {/* Main Content */}

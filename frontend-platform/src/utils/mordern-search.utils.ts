@@ -115,6 +115,8 @@ export const fetchTours = async (
     filters: TourFiltersType
 ) => {
     try {
+        console.log("Fetching tours with filters: ", filters);
+
         // Determine page for this fetch
         const pageToFetch = isLoadMore ? paginationMeta.page + 1 : paginationMeta.page;
         const updatedPaginationMeta = { ...paginationMeta, page: pageToFetch };
@@ -189,33 +191,16 @@ export const getUniqueSeasons = (prices: Price[]): string[] => {
     return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
 };
 
-// Update URL with filters and reset pagination (results-filters.tsx)
+// Update URL with filters only (results-filters.tsx)
 export function applyFiltersHelper({
     filters,
     searchParams,
     router,
-    setPaginationMeta,
-    setTourResults,
 }: {
     filters: TourFiltersType;
     searchParams: URLSearchParams;
     router: AppRouterInstance;
-    setPaginationMeta: (pagination: paginationType) => void;
-    setTourResults: React.Dispatch<React.SetStateAction<any[]>>;
 }) {
-    // Reset pagination
-    const resetPagination: paginationType = {
-        page: 1,
-        limit: 12,
-        total: 0,
-        totalPages: 0,
-        hasMore: false,
-    };
-    setPaginationMeta(resetPagination);
-
-    // Reset Tour Results
-    setTourResults([]);
-
     // Create a modifiable copy of the URLSearchParams
     const params = new URLSearchParams(searchParams.toString());
 
@@ -234,7 +219,7 @@ export function applyFiltersHelper({
         params.delete("dur");
     }
 
-    // 2. Duration filter
+    // 3. Budget filter
     const [minBudget, maxBudget] = filters.budget;
     if (!(minBudget === 100 && maxBudget === 20000)) {
         params.set("bud", `${minBudget}-${maxBudget}`);
@@ -242,6 +227,26 @@ export function applyFiltersHelper({
         params.delete("bud");
     }
 
-    // 3. Update URL without reloading
+    // 4. Update URL without reloading
     router.replace(`?${params.toString()}`);
 }
+
+// Reset filter query params (results-filters.tsx)
+export const resetFiltersHelper = ({
+    searchParams,
+    router,
+}: {
+    searchParams: URLSearchParams;
+    router: AppRouterInstance;
+}) => {
+    // Create a modifiable copy of the URLSearchParams
+    const params = new URLSearchParams(searchParams.toString());
+
+    // Remove specific filter params
+    params.delete("acc"); // Accommodation
+    params.delete("dur"); // Duration
+    params.delete("bud"); // Budget
+
+    // Update the URL without reloading
+    router.replace(`?${params.toString()}`);
+};
