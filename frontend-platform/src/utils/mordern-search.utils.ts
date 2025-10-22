@@ -3,6 +3,10 @@ import { paginationType, ParkSearchType, Price, SuggestionType, Tour, TourFilter
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
+// Default filter and pagination values
+export const DEFAULT_FILTERS: TourFiltersType = { accommodation: [], budget: [100, 20000], duration: [1, 14] }
+export const DEFAULT_PAGINATION: paginationType = { page: 1, limit: 12, total: 0, totalPages: 0, hasMore: false }
+
 // GET Parks and Countries Search Suggestions from DB
 const fetchParksCountries = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
@@ -104,7 +108,7 @@ export const handleSearch = (
     setFilteredSuggestions(filteredResults);
 }
 
-// GET Park's/Countries Tour Results (search-results.tsx)
+// GET Park's/Countries Tour Results (useTours.tsx)
 export const fetchTours = async (
     id: number,
     type: string,
@@ -191,7 +195,7 @@ export const getUniqueSeasons = (prices: Price[]): string[] => {
     return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
 };
 
-// Update URL with filters only (results-filters.tsx)
+// Update URL with filters only (useFilters.ts)
 export function applyFiltersHelper({
     filters,
     searchParams,
@@ -250,3 +254,22 @@ export const resetFiltersHelper = ({
     // Update the URL without reloading
     router.replace(`?${params.toString()}`);
 };
+
+// Get filters from URLSearchParams (search-results.tsx)
+export function getFiltersFromSearchParams(searchParams: URLSearchParams): TourFiltersType {
+    const accommodationParam = searchParams.get("acc");
+    const durationParam = searchParams.get("dur");
+    const budgetParam = searchParams.get("bud");
+
+    const accommodation = accommodationParam ? accommodationParam.split("|") : [];
+
+    const duration: [number, number] = durationParam
+        ? durationParam.split("-").map(Number).slice(0, 2) as [number, number]
+        : [1, 14];
+
+    const budget: [number, number] = budgetParam
+        ? budgetParam.split("-").map(Number).slice(0, 2) as [number, number]
+        : [100, 20000];
+
+    return { accommodation, duration, budget };
+}

@@ -1,175 +1,79 @@
 "use client";
-import { TourFiltersType, paginationType, Tour } from "@/types/types";
-import { applyFiltersHelper, fetchTours, resetFiltersHelper } from "@/utils/mordern-search.utils";
+import { DEFAULT_FILTERS, DEFAULT_PAGINATION, getFiltersFromSearchParams, } from "@/utils/mordern-search.utils";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from '@/recipes/button/button';
 import { ChevronDown } from 'lucide-react';
 import ResultsFilters from './results-filters';
 import ResultsTabs from './results-tabs';
+import { useTours } from "@/hooks/useTours";
+import { useFilters } from "@/hooks/useFilters";
 
 export const SearchResults = () => {
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [tourResults, setTourResults] = useState<Tour[]>([]);
     const name = decodeURIComponent(params.name as string);
     const idParam = Number(searchParams?.get("id"));
     const typeParam = (searchParams?.get("type")) ?? "";
-    const accommodationParam = searchParams.get("acc");
-    const durationParam = searchParams.get("dur");
-    const budgetParam = searchParams.get("bud");
-    const [paginationMeta, setPaginationMeta] = useState<paginationType>({
-        page: 1,
-        limit: 12,
-        total: 0,
-        totalPages: 0,
-        hasMore: false,
-    });
-    const [filters, setFilters] = useState<TourFiltersType>({
-        accommodation: [],
-        budget: [100, 20000],
-        duration: [1, 14],
+
+    // Tours hook
+    const { tours, pagination, isLoading,
+        loadTours, resetPagination,
+        loadMoreTours, isLoadingMore } = useTours(idParam, typeParam)
+
+    // Filters hook
+    const { filters, setFilters, applyFilters, resetFilters } = useFilters({
+        searchParams, router, resetPagination,
     })
-    const [isLoading, setIsLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("all")
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    // Fetch tours on component mount or when id/type changes
+    // Load tours with initial filters from URL on mount
     useEffect(() => {
-        const tourFetcher = async () => {
-            const acc = accommodationParam ? accommodationParam.split("|") : [];
-            const dur = durationParam
-                ? (durationParam.split("-").map(Number).slice(0, 2) as [number, number])
-                : ([1, 14] as [number, number]);
-
-            const bud = budgetParam
-                ? (budgetParam.split("-").map(Number).slice(0, 2) as [number, number])
-                : ([100, 20000] as [number, number]);
-
-            const dynamicFIlter: TourFiltersType = { accommodation: acc, duration: dur, budget: bud }
-
-            if (accommodationParam || durationParam) {
-                setFilters({ accommodation: acc, duration: dur, budget: bud });
-            }
-            try {
-                if (idParam && typeParam) {
-                    setIsLoading(true);
-                    await fetchTours(
-                        idParam, typeParam, paginationMeta,
-                        setTourResults, setPaginationMeta, false,
-                        dynamicFIlter
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching tours:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        tourFetcher();
-    }, [idParam, typeParam, durationParam, accommodationParam]);
-
-    // Apply results filters
-    const applyFilters = async () => {
         try {
-            setIsLoading(true);
+            const initialFilters = getFiltersFromSearchParams(searchParams);
 
-            const resetMeta = {
-                page: 1,
-                limit: 12,
-                total: 0,
-                totalPages: 0,
-                hasMore: false,
-            };
+            setFilters(initialFilters)
+            loadTours(initialFilters)
+        } catch (error) {
+            console.error("Error loading tours with initial filters:", error);
+        }
+    }, [idParam, typeParam])
 
-            // Update UI immediately
-            setPaginationMeta(resetMeta);
-            setTourResults([]);
-
-            // Update URL filters
-            applyFiltersHelper({ filters, searchParams, router });
-
-            // Fetch tours with reset pagination
-            await fetchTours(idParam, typeParam, resetMeta, setTourResults, setPaginationMeta, false, filters);
+    // Load tours with applied filters
+    const handleApplyFilters = async () => {
+        try {
+            applyFilters();
+            await loadTours(filters, DEFAULT_PAGINATION);
         } catch (error) {
             console.error("Error applying filters:", error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
-    // Reset results filters
-    const resetFilters = async () => {
+    // Load tours with default filters
+    const handleResetFilters = async () => {
         try {
-            setIsLoading(true);
-
-            const resetMeta = {
-                page: 1,
-                limit: 12,
-                total: 0,
-                totalPages: 0,
-                hasMore: false,
-            };
-
-            const resetFilters: TourFiltersType = {
-                accommodation: [],
-                budget: [100, 20000],
-                duration: [1, 14],
-            }
-
-            // Update UI immediately
-            setPaginationMeta(resetMeta);
-            setTourResults([]);
-            setFilters(resetFilters);
-            
-
-            // Update URL with filters and reset pagination
-            resetFiltersHelper(
-                { searchParams, router, }
-            )
-
-            // Fetch Filtered Tours
-            await fetchTours(idParam, typeParam, paginationMeta, setTourResults,
-                setPaginationMeta, false, resetFilters);
-        }
-        catch (error) {
-            console.error("Error applying filters:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Load more tours
-    const loadMore = async () => {
-        try {
-            if (!paginationMeta.hasMore) return;
-
-            setIsLoadingMore(true);
-            await fetchTours(idParam, typeParam, paginationMeta, setTourResults,
-                setPaginationMeta, true, filters);
+            resetFilters();
+            await loadTours(DEFAULT_FILTERS, DEFAULT_PAGINATION);
         } catch (error) {
-            console.error("Error loading more tours:", error);
-        } finally {
-            setIsLoadingMore(false);
+            console.error("Error resetting filters:", error);
         }
-    };
+    }
 
     return (
         <div className='container mx-auto px-6 py-12'>
             {/* Search Results Header */}
-            <ResultsFilters name={name} isLoading={isLoading} totalResults={paginationMeta.total}
-                filters={filters} setFilters={setFilters} applyFilters={applyFilters} resetFilters={resetFilters}
+            <ResultsFilters name={name} isLoading={isLoading} totalResults={pagination.total}
+                filters={filters} setFilters={setFilters} applyFilters={handleApplyFilters} resetFilters={handleResetFilters}
             />
 
             {/* Main Content */}
-            <ResultsTabs paginationMeta={paginationMeta} tourResults={tourResults} isLoading={isLoading} />
+            <ResultsTabs paginationMeta={pagination} tourResults={tours} isLoading={isLoading} />
 
             {/* Load More Button */}
             <div className="flex justify-center">
-                {paginationMeta.hasMore && (
+                {pagination.hasMore && (
                     <Button
-                        onClick={loadMore}
+                        onClick={() => loadMoreTours(filters)}
                         className="flex items-center"
                         loading={isLoadingMore}
                         disabled={isLoadingMore}
@@ -180,7 +84,5 @@ export const SearchResults = () => {
                 )}
             </div>
         </div >
-
-
     )
 };
