@@ -13,7 +13,7 @@ cd src/utils/createQuizData
 ```bash
 # Run all seeds in order
 npx tsx addCategories.ts && \
-npx tsx ddTags.ts && \
+npx tsx addTags.ts && \
 npx tsx addQuizData.ts
 ```
 
