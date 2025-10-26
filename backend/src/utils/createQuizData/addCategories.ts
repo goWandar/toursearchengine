@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-interface Categories {
+interface Category {
   name: string;
   description: string;
   conflictGroupId?: number;
@@ -32,7 +32,7 @@ async function main(): Promise<void> {
   });
 
   // create categories
-  const categories: Categories[] = [
+  const categories: Category[] = [
     { name: 'Adventure', description: 'Action-packed safaris' },
     { name: 'Relaxed', description: 'Slow pace and comfort' },
     {
@@ -56,7 +56,7 @@ async function main(): Promise<void> {
       where: { name: category.name },
       update: {
         description: category.description,
-        conflictGroupId: 'conflictGroupId' in category ? category.conflictGroupId : null,
+        conflictGroupId: category.conflictGroupId ?? null,
       },
       create: category,
     });
