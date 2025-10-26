@@ -273,17 +273,17 @@ model QuizQuestion {
 model QuizOption {
   id          Int             @id @default(autoincrement())
   questionId  Int
-  categoryId  Int
+  tagId   Int
   optionText  String
   orderIndex  Int
   isActive    Boolean         @default(true)
   dateCreated DateTime        @default(now())
   // Relations
   question    QuizQuestion    @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  category    Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category    Category        @relation(fields: [tagId], references: [id], onDelete: Cascade)
   insights    QuizInsight[]   @relation("OptionInsights")
 
-  @@unique([questionId, categoryId])
+  @@unique([questionId, tagId])
   @@map("quiz_options")
   @@schema("public")
 }
