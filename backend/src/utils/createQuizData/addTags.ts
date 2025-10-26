@@ -11,19 +11,28 @@ async function main(): Promise<void> {
 
   for (const tag of tags) {
     try {
-      console.log('Seeding all quiz and tour tags...');
+      // Find the category this tag belongs to
+      const category = await prisma.category.findUnique({
+        where: { name: tag.category },
+      });
+
+      if (!category) {
+        console.warn(`Category not found for tag ${tag.key}: ${tag.category}`);
+        errorCount++;
+        continue;
+      }
 
       // Create or update the tag
       await prisma.tag.upsert({
         where: { key: tag.key },
         update: {
           label: tag.label,
-          category: tag.category,
+          categoryId: category.id,
         },
         create: {
           key: tag.key,
           label: tag.label,
-          category: tag.category,
+          categoryId: category.id,
         },
       });
 

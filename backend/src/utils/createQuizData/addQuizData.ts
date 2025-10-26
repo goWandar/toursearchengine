@@ -9,7 +9,7 @@ interface StageData {
 }
 
 async function main(): Promise<void> {
-  console.log('Seeding Smart Quiz  Data...');
+  console.log('Seeding Smart Quiz Data...');
 
   // QUIZ STAGES
   const stages: StageData[] = [
@@ -34,10 +34,10 @@ async function main(): Promise<void> {
     return stage.id;
   };
 
-  const getCategoryId = async (name: string): Promise<number> => {
-    const category = await prisma.category.findUnique({ where: { name } });
-    if (!category) throw new Error(`Category not found: ${name}`);
-    return category.id;
+  const getTagId = async (key: string): Promise<number> => {
+    const tag = await prisma.tag.findUnique({ where: { key } });
+    if (!tag) throw new Error(`Tag not found: ${key}`);
+    return tag.id;
   };
 
   // Insert questions and options and insight nudges
@@ -55,8 +55,8 @@ async function main(): Promise<void> {
           create: await Promise.all(
             q.options.map(async (opt: QuestionOption, idx: number) => ({
               optionText: opt.label,
-              categoryId: await getCategoryId(opt.category.split(':')[1]),
               orderIndex: idx + 1,
+              tagId: await getTagId(opt.category),
             })),
           ),
         },
@@ -73,10 +73,9 @@ async function main(): Promise<void> {
         },
       });
     }
-
-    console.log('Questions, Options, and Nudges seeded');
-    console.log('Smart Quiz Data Seeded Successfully');
   }
+  console.log('Questions, Options, and Nudges seeded');
+  console.log('Smart Quiz Data Seeded Successfully');
 }
 
 main()
