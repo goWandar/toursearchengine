@@ -4,11 +4,17 @@ This directory contains scripts used to seed foundational data for the quiz and 
 
 ## Quick Start
 
+Navigate to the seed scripts directory:
+
+```bash
+cd src/utils/createQuizData
+```
+
 ```bash
 # Run all seeds in order
-npx tsx createQuizData/addCategories.ts && \
-npx tsx createQuizData/addTags.ts && \
-npx tsx createQuizData/addQuizData.ts
+npx tsx addCategories.ts && \
+npx tsx ddTags.ts && \
+npx tsx addQuizData.ts
 ```
 
 Or run individually (see Usage section below).
