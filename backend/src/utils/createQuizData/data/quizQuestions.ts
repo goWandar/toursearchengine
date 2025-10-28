@@ -383,21 +383,21 @@ export const questions: QuestionData[] = [
     options: [
       {
         value: '3-5',
-        label: '3–5 Days (Quick Getaway)',
+        label: '3-5 Days (Quick Getaway)',
         category: 'duration:short',
         nudge:
           'Perfect for a short escape — focus on one major park with plenty of wildlife and minimal transfers.',
       },
       {
         value: '6-8',
-        label: '6–8 Days (Classic Safari)',
+        label: '6-8 Days (Classic Safari)',
         category: 'duration:standard',
         nudge:
-          'Balanced adventure across 2–3 destinations with time for both exploration and relaxation.',
+          'Balanced adventure across 2-3 destinations with time for both exploration and relaxation.',
       },
       {
         value: '9-14',
-        label: '9–14 Days (Extended Adventure)',
+        label: '9-14 Days (Extended Adventure)',
         category: 'duration:extended',
         nudge:
           'Ideal for travelers wanting a deeper dive into multiple regions, ecosystems, and activities.',
@@ -421,28 +421,28 @@ export const questions: QuestionData[] = [
     options: [
       {
         value: 'jan-mar',
-        label: 'January – March',
+        label: 'January - March',
         category: 'season:jan-mar',
         nudge:
           'Green season in many regions — fewer crowds and excellent birding opportunities, though occasional rain.',
       },
       {
         value: 'apr-jun',
-        label: 'April – June',
+        label: 'April - June',
         category: 'season:apr-jun',
         nudge:
           'Transition into the dry season — great value months with lush landscapes and emerging wildlife activity.',
       },
       {
         value: 'jul-sep',
-        label: 'July – September (Peak Season)',
+        label: 'July - September (Peak Season)',
         category: 'season:jul-sep',
         nudge:
           'Prime wildlife viewing and the Great Migration — plan early, as availability is limited and prices higher.',
       },
       {
         value: 'oct-dec',
-        label: 'October – December',
+        label: 'October - December',
         category: 'season:oct-dec',
         nudge:
           'Post-peak season with young wildlife, dramatic skies, and lower prices — a great mix of experience and value.',

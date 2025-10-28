@@ -33,6 +33,7 @@ async function main(): Promise<void> {
 
   // create categories
   const categories: Category[] = [
+    // Tour categories
     { name: 'Adventure', description: 'Action-packed safaris' },
     { name: 'Relaxed', description: 'Slow pace and comfort' },
     {
@@ -47,8 +48,26 @@ async function main(): Promise<void> {
     { name: 'Photography', description: 'For shutterbugs and pros' },
     { name: 'Migration', description: 'The Great Wildebeest Migration' },
     { name: 'Culture', description: 'Local traditions and people' },
-    { name: 'Small Groups', description: '2–8 people', conflictGroupId: groupSize.id },
+    { name: 'Small Groups', description: '2-8 people', conflictGroupId: groupSize.id },
     { name: 'Large Groups', description: '9+ people', conflictGroupId: groupSize.id },
+
+    // Tag categories for quiz system
+    { name: 'persona', description: 'Travel companion type' },
+    { name: 'style', description: 'Safari style preference' },
+    { name: 'experience-level', description: 'Safari experience level' },
+    { name: 'budget', description: 'Budget range' },
+    { name: 'interest', description: 'Primary interests' },
+    { name: 'wildlife', description: 'Specific wildlife focus' },
+    { name: 'duration', description: 'Trip duration' },
+    { name: 'pace', description: 'Activity pace' },
+    { name: 'accommodation', description: 'Accommodation type' },
+    { name: 'activity', description: 'Activity type' },
+    { name: 'region', description: 'Geographic region' },
+    { name: 'season', description: 'Travel season' },
+    { name: 'crowd-preference', description: 'Crowd tolerance' },
+    { name: 'timing-priority', description: 'Timing factors' },
+    { name: 'weather-tolerance', description: 'Weather preferences' },
+    { name: 'planning-flexibility', description: 'Date flexibility' },
   ];
 
   for (const category of categories) {
