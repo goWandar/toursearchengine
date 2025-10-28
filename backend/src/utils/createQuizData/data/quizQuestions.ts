@@ -123,9 +123,9 @@ export const questions: QuestionData[] = [
     orderIndex: 4,
     options: [
       {
-        value: 'budget',
+        value: 'economy',
         label: 'Budget-Friendly',
-        category: 'budget:budget',
+        category: 'budget:economy',
         nudge: 'Budget safaris offer authentic bush experiences with camping and basic lodges.',
       },
       {
