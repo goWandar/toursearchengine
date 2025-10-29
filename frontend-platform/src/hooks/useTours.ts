@@ -1,4 +1,4 @@
-import { paginationType, Tour, TourFiltersType } from "@/types/types"
+import { paginationType, SortToursType, Tour, TourFiltersType } from "@/types/types"
 import { DEFAULT_PAGINATION, fetchTours } from "@/utils/mordern-search.utils"
 import { useState } from "react"
 
@@ -15,22 +15,21 @@ export function useTours(idParam: number, typeParam: string) {
     }
 
     // Fetch tours with given filters
-    const loadTours = async (filters: TourFiltersType, defaultPagination?: paginationType) => {
+    const loadTours = async (filters: TourFiltersType, sortBy: SortToursType) => {
+        setTours([]);
         setIsLoading(true);
-        setTours([])
         try {
-            const paginationToUse = defaultPagination ? defaultPagination : pagination
-            await fetchTours(idParam, typeParam, paginationToUse, setTours, setPagination, false, filters)
+            await fetchTours(idParam, typeParam, DEFAULT_PAGINATION, setTours, setPagination, false, filters, sortBy)
         } finally {
             setIsLoading(false)
         }
     }
 
     // Load more tours with given filters
-    const loadMoreTours = async (filters: TourFiltersType) => {
+    const loadMoreTours = async (filters: TourFiltersType, sortBy: SortToursType) => {
         setIsLoadingMore(true)
         try {
-            await fetchTours(idParam, typeParam, pagination, setTours, setPagination, true, filters)
+            await fetchTours(idParam, typeParam, pagination, setTours, setPagination, true, filters, sortBy)
         } finally {
             setIsLoadingMore(false)
         }

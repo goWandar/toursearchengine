@@ -1,4 +1,4 @@
-import { paginationType, ParksCountriesType, TourFiltersType, TourSearchResponse } from '@/types/types';
+import { paginationType, ParksCountriesType, SortToursType, TourFiltersType, TourSearchResponse } from '@/types/types';
 import axiosClient from '@/utils/axios-retry-client';
 
 // Get All Parks and Countries Suggestions
@@ -16,9 +16,9 @@ export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
 export const getToursByCountryId = async (
     countryId: number,
     paginationMeta: paginationType,
-    filters: TourFiltersType
+    filters: TourFiltersType,
+    sortBy: SortToursType
 ): Promise<TourSearchResponse> => {
-    console.log("Filters: ", filters)
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
             `/api/tours/country/${countryId}`,
@@ -28,7 +28,8 @@ export const getToursByCountryId = async (
                     limit: paginationMeta.limit,
                     duration: filters.duration,
                     accommodation: filters.accommodation,
-                    budget: filters.budget
+                    budget: filters.budget,
+                    sortBy: sortBy
                 }
             }
         );
@@ -43,7 +44,8 @@ export const getToursByCountryId = async (
 export const getToursByParkId = async (
     parkId: number,
     paginationMeta: paginationType,
-    filters: TourFiltersType
+    filters: TourFiltersType,
+    sortBy: SortToursType
 ): Promise<TourSearchResponse> => {
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
@@ -54,7 +56,8 @@ export const getToursByParkId = async (
                     limit: paginationMeta.limit,
                     duration: filters.duration,
                     accommodation: filters.accommodation,
-                    budget: filters.budget
+                    budget: filters.budget,
+                    sortBy: sortBy
                 }
             }
         );

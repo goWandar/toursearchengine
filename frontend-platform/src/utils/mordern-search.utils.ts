@@ -1,7 +1,18 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { paginationType, ParkSearchType, Price, SuggestionType, Tour, TourFiltersType } from "@/types/types";
+import { paginationType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+type HandlerDeps = {
+    filters: TourFiltersType;
+    sortBy: SortToursType;
+    router: any;
+    searchParams: any;
+    resetPagination: () => void;
+    loadTours: (filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
+    setFilters?: (filters: TourFiltersType) => void;
+    setSortBy?: (value: SortToursType) => void;
+};
 
 // Default filter and pagination values
 export const DEFAULT_FILTERS: TourFiltersType = { accommodation: [], budget: [100, 20000], duration: [1, 14] }
@@ -116,10 +127,10 @@ export const fetchTours = async (
     setTourResults: React.Dispatch<React.SetStateAction<Tour[]>>,
     setPaginationMeta: React.Dispatch<React.SetStateAction<paginationType>>,
     isLoadMore: boolean = false,
-    filters: TourFiltersType
+    filters: TourFiltersType,
+    sortBy: SortToursType
 ) => {
     try {
-        console.log("Fetching tours with filters: ", filters);
 
         // Determine page for this fetch
         const pageToFetch = isLoadMore ? paginationMeta.page + 1 : paginationMeta.page;
@@ -128,9 +139,9 @@ export const fetchTours = async (
         let fetchedTours: { tours: Tour[]; pagination: paginationType };
 
         if (type === 'park') {
-            fetchedTours = await getToursByParkId(id, updatedPaginationMeta, filters);
+            fetchedTours = await getToursByParkId(id, updatedPaginationMeta, filters, sortBy);
         } else if (type === 'country') {
-            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta, filters);
+            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta, filters, sortBy);
         } else {
             throw new Error(`Unknown type: ${type}`);
         }
@@ -195,8 +206,52 @@ export const getUniqueSeasons = (prices: Price[]): string[] => {
     return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
 };
 
-// Update URL with filters only (useFilters.ts)
-export function applyFiltersHelper({
+// Get filters from URLSearchParams (search-results.tsx)
+export function getQueriesFromSearchParams(
+    searchParams: URLSearchParams
+) {
+    // Extract params
+    const accommodationParam = searchParams.get("acc");
+    const durationParam = searchParams.get("dur");
+    const budgetParam = searchParams.get("bud");
+    const sortParam = searchParams.get("sort");
+
+    // Parse accommodation
+    const accommodation = accommodationParam
+        ? accommodationParam.split("|")
+        : [];
+
+    // Parse duration
+    const duration: [number, number] = durationParam
+        ? durationParam
+            .split("-")
+            .map(Number)
+            .slice(0, 2) as [number, number]
+        : [1, 14];
+
+    // Parse budget
+    const budget: [number, number] = budgetParam
+        ? budgetParam
+            .split("-")
+            .map(Number)
+            .slice(0, 2) as [number, number]
+        : [100, 20000];
+
+    // Parse sort
+    const sorting: SortToursType = (sortParam as SortToursType) || "relevance";
+
+    return {
+        initialFilters: {
+            accommodation,
+            duration,
+            budget,
+        },
+        initialSorting: sorting,
+    };
+}
+
+// Update URL with filters query params
+function applyFiltersHelper({
     filters,
     searchParams,
     router,
@@ -235,41 +290,104 @@ export function applyFiltersHelper({
     router.replace(`?${params.toString()}`);
 }
 
-// Reset filter query params (results-filters.tsx)
-export const resetFiltersHelper = ({
+// Reset filter query params in URL
+function resetFiltersHelper({
     searchParams,
     router,
 }: {
     searchParams: URLSearchParams;
     router: AppRouterInstance;
-}) => {
+}) {
     // Create a modifiable copy of the URLSearchParams
     const params = new URLSearchParams(searchParams.toString());
 
     // Remove specific filter params
-    params.delete("acc"); // Accommodation
-    params.delete("dur"); // Duration
-    params.delete("bud"); // Budget
+    params.delete("acc");
+    params.delete("dur");
+    params.delete("bud");
 
     // Update the URL without reloading
     router.replace(`?${params.toString()}`);
 };
 
-// Get filters from URLSearchParams (search-results.tsx)
-export function getFiltersFromSearchParams(searchParams: URLSearchParams): TourFiltersType {
-    const accommodationParam = searchParams.get("acc");
-    const durationParam = searchParams.get("dur");
-    const budgetParam = searchParams.get("bud");
 
-    const accommodation = accommodationParam ? accommodationParam.split("|") : [];
+// Apply filters handler (search-results.tsx)
+export const applyFiltersHandler = async ({
+    filters,
+    sortBy,
+    searchParams,
+    router,
+    resetPagination,
+    loadTours,
+}: HandlerDeps) => {
 
-    const duration: [number, number] = durationParam
-        ? durationParam.split("-").map(Number).slice(0, 2) as [number, number]
-        : [1, 14];
+    try {
+        resetPagination();
+        applyFiltersHelper({ filters, searchParams, router });
+        await loadTours(filters, sortBy);
+    } catch (error) {
+        console.error("Error applying filters:", error);
+    }
+};
 
-    const budget: [number, number] = budgetParam
-        ? budgetParam.split("-").map(Number).slice(0, 2) as [number, number]
-        : [100, 20000];
+// Reset filters handler (search-results.tsx)
+export const resetFiltersHandler = async ({
+    sortBy,
+    searchParams,
+    router,
+    resetPagination,
+    loadTours,
+    setFilters,
+}: HandlerDeps) => {
+    try {
+        setFilters?.(DEFAULT_FILTERS);
+        resetFiltersHelper({ searchParams, router });
+        resetPagination();
+        await loadTours(DEFAULT_FILTERS, sortBy);
+    } catch (error) {
+        console.error("Error resetting filters:", error);
+    }
+};
 
-    return { accommodation, duration, budget };
+
+// Add the tour sort type to URL)
+function applySortByHelper({
+    sortBy,
+    searchParams,
+    router,
+}: {
+    sortBy: SortToursType;
+    searchParams: URLSearchParams;
+    router: AppRouterInstance;
+}) {
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (sortBy !== 'relevance') {
+        params.set('sort', sortBy);
+    } else {
+        params.delete('sort');
+    }
+
+    router.replace(`?${params.toString()}`);
 }
+
+// Sort tours handler (search-results.tsx)
+export const sortToursHandler = async ({
+    filters,
+    sortBy,
+    searchParams,
+    router,
+    resetPagination,
+    loadTours,
+    setSortBy,
+}: HandlerDeps) => {
+    try {
+        applySortByHelper({ sortBy, searchParams, router });
+        setSortBy?.(sortBy);
+        resetPagination();
+        await loadTours(filters, sortBy);
+    } catch (error) {
+        console.error("Error sorting tours:", error);
+    }
+};

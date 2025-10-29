@@ -81,8 +81,8 @@ export default function ResultsTabs({
                         ? Array.from({ length: 12 }).map((_, i) => (
                             <SafariCardSkeleton key={i} />
                         ))
-                        : tourResults.map((tour) => (
-                            <ModernSafariCard key={tour.id} data={tour} showCarousel={true} />
+                        : tourResults.map((tour, idx) => (
+                            <ModernSafariCard key={idx} data={tour} showCarousel={true} />
                         ))}
                 </div>
                 <div id="insights-section">

@@ -119,3 +119,5 @@ export interface TourFiltersType {
     budget: [number, number];
     duration: [number, number];
 }
+
+export type SortToursType = 'relevance' | 'duration';

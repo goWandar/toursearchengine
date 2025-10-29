@@ -4,7 +4,7 @@ import { Button } from "@/recipes/button/button";
 import { Filter, ChevronDown, RotateCcw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
-import { TourFiltersType } from "@/types/types";
+import { SortToursType, TourFiltersType } from "@/types/types";
 import { Slider } from "@/recipes/slider/slider";
 import { useState } from "react";
 
@@ -16,9 +16,13 @@ interface ResultsFiltersProps {
     setFilters: React.Dispatch<React.SetStateAction<TourFiltersType>>;
     applyFilters: () => void;
     resetFilters: () => void;
+    handleSortTours?: (value: SortToursType) => void;
+    sortBy: SortToursType;
 }
 
-const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters, resetFilters }
+const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters,
+    resetFilters, handleSortTours, sortBy
+}
     : ResultsFiltersProps) => {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const accommodationTypes = [
@@ -148,16 +152,16 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
                     </PopoverContent>
                 </Popover>
 
-                <Select defaultValue="relevance">
+                <Select disabled={isLoading} value={sortBy} onValueChange={(value: SortToursType) => handleSortTours && handleSortTours(value)}>
                     <SelectTrigger className="w-40 bg-white shadow-sm border-gray-200 rounded-full">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="relevance">Relevance</SelectItem>
-                        <SelectItem value="price-low">Price: Low to High</SelectItem>
-                        <SelectItem value="price-high">Price: High to Low</SelectItem>
-                        <SelectItem value="rating">Highest Rated</SelectItem>
-                        <SelectItem value="duration">Duration</SelectItem>
+                        <SelectItem value="relevance" onClick={() => handleSortTours && handleSortTours("relevance")}>Relevance</SelectItem>
+                        {/* <SelectItem value="price-low" >Price: Low to High</SelectItem> */}
+                        {/* <SelectItem value="price-high">Price: High to Low</SelectItem> */}
+                        {/* <SelectItem value="rating">Highest Rated</SelectItem> */}
+                        <SelectItem value="duration" onClick={() => handleSortTours && handleSortTours("duration")}>Duration</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
