@@ -295,7 +295,7 @@ model QuizInsight {
   id          Int           @id @default(autoincrement())
   questionId  Int?
   optionId    Int?
-  insightText String
+  insightText String        @unique
   contextType String?
   dateCreated DateTime      @default(now())
   // Relations
