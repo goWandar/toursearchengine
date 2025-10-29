@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { notFound, serverError, success } from '../utils/genericResponseHandler.js';
 
 import { prisma } from '../db/prisma.js';
+import { parseTourQueryParams } from '../utils/tourServices.utils.js';
 
 export const TourService = {
 
@@ -9,49 +10,55 @@ export const TourService = {
   async getToursByCountryId(req: Request, res: Response): Promise<Response> {
     try {
       const countryId = parseInt(req.params.countryId);
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const skip = (page - 1) * limit;
+      const {
+        page,
+        limit,
+        skip,
+        accommodation,
+        duration,
+        budget,
+        sortBy,
+      } = parseTourQueryParams(req.query);
 
-      // Extract and normalize filters
-      const accommodationParam = req.query.accommodation;
-      const accommodation = Array.isArray(accommodationParam)
-        ? accommodationParam.map(String)
-        : accommodationParam
-          ? [String(accommodationParam)]
-          : [];
+      // Build the where clause
+      const where: any = {
+        countryId,
+        archived: false,
+        ...(accommodation.length
+          ? { accommodationType: { in: accommodation } }
+          : {}),
+        durationInDays: { gte: duration[0], lte: duration[1] },
+        ...(budget
+          ? {
+            prices: {
+              some: {
+                pricePerPerson: {
+                  gte: budget[0],
+                  lte: budget[1],
+                },
+              },
+            },
+          }
+          : {}),
+      };
 
-      const durationRaw = req.query.duration as string[]; // always sent from frontend
-      const duration: [number, number] = durationRaw.map(Number) as [number, number];
-
-      const budgetRaw = req.query.budget as string[]; // always sent from frontend
-      const budget: [number, number] = budgetRaw.map(Number) as [number, number];
+      // Determine orderBy
+      let orderBy: any;
+      switch (sortBy) {
+        case 'duration':
+          orderBy = { durationInDays: 'asc' }; // shortest to longest
+          break;
+        case 'relevance':
+        default:
+          orderBy = { dateCreated: 'asc' };
+      }
 
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
-          where: {
-            countryId,
-            archived: false,
-            ...(accommodation.length
-              ? { accommodationType: { in: accommodation } }
-              : {}),
-            durationInDays: { gte: duration[0], lte: duration[1] },
-            ...(budget
-              ? {
-                prices: {
-                  some: {
-                    pricePerPerson: {
-                      gte: budget[0],
-                      lte: budget[1],
-                    },
-                  },
-                },
-              }
-              : {}),
-          },
+          where,
           skip,
           take: limit,
-          orderBy: { dateCreated: 'asc' },
+          orderBy,
           include: {
             operator: { select: { id: true, name: true } },
             country: { select: { id: true, name: true } },
@@ -62,29 +69,7 @@ export const TourService = {
             },
           },
         }),
-
-        prisma.tour.count({
-          where: {
-            countryId,
-            archived: false,
-            ...(accommodation.length
-              ? { accommodationType: { in: accommodation } }
-              : {}),
-            durationInDays: { gte: duration[0], lte: duration[1] },
-            ...(budget
-              ? {
-                prices: {
-                  some: {
-                    pricePerPerson: {
-                      gte: budget[0],
-                      lte: budget[1],
-                    },
-                  },
-                },
-              }
-              : {}),
-          },
-        }),
+        prisma.tour.count({ where }),
       ]);
 
       if (!tours.length) return notFound(res, 'No tours found for this country');
@@ -119,24 +104,28 @@ export const TourService = {
   async getToursByParkId(req: Request, res: Response): Promise<Response> {
     try {
       const parkId = parseInt(req.params.parkId);
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 8;
-      const skip = (page - 1) * limit;
+      const {
+        page,
+        limit,
+        skip,
+        accommodation,
+        duration,
+        budget,
+        sortBy,
+      } = parseTourQueryParams(req.query);
 
-      // Extract and normalize filters
-      const accommodationParam = req.query.accommodation;
-      const accommodation = Array.isArray(accommodationParam)
-        ? accommodationParam.map(String)
-        : accommodationParam
-          ? [String(accommodationParam)]
-          : [];
+      // Determine sorting logic
+      let orderBy: any;
+      switch (sortBy) {
+        case 'duration':
+          orderBy = { durationInDays: 'asc' }; // shortest to longest
+          break;
+        case 'relevance':
+        default:
+          orderBy = { dateCreated: 'asc' }; // default relevance
+      }
 
-      const durationRaw = req.query.duration as string[]; // always sent from frontend
-      const duration: [number, number] = durationRaw.map(Number) as [number, number];
-
-      const budgetRaw = req.query.budget as string[]; // always sent from frontend
-      const budget: [number, number] = budgetRaw.map(Number) as [number, number];
-
+      // Fetch tours + count in parallel
       const [tours, total] = await Promise.all([
         prisma.tour.findMany({
           where: {
@@ -161,7 +150,7 @@ export const TourService = {
           },
           skip,
           take: limit,
-          orderBy: { dateCreated: 'asc' },
+          orderBy, // ✅ use dynamic orderBy here
           include: {
             operator: { select: { id: true, name: true } },
             country: { select: { id: true, name: true } },
@@ -172,6 +161,7 @@ export const TourService = {
             },
           },
         }),
+
         prisma.tour.count({
           where: {
             tourParks: { some: { parkId } },
@@ -264,18 +254,18 @@ export const TourService = {
 
       // Popular Parks hardcoded data(temporary)
       const popularParks = [
-        { country: "Kenya", id: 64, keyword: "masai mara", name: "Masai Mara National Reserve", type: "park" },
-        { country: "Tanzania", id: 103, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
-        { country: "Botswana", id: 116, keyword: "okavango", name: "Okavango Delta ", type: "park" },
+        { country: "Kenya", id: 66, keyword: "masai mara", name: "Masai Mara National Reserve", type: "park" },
+        { country: "Tanzania", id: 105, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
+        { country: "Botswana", id: 118, keyword: "okavango", name: "Okavango Delta ", type: "park" },
         { country: "South Africa", id: 20, keyword: "kruger", name: "Kruger National Park", type: "park" },
       ];
 
       // Trending Searches hardcoded data(temporary)
       const trendingSearches = [
-        { country: "Tanzania", id: 82, keyword: "arusha", name: "Arusha National Park", type: "park" },
+        { country: "Tanzania", id: 84, keyword: "arusha", name: "Arusha National Park", type: "park" },
         { id: 1, name: "Tanzania", type: "country" },
-        { country: "Tanzania", id: 103, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
-        { country: "Tanzania", id: 88, keyword: "kilimanjaro", name: "Kilimanjaro National Park", type: "park" },
+        { country: "Tanzania", id: 105, keyword: "serengeti", name: "Serengeti National Park", type: "park" },
+        { country: "Tanzania", id: 90, keyword: "kilimanjaro", name: "Kilimanjaro National Park", type: "park" },
       ];
 
       // Return all in one response
