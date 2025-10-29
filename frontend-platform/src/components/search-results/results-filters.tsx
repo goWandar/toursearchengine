@@ -31,9 +31,9 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
         { displayName: "Camp", name: "camp" },];
 
     return (
-        <div className="flex items-center justify-between mb-8">
-            <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+            <div className="mb-3 lg:mb-0">
+                <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3">
                     {name ? `Search results for "${name}"` : "All Safari Options"}
                 </h1>
                 {!isLoading && (
@@ -42,7 +42,7 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
             </div>
 
             {/* Compact Modern Filter */}
-            <div className="flex items-center space-x-4">
+            <div className="flex justify-between items-center space-x-4">
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
                         <Button
