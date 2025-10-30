@@ -65,17 +65,19 @@ async function main(): Promise<void> {
 
     // Create insight nudges for each option
     for (const opt of q.options) {
-      await prisma.quizInsight.create({
-        data: {
+      await prisma.quizInsight.upsert({
+        where: { insightText: opt.nudge },
+        update: {},
+        create: {
           questionId: createdQuestion.id,
           insightText: opt.nudge,
           contextType: 'nudge',
         },
       });
     }
+    console.log('Questions, Options, and Nudges seeded');
+    console.log('Smart Quiz Data Seeded Successfully');
   }
-  console.log('Questions, Options, and Nudges seeded');
-  console.log('Smart Quiz Data Seeded Successfully');
 }
 
 main()
