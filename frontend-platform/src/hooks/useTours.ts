@@ -15,11 +15,14 @@ export function useTours(idParam: number, typeParam: string) {
     }
 
     // Fetch tours with given filters
-    const loadTours = async (filters: TourFiltersType, sortBy: SortToursType) => {
+    const loadTours = async (filters: TourFiltersType, sortBy: SortToursType, setTotalResults?: (total: number) => void) => {
+        // Check if idParam and typeParam have been loaded
+        if (!idParam || !typeParam) return;
+
         setTours([]);
         setIsLoading(true);
         try {
-            await fetchTours(idParam, typeParam, DEFAULT_PAGINATION, setTours, setPagination, false, filters, sortBy)
+            await fetchTours(idParam, typeParam, DEFAULT_PAGINATION, setTours, setPagination, false, filters, sortBy, setTotalResults)
         } finally {
             setIsLoading(false)
         }
@@ -27,6 +30,9 @@ export function useTours(idParam: number, typeParam: string) {
 
     // Load more tours with given filters
     const loadMoreTours = async (filters: TourFiltersType, sortBy: SortToursType) => {
+        // Check if idParam and typeParam have been loaded
+        if (!idParam || !typeParam) return;
+
         setIsLoadingMore(true)
         try {
             await fetchTours(idParam, typeParam, pagination, setTours, setPagination, true, filters, sortBy)
@@ -35,5 +41,5 @@ export function useTours(idParam: number, typeParam: string) {
         }
     }
 
-    return { tours, pagination, isLoading, setPagination, loadTours, resetPagination, loadMoreTours, isLoadingMore }
+    return { tours, pagination, isLoading, setPagination, loadTours, resetPagination, loadMoreTours, isLoadingMore, setIsLoading }
 }

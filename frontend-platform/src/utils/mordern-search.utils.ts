@@ -1,5 +1,5 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { paginationType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
+import { paginationType, Park, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -128,7 +128,8 @@ export const fetchTours = async (
     setPaginationMeta: React.Dispatch<React.SetStateAction<paginationType>>,
     isLoadMore: boolean = false,
     filters: TourFiltersType,
-    sortBy: SortToursType
+    sortBy: SortToursType,
+    setTotalResults?: (total: number) => void
 ) => {
     try {
 
@@ -153,6 +154,9 @@ export const fetchTours = async (
 
         // Update pagination meta
         setPaginationMeta(fetchedTours.pagination);
+
+        // Set total results
+        setTotalResults && setTotalResults(fetchedTours.pagination.total);
 
         return fetchedTours;
     } catch (error) {
@@ -391,3 +395,43 @@ export const sortToursHandler = async ({
         console.error("Error sorting tours:", error);
     }
 };
+
+// Get Parks by Country Name (parks-tab-content.tsx)
+export function getParksByCountry(country: string, setParks: React.Dispatch<React.SetStateAction<ParkSearchType[]>>) {
+    // Retrieve data from localStorage
+    const parksAndCountries = localStorage.getItem("parksAndCountries");
+
+    if (!parksAndCountries) {
+        return;
+    }
+
+    try {
+        const parsedData: ParksCountriesType = JSON.parse(parksAndCountries);
+        const parks: ParkSearchType[] = parsedData.parks;
+
+        // Normalize both sides to handle extra spaces or case differences
+        const matchingParks = parks.filter(
+            (park) => park.country.trim().toLowerCase() === country.trim().toLowerCase()
+        );
+
+        setParks(matchingParks);
+    } catch (error) {
+        throw new Error(`Failed to parse parks from localStorage: ${error}`);
+    }
+}
+
+// Get Tours By Park Id Helper (parks-tab-content.tsx)
+export const getToursByParkHandler = async ({
+    sortBy,
+    resetPagination,
+    loadTours,
+}: HandlerDeps) => {
+    try {
+        resetPagination();
+        await loadTours(DEFAULT_FILTERS, sortBy);
+    } catch (error) {
+        console.error("Error resetting filters:", error);
+    }
+};
+
+
