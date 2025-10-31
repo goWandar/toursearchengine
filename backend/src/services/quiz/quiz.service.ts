@@ -11,12 +11,10 @@ export const QuizService = {
     logger.info('[QuizService] Quiz service initialized.');
   },
 
-  async getQuizStages(): Promise<ServiceResponse<QuizStage[]>> {
-    logger.info('[QuizService] Fetching quiz stages.');
-
+  async getQuizStage(stageId: number): Promise<ServiceResponse<QuizStage | null>> {
     try {
-      const stages = await prisma.quizStage.findMany({
-        orderBy: { orderIndex: 'asc' },
+      const stage = await prisma.quizStage.findUnique({
+        where: { id: stageId },
         include: {
           questions: {
             orderBy: { orderIndex: 'asc' },
@@ -27,12 +25,12 @@ export const QuizService = {
         },
       });
 
-      logger.success(`[QuizService] Successfully fetched ${stages.length} quiz stages.`);
+      if (!stage) return { success: false, error: 'Stage not found' };
 
-      return { success: true, data: stages };
+      return { success: true, data: stage };
     } catch (error) {
-      logger.error('[QuizService] Failed to fetch quiz stages:', error);
-      return handlePrismaRequestError(error, 'fetching quiz stages', 'QuizService');
+      logger.error('[QuizService] Failed to fetch quiz stage:', error);
+      return handlePrismaRequestError(error, 'fetching quiz stage', 'QuizService');
     }
   },
 };
