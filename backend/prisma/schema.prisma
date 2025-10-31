@@ -229,6 +229,7 @@ model QuizResponse {
   stageId            Int?
   confidenceLevel    Int?
   quizSelections     Json?
+  resultsJson        Json?
   dateCreated        DateTime     @default(now())
   // Relations
   stage              QuizStage?   @relation(fields: [stageId], references: [id])
