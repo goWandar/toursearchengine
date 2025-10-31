@@ -4,23 +4,23 @@ import { Button } from "@/recipes/button/button";
 import { Filter, ChevronDown, RotateCcw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
-import { SortToursType, TourFiltersType } from "@/types/types";
+import { paginationType, SortToursType, TourFiltersType } from "@/types/types";
 import { Slider } from "@/recipes/slider/slider";
 import { useState } from "react";
 
 interface ResultsFiltersProps {
     name?: string;
     isLoading: boolean;
-    totalResults: number;
+    pagination: paginationType;
     filters: TourFiltersType;
-    setFilters: React.Dispatch<React.SetStateAction<TourFiltersType>>;
+    setFilters: (filters: TourFiltersType) => void;
     applyFilters: () => void;
     resetFilters: () => void;
     handleSortTours?: (value: SortToursType) => void;
     sortBy: SortToursType;
 }
 
-const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, applyFilters,
+const ResultsFilters = ({ name, isLoading, pagination, filters, setFilters, applyFilters,
     resetFilters, handleSortTours, sortBy
 }
     : ResultsFiltersProps) => {
@@ -36,9 +36,10 @@ const ResultsFilters = ({ name, isLoading, totalResults, filters, setFilters, ap
                 <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3">
                     {name ? `Search results for "${name}"` : "All Safari Options"}
                 </h1>
-                {!isLoading && (
-                    <p className="text-lg text-gray-600">{totalResults} results found</p>
-                )}
+                {(!isLoading && pagination.total > 0)
+                    && (
+                        <p className="text-lg text-gray-600">{pagination.total} results found</p>
+                    )}
             </div>
 
             {/* Compact Modern Filter */}

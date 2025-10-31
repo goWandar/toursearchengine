@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/recipes/tabs/tabs";
 import { Button } from "@/recipes/button/button";
 import ParksTabContent from "./parks-tab-content";
 import AllTabContent from "./all-tab-content";
+import { useToursStore } from "@/stores/useTourStore";
+import { useFiltersStore } from "@/stores/useFiltersStore";
 
 interface ResultsTabsProps {
     isLoading: boolean;
@@ -13,8 +15,6 @@ interface ResultsTabsProps {
     searchItemName: string;
     searchItemId: number;
     searchParams?: URLSearchParams;
-    totalResults: number;
-    setTotalResults: (total: number) => void;
 }
 
 export default function ResultsTabs({
@@ -22,10 +22,22 @@ export default function ResultsTabs({
     searchItemName,
     searchItemId,
     searchParams,
-    totalResults,
-    setTotalResults,
 }: ResultsTabsProps) {
     const [activeTab, setActiveTab] = useState("all");
+
+    // Tours Store
+    const {
+        tours,
+        pagination,
+        isLoading,
+        isLoadingMore,
+        loadTours,
+        loadMoreTours,
+        resetPagination,
+    } = useToursStore();
+
+    // Filters Store
+    // const { filters, setFilters, sortBy, setSortBy } = useFiltersStore();
 
 
     return (
@@ -34,7 +46,7 @@ export default function ResultsTabs({
                 {/* All Results tab */}
                 <TabsTrigger value="all" asChild>
                     <div className="rounded-xl font-medium relative">
-                        All Results {activeTab === "all" && `(${totalResults})`}
+                        All Results {(activeTab === "all" && pagination.total > 0) && `(${pagination.total})`}
                         {activeTab === "all" && (
                             <Button
                                 size="sm"
@@ -51,7 +63,7 @@ export default function ResultsTabs({
                 {/* Parks tab */}
                 {searchItemType === "country" && (
                     <TabsTrigger value="parks" className="rounded-xl font-medium relative">
-                        Parks {activeTab === "parks" && `(${totalResults})`}
+                        Parks {(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}
                         {activeTab === "parks" && (
                             <Button
                                 size="sm"
@@ -67,7 +79,7 @@ export default function ResultsTabs({
 
                 {/* Experiences tab */}
                 <TabsTrigger value="experiences" className="rounded-xl font-medium relative">
-                    Experiences {activeTab === "experiences" && `(${totalResults})`}
+                    Experiences {(activeTab === "experiences" && pagination.total > 0) && `(${pagination.total})`}
                     {activeTab === "experiences" && (
                         <Button
                             size="sm"
@@ -87,14 +99,13 @@ export default function ResultsTabs({
                     searchParams={searchParams}
                     searchItemId={searchItemId}
                     searchItemType={searchItemType}
-                    setTotalResults={setTotalResults}
                 />
             </TabsContent>
 
             {/* Parks Tab Content */}
             <TabsContent value="parks" className="space-y-12">
                 {/* Parks */}
-                <ParksTabContent countryName={searchItemName} setTotalResults={setTotalResults} />
+                <ParksTabContent countryName={searchItemName} />
             </TabsContent>
         </Tabs>
     );

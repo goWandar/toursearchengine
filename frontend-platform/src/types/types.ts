@@ -121,3 +121,22 @@ export interface TourFiltersType {
 }
 
 export type SortToursType = 'relevance' | 'duration';
+
+
+export type TourHandlerDeps = {
+    idParam: number;
+    typeParam: string;
+    filters: TourFiltersType;
+    sortBy: SortToursType;
+    router: any;
+    searchParams: any;
+    resetPagination: () => void;
+    loadTours: (
+        idParam: number,
+        typeParam: string,
+        filters: TourFiltersType,
+        sortBy: SortToursType,
+    ) => Promise<void>;
+    setFilters?: (filters: TourFiltersType) => void;
+    setSortBy?: (value: SortToursType) => void;
+};

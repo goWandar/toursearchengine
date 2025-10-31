@@ -1,51 +1,53 @@
-import React, { useEffect } from 'react'
-import SafariCardSkeleton from './safari-card-skeleton'
-import ModernSafariCard from './modern-safari-card'
-import { useTours } from '@/hooks/useTours'
-import { useFilters } from '@/hooks/useFilters'
-import { getQueriesFromSearchParams } from '@/utils/mordern-search.utils'
-import { Button } from '@/recipes/button/button'
-import { ChevronDown } from 'lucide-react'
+"use client";
+
+import React, { useEffect } from "react";
+import SafariCardSkeleton from "./safari-card-skeleton";
+import ModernSafariCard from "./modern-safari-card";
+import { getQueriesFromSearchParams } from "@/utils/mordern-search.utils";
+import { Button } from "@/recipes/button/button";
+import { ChevronDown } from "lucide-react";
+import { useFiltersStore } from "@/stores/useFiltersStore";
+import { useToursStore } from "@/stores/useTourStore";
 
 interface AllTabContentProps {
     searchParams?: URLSearchParams;
     searchItemId: number;
     searchItemType: string;
-    setTotalResults: (total: number) => void;
 }
 
-const AllTabContent = (
-    {
-        searchParams,
-        searchItemId,
-        searchItemType,
-        setTotalResults,
-    }: AllTabContentProps
-) => {
+const AllTabContent = ({
+    searchParams,
+    searchItemId,
+    searchItemType,
+}: AllTabContentProps) => {
 
-    // Tours hook
-    const { tours, pagination, isLoading,
-        loadTours, resetPagination,
-        loadMoreTours, isLoadingMore } = useTours(searchItemId, searchItemType);
+    // Tours Store
+    const { tours, pagination, isLoading, isLoadingMore, loadTours,
+        loadMoreTours, resetPagination } = useToursStore();
 
-    // Filters Hook
-    const { filters, setFilters, setSortBy, sortBy } = useFilters();
+    // Filters Store
+    const { filters, setFilters, sortBy, setSortBy } = useFiltersStore();
 
     // Load tours with initial filters from URL on mount
     useEffect(() => {
         const loadInitialTours = async () => {
-            try {
-                if (!searchParams) return;
-                const { initialFilters, initialSorting } = getQueriesFromSearchParams(searchParams);
-                setFilters(initialFilters)
-                setSortBy(initialSorting);
-                loadTours(initialFilters, initialSorting, setTotalResults);
-            } catch (error) {
-                console.error("Error loading tours with initial filters:", error);
-            }
+            if (!searchParams) return;
+
+            // Fetch initial filters and sorting from URL
+            const { initialFilters, initialSorting } =
+                getQueriesFromSearchParams(searchParams);
+
+            setFilters(initialFilters);
+            setSortBy(initialSorting);
+
+            resetPagination();
+
+            // Load tours with initial filters and sorting
+            await loadTours(searchItemId, searchItemType, initialFilters, initialSorting);
         };
+
         loadInitialTours();
-    }, [searchItemId, searchItemType])
+    }, [searchItemId, searchItemType]);
 
     return (
         <>
@@ -58,14 +60,15 @@ const AllTabContent = (
                         <ModernSafariCard key={idx} data={tour} showCarousel={true} />
                     ))}
             </div>
-            <div id="insights-section">
-                {/* <InsightsSection type="parks" subType="general" /> */}
-            </div>
+
+            {/* Insights Section (placeholder) */}
+            <div id="insights-section">{/* <InsightsSection /> */}</div>
+
             {/* Load More Button */}
             <div className="flex justify-center">
                 {pagination.hasMore && (
                     <Button
-                        onClick={() => loadMoreTours(filters, sortBy)}
+                        onClick={() => loadMoreTours(searchItemId, searchItemType, filters, sortBy)}
                         className="flex items-center"
                         loading={isLoadingMore}
                         disabled={isLoadingMore}
@@ -76,7 +79,7 @@ const AllTabContent = (
                 )}
             </div>
         </>
-    )
-}
+    );
+};
 
-export default AllTabContent
+export default AllTabContent;

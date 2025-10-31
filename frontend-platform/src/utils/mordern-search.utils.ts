@@ -1,18 +1,7 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { paginationType, Park, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
+import { paginationType, Park, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType, TourHandlerDeps } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-type HandlerDeps = {
-    filters: TourFiltersType;
-    sortBy: SortToursType;
-    router: any;
-    searchParams: any;
-    resetPagination: () => void;
-    loadTours: (filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
-    setFilters?: (filters: TourFiltersType) => void;
-    setSortBy?: (value: SortToursType) => void;
-};
 
 // Default filter and pagination values
 export const DEFAULT_FILTERS: TourFiltersType = { accommodation: [], budget: [100, 20000], duration: [1, 14] }
@@ -129,7 +118,6 @@ export const fetchTours = async (
     isLoadMore: boolean = false,
     filters: TourFiltersType,
     sortBy: SortToursType,
-    setTotalResults?: (total: number) => void
 ) => {
     try {
 
@@ -156,7 +144,6 @@ export const fetchTours = async (
         setPaginationMeta(fetchedTours.pagination);
 
         // Set total results
-        setTotalResults && setTotalResults(fetchedTours.pagination.total);
 
         return fetchedTours;
     } catch (error) {
@@ -255,7 +242,7 @@ export function getQueriesFromSearchParams(
 }
 
 // Update URL with filters query params
-function applyFiltersHelper({
+export function applyFiltersHelper({
     filters,
     searchParams,
     router,
@@ -295,7 +282,7 @@ function applyFiltersHelper({
 }
 
 // Reset filter query params in URL
-function resetFiltersHelper({
+export function resetFiltersHelper({
     searchParams,
     router,
 }: {
@@ -315,47 +302,9 @@ function resetFiltersHelper({
 };
 
 
-// Apply filters handler (search-results.tsx)
-export const applyFiltersHandler = async ({
-    filters,
-    sortBy,
-    searchParams,
-    router,
-    resetPagination,
-    loadTours,
-}: HandlerDeps) => {
-
-    try {
-        resetPagination();
-        applyFiltersHelper({ filters, searchParams, router });
-        await loadTours(filters, sortBy);
-    } catch (error) {
-        console.error("Error applying filters:", error);
-    }
-};
-
-// Reset filters handler (search-results.tsx)
-export const resetFiltersHandler = async ({
-    sortBy,
-    searchParams,
-    router,
-    resetPagination,
-    loadTours,
-    setFilters,
-}: HandlerDeps) => {
-    try {
-        setFilters?.(DEFAULT_FILTERS);
-        resetFiltersHelper({ searchParams, router });
-        resetPagination();
-        await loadTours(DEFAULT_FILTERS, sortBy);
-    } catch (error) {
-        console.error("Error resetting filters:", error);
-    }
-};
-
 
 // Add the tour sort type to URL)
-function applySortByHelper({
+export function applySortByHelper({
     sortBy,
     searchParams,
     router,
@@ -376,25 +325,7 @@ function applySortByHelper({
     router.replace(`?${params.toString()}`);
 }
 
-// Sort tours handler (search-results.tsx)
-export const sortToursHandler = async ({
-    filters,
-    sortBy,
-    searchParams,
-    router,
-    resetPagination,
-    loadTours,
-    setSortBy,
-}: HandlerDeps) => {
-    try {
-        applySortByHelper({ sortBy, searchParams, router });
-        setSortBy?.(sortBy);
-        resetPagination();
-        await loadTours(filters, sortBy);
-    } catch (error) {
-        console.error("Error sorting tours:", error);
-    }
-};
+
 
 // Get Parks by Country Name (parks-tab-content.tsx)
 export function getParksByCountry(country: string, setParks: React.Dispatch<React.SetStateAction<ParkSearchType[]>>) {
@@ -420,18 +351,20 @@ export function getParksByCountry(country: string, setParks: React.Dispatch<Reac
     }
 }
 
-// Get Tours By Park Id Helper (parks-tab-content.tsx)
-export const getToursByParkHandler = async ({
-    sortBy,
-    resetPagination,
-    loadTours,
-}: HandlerDeps) => {
-    try {
-        resetPagination();
-        await loadTours(DEFAULT_FILTERS, sortBy);
-    } catch (error) {
-        console.error("Error resetting filters:", error);
-    }
-};
+// // Get Tours By Park Id Helper (parks-tab-content.tsx)
+// export const getToursByParkHandler = async ({
+//     idParam,
+//     typeParam,
+//     sortBy,
+//     resetPagination,
+//     loadTours,
+// }: TourHandlerDeps) => {
+//     try {
+//         resetPagination();
+//         await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy);
+//     } catch (error) {
+//         console.error("Error resetting filters:", error);
+//     }
+// };
 
 

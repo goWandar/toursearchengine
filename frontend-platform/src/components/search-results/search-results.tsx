@@ -1,14 +1,10 @@
 "use client";
-import { applyFiltersHandler, DEFAULT_FILTERS, getQueriesFromSearchParams, resetFiltersHandler, sortToursHandler, } from "@/utils/mordern-search.utils";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button } from '@/recipes/button/button';
-import { ChevronDown } from 'lucide-react';
 import ResultsFilters from './results-filters';
 import ResultsTabs from './results-tabs';
-import { useTours } from "@/hooks/useTours";
-import { SortToursType, TourFiltersType } from "@/types/types";
-import { useFilters } from "@/hooks/useFilters";
+import { SortToursType } from "@/types/types";
+import { useToursStore } from "@/stores/useTourStore";
+import { useFiltersStore } from "@/stores/useFiltersStore";
 
 export const SearchResults = () => {
     const params = useParams();
@@ -17,15 +13,16 @@ export const SearchResults = () => {
     const name = decodeURIComponent(params.name as string);
     const idParam = Number(searchParams?.get("id"));
     const typeParam = (searchParams?.get("type")) ?? "";
-    const [totalResults, setTotalResults] = useState(0);
 
     // Tours hook
-    const { isLoading, loadTours, resetPagination } = useTours(idParam, typeParam)
+    const { isLoading, loadTours, resetPagination, pagination } = useToursStore()
 
     // Filters Hook
-    const { filters, setFilters, sortBy, setSortBy } = useFilters();
+    const { filters, setFilters, sortBy, setSortBy, applyFilters, resetFilters, sortTours } = useFiltersStore();
 
-    const handleApplyFilters = () => applyFiltersHandler({
+    const handleApplyFilters = () => applyFilters({
+        idParam,
+        typeParam,
         filters,
         sortBy,
         searchParams,
@@ -34,17 +31,19 @@ export const SearchResults = () => {
         loadTours,
     });
 
-    const handleResetFilters = () => resetFiltersHandler({
-        filters,
-        sortBy,
+    const handleResetFilters = () => resetFilters({
+        idParam,
+        typeParam,
         searchParams,
+        sortBy,
         router,
         resetPagination,
         loadTours,
-        setFilters,
     });
 
-    const handleSortTours = (sort: SortToursType) => sortToursHandler({
+    const handleSortTours = (sort: SortToursType) => sortTours({
+        idParam,
+        typeParam,
         filters,
         sortBy: sort,
         searchParams,
@@ -57,16 +56,15 @@ export const SearchResults = () => {
     return (
         <div className='container mx-auto px-6 py-12'>
             {/* Search Results Header */}
-            <ResultsFilters name={name} isLoading={isLoading} totalResults={totalResults}
+            <ResultsFilters name={name} isLoading={isLoading}
                 filters={filters} setFilters={setFilters} applyFilters={handleApplyFilters} resetFilters={handleResetFilters}
-                handleSortTours={handleSortTours} sortBy={sortBy}
+                handleSortTours={handleSortTours} sortBy={sortBy} pagination={pagination}
             />
 
             {/* Main Content */}
             <ResultsTabs isLoading={isLoading}
                 searchItemType={typeParam} searchItemName={name} searchItemId={idParam}
-                searchParams={searchParams} setTotalResults={setTotalResults}
-                totalResults={totalResults}
+                searchParams={searchParams}
             />
         </div >
     )
