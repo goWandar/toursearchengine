@@ -44,7 +44,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Hello, world!');
 });
 
