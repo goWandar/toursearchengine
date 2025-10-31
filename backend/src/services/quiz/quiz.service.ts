@@ -1,16 +1,17 @@
-import { prisma } from '../../db/prisma.js';
 import { logger } from '../../utils/logger.js';
 
-import { handlePrismaRequestError } from '../../utils/errorHandler.js';
-
+import type { QuizStage } from '@prisma/client';
 import { ServiceResponse } from '../../types/shared.types.js';
+
+import { prisma } from '../../db/prisma.js';
+import { handlePrismaRequestError } from '../../utils/errorHandler.js';
 
 export const QuizService = {
   initQuiz: () => {
     logger.info('[QuizService] Quiz service initialized.');
   },
 
-  async getQuizStages(): Promise<ServiceResponse<any>> {
+  async getQuizStages(): Promise<ServiceResponse<QuizStage[]>> {
     logger.info('[QuizService] Fetching quiz stages.');
 
     try {
