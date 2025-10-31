@@ -1,16 +1,20 @@
 import { prisma } from '../../db/prisma.js';
 import { logger } from '../../utils/logger.js';
 
+import { handlePrismaRequestError } from '../../utils/errorHandler.js';
+
+import { ServiceResponse } from '../../types/shared.types.js';
+
 export const QuizService = {
-  // Add quiz service
   initQuiz: () => {
     logger.info('[QuizService] Quiz service initialized.');
   },
 
-  async getQuizStages() {
+  async getQuizStages(): Promise<ServiceResponse<any>> {
     logger.info('[QuizService] Fetching quiz stages.');
+
     try {
-      return await prisma.quizStage.findMany({
+      const stages = await prisma.quizStage.findMany({
         orderBy: { orderIndex: 'asc' },
         include: {
           questions: {
@@ -21,9 +25,13 @@ export const QuizService = {
           },
         },
       });
+
+      logger.success(`[QuizService] Successfully fetched ${stages.length} quiz stages.`);
+
+      return { success: true, data: stages };
     } catch (error) {
-      console.error('getQuizStages error:', error);
-      throw new Error('Failed to fetch quiz stages');
+      logger.error('[QuizService] Failed to fetch quiz stages:', error);
+      return handlePrismaRequestError(error, 'fetching quiz stages', 'QuizService');
     }
   },
 };
