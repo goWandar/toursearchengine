@@ -55,16 +55,16 @@ export const SearchResults = () => {
 
     return (
         <div className='container mx-auto px-6 py-12'>
-            {/* Search Results Header */}
+            {/* Search Results Filters - Header */}
             <ResultsFilters name={name} isLoading={isLoading}
                 filters={filters} setFilters={setFilters} applyFilters={handleApplyFilters} resetFilters={handleResetFilters}
                 handleSortTours={handleSortTours} sortBy={sortBy} pagination={pagination}
             />
 
-            {/* Main Content */}
+            {/* Search Results Content */}
             <ResultsTabs isLoading={isLoading}
                 searchItemType={typeParam} searchItemName={name} searchItemId={idParam}
-                searchParams={searchParams}
+                searchParams={searchParams} router={router}
             />
         </div >
     )

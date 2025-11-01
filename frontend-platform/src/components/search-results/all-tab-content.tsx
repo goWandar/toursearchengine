@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import ModernSafariCard from "./modern-safari-card";
-import { getQueriesFromSearchParams } from "@/utils/mordern-search.utils";
+import { getFilterQueriesFromSearchParams } from "@/utils/mordern-search.utils";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
@@ -35,7 +35,7 @@ const AllTabContent = ({
 
             // Fetch initial filters and sorting from URL
             const { initialFilters, initialSorting } =
-                getQueriesFromSearchParams(searchParams);
+                getFilterQueriesFromSearchParams(searchParams);
 
             setFilters(initialFilters);
             setSortBy(initialSorting);

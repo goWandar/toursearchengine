@@ -32,18 +32,25 @@ const ParksTabContent = ({ countryName }: ParksTabContentProps) => {
         }
     }, [countryName]);
 
-    // Load tours whenever parks are ready or park selection changes
+    // Load tours on mount and whenever selected park changes
     useEffect(() => {
-        if (!parks.length) return;
+        const loadToursForSelectedPark = async () => {
+            if (!parks.length) return;
 
-        const currentPark = selectedPark ?? parks[0];
-        setSelectedPark(currentPark);
+            try {
+                const currentPark = selectedPark ?? parks[0];
+                setSelectedPark(currentPark);
 
-        resetPagination();
+                resetPagination();
 
-        loadTours(currentPark.id, currentPark.type, filters, sortBy)
-            .catch((err) => console.error("Error loading tours:", err))
-            .finally(() => setIsLoading(false));
+                await loadTours(currentPark.id, currentPark.type, filters, sortBy)
+            } catch (error) {
+                console.error("Error loading tours:", error)
+            } finally {
+                setIsLoading(false)
+            };
+        };
+        loadToursForSelectedPark();
     }, [parks.length, selectedPark]);
 
     return (

@@ -198,7 +198,7 @@ export const getUniqueSeasons = (prices: Price[]): string[] => {
 };
 
 // Get filters from URLSearchParams (search-results.tsx)
-export function getQueriesFromSearchParams(
+export function getFilterQueriesFromSearchParams(
     searchParams: URLSearchParams
 ) {
     // Extract params
@@ -239,7 +239,7 @@ export function getQueriesFromSearchParams(
         },
         initialSorting: sorting,
     };
-}
+};
 
 // Update URL with filters query params
 export function applyFiltersHelper({
@@ -302,8 +302,7 @@ export function resetFiltersHelper({
 };
 
 
-
-// Add the tour sort type to URL)
+// Add the tour sort type to the query params in URL
 export function applySortByHelper({
     sortBy,
     searchParams,
@@ -320,6 +319,28 @@ export function applySortByHelper({
         params.set('sort', sortBy);
     } else {
         params.delete('sort');
+    }
+
+    router.replace(`?${params.toString()}`);
+};
+
+// Add the tour sort type to the query params in URL
+export function addActiveTabHelper({
+    activeTab,
+    searchParams,
+    router,
+}: {
+    activeTab: "all" | "parks" | "experiences";
+    searchParams: URLSearchParams;
+    router: AppRouterInstance;
+}) {
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (activeTab !== 'all') {
+        params.set('tab', activeTab);
+    } else {
+        params.delete('tab');
     }
 
     router.replace(`?${params.toString()}`);
@@ -349,22 +370,6 @@ export function getParksByCountry(country: string, setParks: React.Dispatch<Reac
     } catch (error) {
         throw new Error(`Failed to parse parks from localStorage: ${error}`);
     }
-}
-
-// // Get Tours By Park Id Helper (parks-tab-content.tsx)
-// export const getToursByParkHandler = async ({
-//     idParam,
-//     typeParam,
-//     sortBy,
-//     resetPagination,
-//     loadTours,
-// }: TourHandlerDeps) => {
-//     try {
-//         resetPagination();
-//         await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy);
-//     } catch (error) {
-//         console.error("Error resetting filters:", error);
-//     }
-// };
+};
 
 
