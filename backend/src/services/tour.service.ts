@@ -220,6 +220,11 @@ export const TourService = {
     try {
       // Fetch parks
       const parks = await prisma.park.findMany({
+        where: {
+          tourParks: {
+            some: {}, // At least one related TourPark record exists
+          },
+        },
         select: {
           id: true,
           name: true,
