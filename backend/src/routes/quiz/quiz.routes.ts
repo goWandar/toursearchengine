@@ -21,4 +21,31 @@ router.get('/quiz/stages/:stageId', async (req: Request, res: Response) => {
   return responseHandler(res, result, 'GET');
 });
 
+// POST submit quiz answers
+router.post('/quiz/submit', async (req: Request, res: Response) => {
+  const submission = req.body;
+  const sessionId = req.headers['x-session-id'] as string | undefined;
+  const userId = req.user?.id; // Assuming user ID is available in req.user
+
+  // Validate inputs
+  if (!submission.stageId) {
+    logger.warn('[QuizService] Submission missing stageId');
+    return res.status(400).json({ success: false, error: 'Stage ID is required' });
+  }
+
+  if (!submission.answers || submission.answers.length === 0) {
+    logger.warn('[QuizService] Submission contains no answers');
+    return res.status(400).json({ success: false, error: 'At least one answer is required' });
+  }
+
+  if (!sessionId) {
+    logger.warn('[QuizService] Submission missing sessionId');
+    return res.status(400).json({ success: false, error: 'Session ID is required' });
+  }
+
+  const result = await QuizService.submitQuizAnswers(submission, sessionId, userId);
+
+  return responseHandler(res, result, 'POST');
+});
+
 export default router;
