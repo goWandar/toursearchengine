@@ -199,7 +199,8 @@ export const getUniqueSeasons = (prices: Price[]): string[] => {
 
 // Get filters from URLSearchParams (search-results.tsx)
 export function getFilterQueriesFromSearchParams(
-    searchParams: URLSearchParams
+    searchParams: URLSearchParams,
+    setIsFiltersApplied: (value: boolean) => void
 ) {
     // Extract params
     const accommodationParam = searchParams.get("acc");
@@ -230,6 +231,13 @@ export function getFilterQueriesFromSearchParams(
 
     // Parse sort
     const sorting: SortToursType = (sortParam as SortToursType) || "relevance";
+
+    // Determine if any filters should be applied
+    const filtersApplied = accommodation.length > 0 || duration[0] !== 1 ||
+        duration[1] !== 14 || budget[0] !== 100 || budget[1] !== 20000;
+    if (filtersApplied) {
+        setIsFiltersApplied(true);
+    }
 
     return {
         initialFilters: {

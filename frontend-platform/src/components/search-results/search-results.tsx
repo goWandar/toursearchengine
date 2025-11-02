@@ -18,7 +18,8 @@ export const SearchResults = () => {
     const { isLoading, loadTours, resetPagination, pagination } = useToursStore()
 
     // Filters Hook
-    const { filters, setFilters, sortBy, setSortBy, applyFilters, resetFilters, sortTours } = useFiltersStore();
+    const { filters, setFilters, sortBy, setSortBy, applyFilters, resetFilters,
+        sortTours, setIsFiltersApplied } = useFiltersStore();
 
     const handleApplyFilters = () => applyFilters({
         idParam,
@@ -29,6 +30,7 @@ export const SearchResults = () => {
         router,
         resetPagination,
         loadTours,
+        setIsFiltersApplied
     });
 
     const handleResetFilters = () => resetFilters({
@@ -39,6 +41,7 @@ export const SearchResults = () => {
         router,
         resetPagination,
         loadTours,
+        setIsFiltersApplied
     });
 
     const handleSortTours = (sort: SortToursType) => sortTours({

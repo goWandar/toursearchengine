@@ -5,8 +5,10 @@ import { applyFiltersHelper, applySortByHelper, DEFAULT_FILTERS, resetFiltersHel
 interface FiltersState {
     filters: TourFiltersType;
     sortBy: SortToursType;
+    isFiltersApplied: boolean;
     setFilters: (filters: TourFiltersType) => void;
     setSortBy: (sortBy: SortToursType) => void;
+    setIsFiltersApplied: (value: boolean) => void;
 
     resetFilters: (deps: {
         idParam: number;
@@ -16,6 +18,7 @@ interface FiltersState {
         router: any;
         resetPagination: () => void;
         loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
+        setIsFiltersApplied: (value: boolean) => void;
     }) => Promise<void>;
 
     applyFilters: (deps: {
@@ -27,6 +30,7 @@ interface FiltersState {
         router: any;
         resetPagination: () => void;
         loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
+        setIsFiltersApplied: (value: boolean) => void;
     }) => Promise<void>;
 
     sortTours: (deps: {
@@ -45,13 +49,17 @@ interface FiltersState {
 export const useFiltersStore = create<FiltersState>((set) => ({
     filters: DEFAULT_FILTERS,
     sortBy: "relevance",
+    isFiltersApplied: false,
 
     setFilters: (filters) => set({ filters }),
     setSortBy: (sortBy) => set({ sortBy }),
 
-    resetFilters: async ({ idParam, typeParam, searchParams, sortBy, router, resetPagination, loadTours }) => {
+    setIsFiltersApplied: (value) => set({ isFiltersApplied: value }),
+
+    resetFilters: async ({ idParam, typeParam, searchParams, sortBy, router, resetPagination, loadTours, setIsFiltersApplied }) => {
         try {
-            set({ filters: DEFAULT_FILTERS, sortBy: "relevance" });
+            setIsFiltersApplied(false);
+            set({ filters: DEFAULT_FILTERS, sortBy: sortBy });
             resetFiltersHelper({ searchParams, router });
             resetPagination();
             await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy);
@@ -60,8 +68,9 @@ export const useFiltersStore = create<FiltersState>((set) => ({
         }
     },
 
-    applyFilters: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours }) => {
+    applyFilters: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours, setIsFiltersApplied }) => {
         try {
+            setIsFiltersApplied(true);
             resetPagination();
             applyFiltersHelper({ filters, searchParams, router });
             await loadTours(idParam, typeParam, filters, sortBy);

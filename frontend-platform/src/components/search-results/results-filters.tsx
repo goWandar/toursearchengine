@@ -1,12 +1,14 @@
 "use client";
 
 import { Button } from "@/recipes/button/button";
-import { Filter, ChevronDown, RotateCcw } from "lucide-react";
+import { Filter, ChevronDown, RotateCcw, FilterIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
 import { paginationType, SortToursType, TourFiltersType } from "@/types/types";
 import { Slider } from "@/recipes/slider/slider";
 import { useState } from "react";
+import { Badge } from "@/recipes/badge/badge";
+import { useFiltersStore } from "@/stores/useFiltersStore";
 
 interface ResultsFiltersProps {
     name?: string;
@@ -30,12 +32,53 @@ const ResultsFilters = ({ name, isLoading, pagination, filters, setFilters, appl
         { displayName: "Lodge", name: "lodge" },
         { displayName: "Camp", name: "camp" },];
 
+    // Filters hook
+    const { isFiltersApplied } = useFiltersStore();;
+
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+            {/* Title and Results Count */}
             <div className="mb-3 lg:mb-0">
-                <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3">
-                    {name ? `Search results for "${name}"` : "All Safari Options"}
-                </h1>
+                <div>
+                    {/* Title */}
+                    <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3">
+                        {name ? `Search results for "${name}"` : "All Safari Options"}
+                    </h1>
+
+                    {/* Filters Stickers */}
+                    <div className="flex flex-row py-2 gap-2">
+                        {isFiltersApplied && (
+                            filters.budget[0] !== 100 ||
+                            filters.budget[1] !== 20000 ||
+                            filters.duration[0] !== 1 ||
+                            filters.duration[1] !== 14 ||
+                            filters.accommodation.length > 0
+                        ) && (
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <FilterIcon className="text-green-800" />
+
+                                    {(filters.budget[0] !== 100 || filters.budget[1] !== 20000) && (
+                                        <Badge variant="secondary">
+                                            Budget: {filters.budget[0]} - {filters.budget[1]} USD
+                                        </Badge>
+                                    )}
+
+                                    {(filters.duration[0] !== 1 || filters.duration[1] !== 14) && (
+                                        <Badge variant="secondary">
+                                            Duration: {filters.duration[0]} - {filters.duration[1]} days
+                                        </Badge>
+                                    )}
+
+                                    {filters.accommodation.length > 0 && (
+                                        <Badge variant="secondary">
+                                            Accommodation: {filters.accommodation.join(", ")}
+                                        </Badge>
+                                    )}
+                                </div>
+                            )}
+                    </div>
+                </div>
+                {/* Results Count */}
                 {(!isLoading && pagination.total > 0)
                     && (
                         <p className="text-lg text-gray-600">{pagination.total} results found</p>
