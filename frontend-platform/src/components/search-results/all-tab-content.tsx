@@ -13,13 +13,19 @@ interface AllTabContentProps {
     searchParams?: URLSearchParams;
     searchItemId: number;
     searchItemType: string;
+    setSearchItemType: (type: string) => void;
+    setSearchItemId: (id: number) => void;
 }
 
 const AllTabContent = ({
     searchParams,
     searchItemId,
     searchItemType,
+    setSearchItemType,
+    setSearchItemId,
 }: AllTabContentProps) => {
+    const idInURL = Number(searchParams?.get("id")) || 0;
+    const typeInURL = searchParams?.get("type") ?? "";
 
     // Tours Store
     const { tours, pagination, isLoading, isLoadingMore, loadTours,
@@ -33,6 +39,14 @@ const AllTabContent = ({
         const loadInitialTours = async () => {
             if (!searchParams) return;
 
+            // Get initial search item from URL
+            const currentSearchItemId = idInURL;
+            const currentSearchItemType = typeInURL;
+
+            // Set search item in parent component(for filtering handlers) 
+            setSearchItemType(currentSearchItemType);
+            setSearchItemId(currentSearchItemId);
+
             // Fetch initial filters and sorting from URL
             const { initialFilters, initialSorting } =
                 getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
@@ -43,11 +57,11 @@ const AllTabContent = ({
             resetPagination();
 
             // Load tours with initial filters and sorting
-            await loadTours(searchItemId, searchItemType, initialFilters, initialSorting);
+            await loadTours(currentSearchItemId, currentSearchItemType, initialFilters, initialSorting);
         };
 
         loadInitialTours();
-    }, [searchItemId, searchItemType]);
+    }, [searchItemId, searchItemType, setSearchItemId, setSearchItemType]);
 
     return (
         <>

@@ -16,6 +16,8 @@ interface ResultsTabsProps {
     searchItemId: number;
     searchParams: URLSearchParams;
     router: any;
+    setSearchItemType: (type: string) => void;
+    setSearchItemId: (id: number) => void;
 }
 
 export default function ResultsTabs({
@@ -24,13 +26,16 @@ export default function ResultsTabs({
     searchItemId,
     searchParams,
     router,
+    setSearchItemId,
+    setSearchItemType,
 }: ResultsTabsProps) {
     const [activeTab, setActiveTab] = useState<"all" | "parks" | "experiences">("all");
+    const typeInURL = searchParams?.get("type") ?? "";
 
     // Tours Store
     const { pagination } = useToursStore();
 
-    // Check URL params on mount to set active tab
+    // Check URL params on mount to set active results tab
     useEffect(() => {
         const tabFromUrl = searchParams.get("tab");
         if (tabFromUrl === "parks" && searchItemType === "country") {
@@ -42,7 +47,7 @@ export default function ResultsTabs({
         }
     }, []);
 
-    // Add active tab to URL whenever it changes
+    // Add active tab to URL whenever it changes(is applied)
     useEffect(() => {
         addActiveTabHelper({ activeTab, searchParams, router })
     }, [activeTab]);
@@ -70,7 +75,7 @@ export default function ResultsTabs({
                 </TabsTrigger>
 
                 {/* Parks tab */}
-                {searchItemType === "country" && (
+                {typeInURL === "country" && (
                     <TabsTrigger value="parks" className="rounded-xl font-medium relative">
                         Parks {(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}
                         {activeTab === "parks" && (
@@ -98,13 +103,17 @@ export default function ResultsTabs({
 
             {/* All Tours Tab Content */}
             <TabsContent value="all" className="space-y-12">
-                <AllTabContent searchParams={searchParams} searchItemId={searchItemId} searchItemType={searchItemType} />
+                <AllTabContent searchParams={searchParams} searchItemId={searchItemId} searchItemType={searchItemType}
+                    setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
+                />
             </TabsContent>
 
             {/* Parks Tab Content */}
             <TabsContent value="parks" className="space-y-12">
                 {/* Parks */}
-                <ParksTabContent countryName={searchItemName} />
+                <ParksTabContent countryName={searchItemName} setSearchItemId={setSearchItemId}
+                    setSearchItemType={setSearchItemType}
+                />
             </TabsContent>
         </Tabs>
     );

@@ -5,14 +5,17 @@ import ResultsTabs from './results-tabs';
 import { SortToursType } from "@/types/types";
 import { useToursStore } from "@/stores/useTourStore";
 import { useFiltersStore } from "@/stores/useFiltersStore";
+import { useState } from "react";
 
 export const SearchResults = () => {
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
     const name = decodeURIComponent(params.name as string);
-    const idParam = Number(searchParams?.get("id"));
-    const typeParam = (searchParams?.get("type")) ?? "";
+    const idFromURL = Number(searchParams?.get("id")) || 0;
+    const typeFromURL = searchParams?.get("type") ?? "";
+    const [id, setId] = useState<number>(idFromURL);
+    const [type, setType] = useState<string>(typeFromURL);
 
     // Tours hook
     const { isLoading, loadTours, resetPagination, pagination } = useToursStore()
@@ -22,8 +25,8 @@ export const SearchResults = () => {
         sortTours, setIsFiltersApplied } = useFiltersStore();
 
     const handleApplyFilters = () => applyFilters({
-        idParam,
-        typeParam,
+        idParam: id,
+        typeParam: type,
         filters,
         sortBy,
         searchParams,
@@ -34,8 +37,8 @@ export const SearchResults = () => {
     });
 
     const handleResetFilters = () => resetFilters({
-        idParam,
-        typeParam,
+        idParam: id,
+        typeParam: type,
         searchParams,
         sortBy,
         router,
@@ -45,8 +48,8 @@ export const SearchResults = () => {
     });
 
     const handleSortTours = (sort: SortToursType) => sortTours({
-        idParam,
-        typeParam,
+        idParam: id,
+        typeParam: type,
         filters,
         sortBy: sort,
         searchParams,
@@ -66,8 +69,9 @@ export const SearchResults = () => {
 
             {/* Search Results Content */}
             <ResultsTabs isLoading={isLoading}
-                searchItemType={typeParam} searchItemName={name} searchItemId={idParam}
+                searchItemType={type} searchItemName={name} searchItemId={id}
                 searchParams={searchParams} router={router}
+                setSearchItemType={setType} setSearchItemId={setId}
             />
         </div >
     )

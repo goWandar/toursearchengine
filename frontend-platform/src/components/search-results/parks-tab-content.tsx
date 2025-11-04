@@ -11,19 +11,23 @@ import { useToursStore } from "@/stores/useTourStore";
 
 interface ParksTabContentProps {
     countryName: string;
+    setSearchItemType: (type: string) => void;
+    setSearchItemId: (id: number) => void;
 }
 
-const ParksTabContent = ({ countryName }: ParksTabContentProps) => {
+const ParksTabContent = ({ countryName, setSearchItemType, setSearchItemId,
+}: ParksTabContentProps) => {
     const [parks, setParks] = useState<ParkSearchType[]>([]);
     const [selectedPark, setSelectedPark] = useState<ParkSearchType | null>(null);
 
-    // Zustand stores
+    // Tours store
     const { tours, pagination, isLoading, isLoadingMore, loadTours,
         resetPagination, loadMoreTours, setIsLoading, } = useToursStore();
 
+    // Filters store
     const { filters, sortBy } = useFiltersStore();
 
-    // Get Parks Tabs by Country
+    // Get Parks Tabs by Country Name
     useEffect(() => {
         try {
             getParksByCountry(countryName, setParks);
@@ -32,17 +36,23 @@ const ParksTabContent = ({ countryName }: ParksTabContentProps) => {
         }
     }, [countryName]);
 
-    // Load tours on mount and whenever selected park changes
+    // Load tours on mount or whenever selected park changes
     useEffect(() => {
         const loadToursForSelectedPark = async () => {
             if (!parks.length) return;
 
             try {
+                // Set either the first park or selected park as current
                 const currentPark = selectedPark ?? parks[0];
                 setSelectedPark(currentPark);
 
+                // Set search item in parent component(for filtering handlers)
+                setSearchItemType(currentPark.type);
+                setSearchItemId(currentPark.id);
+
                 resetPagination();
 
+                // Load tours based on Selected Park
                 await loadTours(currentPark.id, currentPark.type, filters, sortBy)
             } catch (error) {
                 console.error("Error loading tours:", error)

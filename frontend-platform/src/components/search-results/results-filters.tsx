@@ -18,7 +18,7 @@ interface ResultsFiltersProps {
     setFilters: (filters: TourFiltersType) => void;
     applyFilters: () => void;
     resetFilters: () => void;
-    handleSortTours?: (value: SortToursType) => void;
+    handleSortTours: (value: SortToursType) => void;
     sortBy: SortToursType;
 }
 
