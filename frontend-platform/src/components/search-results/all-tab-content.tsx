@@ -10,17 +10,13 @@ import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
 
 interface AllTabContentProps {
-    searchParams?: URLSearchParams;
-    searchItemId: number;
-    searchItemType: string;
+    searchParams: URLSearchParams;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
 }
 
 const AllTabContent = ({
     searchParams,
-    searchItemId,
-    searchItemType,
     setSearchItemType,
     setSearchItemId,
 }: AllTabContentProps) => {
@@ -61,7 +57,7 @@ const AllTabContent = ({
         };
 
         loadInitialTours();
-    }, [searchItemId, searchItemType, setSearchItemId, setSearchItemType]);
+    }, [idInURL, typeInURL, setSearchItemId, setSearchItemType]);
 
     return (
         <>
@@ -82,7 +78,7 @@ const AllTabContent = ({
             <div className="flex justify-center">
                 {pagination.hasMore && (
                     <Button
-                        onClick={() => loadMoreTours(searchItemId, searchItemType, filters, sortBy)}
+                        onClick={() => loadMoreTours(idInURL, typeInURL, filters, sortBy)}
                         className="flex items-center"
                         loading={isLoadingMore}
                         disabled={isLoadingMore}

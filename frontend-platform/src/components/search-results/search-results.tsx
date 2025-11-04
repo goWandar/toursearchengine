@@ -68,10 +68,8 @@ export const SearchResults = () => {
             />
 
             {/* Search Results Content */}
-            <ResultsTabs isLoading={isLoading}
-                searchItemType={type} searchItemName={name} searchItemId={id}
-                searchParams={searchParams} router={router}
-                setSearchItemType={setType} setSearchItemId={setId}
+            <ResultsTabs isLoading={isLoading} searchItemName={name} searchParams={searchParams}
+                router={router} setSearchItemType={setType} setSearchItemId={setId}
             />
         </div >
     )
