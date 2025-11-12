@@ -30,8 +30,9 @@ export default function ResultsTabs({
     const [activeTab, setActiveTab] = useState<"all" | "parks" | "experiences" | null>(null);
     const typeInURL = searchParams?.get("type") ?? "";
 
-    // Tours Store
-    const { pagination } = useToursStore();
+    // Tours Store States
+    const pagination = useToursStore((state) => state.pagination);
+    const isLoading = useToursStore((state) => state.isLoading);
 
     // Check URL params on mount to set active results tab
     useEffect(() => {
@@ -68,7 +69,7 @@ export default function ResultsTabs({
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "parks" | "experiences")} className="w-full">
                     <TabsList className="grid w-full grid-cols-3 mb-10 bg-white p-2 rounded-2xl shadow-sm border relative">
                         {/* All Results tab */}
-                        <TabsTrigger value="all" asChild>
+                        <TabsTrigger value="all" asChild disabled={isLoading}>
                             <div className="rounded-xl font-medium relative">
                                 All Results {(activeTab === "all" && pagination.total > 0) && `(${pagination.total})`}
                                 {activeTab === "all" && (
@@ -86,7 +87,7 @@ export default function ResultsTabs({
 
                         {/* Parks tab */}
                         {typeInURL === "country" && (
-                            <TabsTrigger value="parks" className="rounded-xl font-medium relative">
+                            <TabsTrigger value="parks" className="rounded-xl font-medium relative" disabled={isLoading}>
                                 Parks {(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}
                                 {activeTab === "parks" && (
                                     <Button size="sm" variant="ghost"
@@ -99,7 +100,7 @@ export default function ResultsTabs({
                         )}
 
                         {/* Experiences tab */}
-                        <TabsTrigger value="experiences" className="rounded-xl font-medium relative">
+                        <TabsTrigger value="experiences" className="rounded-xl font-medium relative" disabled={isLoading}>
                             Experiences {(activeTab === "experiences" && pagination.total > 0) && `(${pagination.total})`}
                             {activeTab === "experiences" && (
                                 <Button size="sm" variant="ghost"

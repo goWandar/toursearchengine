@@ -9,10 +9,10 @@ import { Slider } from "@/recipes/slider/slider";
 import { useState } from "react";
 import { Badge } from "@/recipes/badge/badge";
 import { useFiltersStore } from "@/stores/useFiltersStore";
+import { useToursStore } from "@/stores/useTourStore";
 
 interface ResultsFiltersProps {
     name?: string;
-    isLoading: boolean;
     pagination: paginationType;
     filters: TourFiltersType;
     setFilters: (filters: TourFiltersType) => void;
@@ -22,7 +22,7 @@ interface ResultsFiltersProps {
     sortBy: SortToursType;
 }
 
-const ResultsFilters = ({ name, isLoading, pagination, filters, setFilters, applyFilters,
+const ResultsFilters = ({ name, pagination, filters, setFilters, applyFilters,
     resetFilters, handleSortTours, sortBy
 }
     : ResultsFiltersProps) => {
@@ -32,8 +32,12 @@ const ResultsFilters = ({ name, isLoading, pagination, filters, setFilters, appl
         { displayName: "Lodge", name: "lodge" },
         { displayName: "Camp", name: "camp" },];
 
-    // Filters hook
-    const { isFiltersApplied } = useFiltersStore();;
+    // Tours Store State
+    const isFiltersApplied = useFiltersStore((state) => state.isFiltersApplied);
+
+    // Tours Store state
+    const isLoading = useToursStore((state) => state.isLoading);
+
 
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
