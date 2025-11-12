@@ -121,7 +121,7 @@ export default function ResultsTabs({
                     {/* Parks Tab Content */}
                     <TabsContent value="parks" className="space-y-12">
                         {/* Parks */}
-                        <ParksTabContent countryName={searchItemName} setSearchItemId={setSearchItemId}
+                        <ParksTabContent searchParams={searchParams} countryName={searchItemName} setSearchItemId={setSearchItemId}
                             setSearchItemType={setSearchItemType}
                         />
                     </TabsContent>

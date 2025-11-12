@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { Badge } from "@/recipes/badge/badge";
 import { ParkSearchType } from "@/types/types";
-import { getParksByCountry } from "@/utils/mordern-search.utils";
+import { getFilterQueriesFromSearchParams, getParksByCountry } from "@/utils/mordern-search.utils";
 import ModernSafariCard from "./modern-safari-card";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { Button } from "@/recipes/button/button";
@@ -10,12 +10,13 @@ import { ChevronDown } from "lucide-react";
 import { useToursStore } from "@/stores/useTourStore";
 
 interface ParksTabContentProps {
+    searchParams: URLSearchParams;
     countryName: string;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
 }
 
-const ParksTabContent = ({ countryName, setSearchItemType, setSearchItemId,
+const ParksTabContent = ({ searchParams, countryName, setSearchItemType, setSearchItemId,
 }: ParksTabContentProps) => {
     const [parks, setParks] = useState<ParkSearchType[]>([]);
     const [selectedPark, setSelectedPark] = useState<ParkSearchType | null>(null);
@@ -25,7 +26,7 @@ const ParksTabContent = ({ countryName, setSearchItemType, setSearchItemId,
         resetPagination, loadMoreTours, setIsLoading, } = useToursStore();
 
     // Filters store
-    const { filters, sortBy } = useFiltersStore();
+    const { filters, sortBy, setFilters, setSortBy, setIsFiltersApplied } = useFiltersStore();
 
     // Get Parks Tabs by Country Name
     useEffect(() => {
@@ -49,6 +50,13 @@ const ParksTabContent = ({ countryName, setSearchItemType, setSearchItemId,
                 // Set search item in parent component(for filtering handlers)
                 setSearchItemType(currentPark.type);
                 setSearchItemId(currentPark.id);
+
+                // Fetch initial filters and sorting from URL
+                const { initialFilters, initialSorting } =
+                    getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
+
+                setFilters(initialFilters);
+                setSortBy(initialSorting);
 
                 resetPagination();
 
