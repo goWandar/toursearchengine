@@ -41,16 +41,16 @@ const AllTabContent = ({
             setSearchItemId(idInURL);
 
             // Fetch initial filters and sorting from URL
-            const { initialFilters, initialSorting } =
+            const { filtersFromURL, sortingFromURL } =
                 getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
 
-            setFilters(initialFilters);
-            setSortBy(initialSorting);
+            setFilters(filtersFromURL);
+            setSortBy(sortingFromURL);
 
             resetPagination();
 
             // Load tours with initial filters and sorting
-            await loadTours(idInURL, typeInURL, initialFilters, initialSorting);
+            await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL);
         };
 
         loadInitialTours();

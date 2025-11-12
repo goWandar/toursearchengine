@@ -52,16 +52,16 @@ const ParksTabContent = ({ searchParams, countryName, setSearchItemType, setSear
                 setSearchItemId(currentPark.id);
 
                 // Fetch initial filters and sorting from URL
-                const { initialFilters, initialSorting } =
+                const { filtersFromURL, sortingFromURL } =
                     getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
 
-                setFilters(initialFilters);
-                setSortBy(initialSorting);
+                setFilters(filtersFromURL);
+                setSortBy(sortingFromURL);
 
                 resetPagination();
 
                 // Load tours based on Selected Park
-                await loadTours(currentPark.id, currentPark.type, filters, sortBy)
+                await loadTours(currentPark.id, currentPark.type, filtersFromURL, sortingFromURL)
             } catch (error) {
                 console.error("Error loading tours:", error)
             } finally {

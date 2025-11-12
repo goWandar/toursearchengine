@@ -240,12 +240,12 @@ export function getFilterQueriesFromSearchParams(
     }
 
     return {
-        initialFilters: {
+        filtersFromURL: {
             accommodation,
             duration,
             budget,
         },
-        initialSorting: sorting,
+        sortingFromURL: sorting,
     };
 };
 
