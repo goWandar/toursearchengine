@@ -35,13 +35,10 @@ const AllTabContent = ({
         const loadInitialTours = async () => {
             if (!searchParams) return;
 
-            // Get initial search item from URL
-            const currentSearchItemId = idInURL;
-            const currentSearchItemType = typeInURL;
 
             // Set search item in parent component(for filtering handlers) 
-            setSearchItemType(currentSearchItemType);
-            setSearchItemId(currentSearchItemId);
+            setSearchItemType(typeInURL);
+            setSearchItemId(idInURL);
 
             // Fetch initial filters and sorting from URL
             const { initialFilters, initialSorting } =
@@ -53,7 +50,7 @@ const AllTabContent = ({
             resetPagination();
 
             // Load tours with initial filters and sorting
-            await loadTours(currentSearchItemId, currentSearchItemType, initialFilters, initialSorting);
+            await loadTours(idInURL, typeInURL, initialFilters, initialSorting);
         };
 
         loadInitialTours();
