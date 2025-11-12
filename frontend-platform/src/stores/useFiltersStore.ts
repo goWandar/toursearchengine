@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { TourFiltersType, SortToursType } from "@/types/types";
-import { applyFiltersHelper, applySortByHelper, DEFAULT_FILTERS, resetFiltersHelper } from "@/utils/mordern-search.utils";
+import { tourSearchUrlHandler, DEFAULT_FILTERS } from "@/utils/mordern-search.utils";
 
 interface FiltersState {
     filters: TourFiltersType;
@@ -60,7 +60,7 @@ export const useFiltersStore = create<FiltersState>((set) => ({
         try {
             setIsFiltersApplied(false);
             set({ filters: DEFAULT_FILTERS, sortBy: sortBy });
-            resetFiltersHelper({ searchParams, router });
+            tourSearchUrlHandler.resetFilters({ searchParams, router });
             resetPagination();
             await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy);
         } catch (error) {
@@ -72,7 +72,7 @@ export const useFiltersStore = create<FiltersState>((set) => ({
         try {
             setIsFiltersApplied(true);
             resetPagination();
-            applyFiltersHelper({ filters, searchParams, router });
+            tourSearchUrlHandler.setFilters({ filters, searchParams, router });
             await loadTours(idParam, typeParam, filters, sortBy);
         } catch (error) {
             console.error("Error applying filters:", error);
@@ -81,7 +81,7 @@ export const useFiltersStore = create<FiltersState>((set) => ({
 
     sortTours: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours, setSortBy }) => {
         try {
-            applySortByHelper({ sortBy, searchParams, router });
+            tourSearchUrlHandler.setSortBy({ sortBy, searchParams, router });
             if (setSortBy) setSortBy(sortBy);
             resetPagination();
             await loadTours(idParam, typeParam, filters, sortBy);

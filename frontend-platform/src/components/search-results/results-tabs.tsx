@@ -7,15 +7,14 @@ import { Button } from "@/recipes/button/button";
 import ParksTabContent from "./parks-tab-content";
 import AllTabContent from "./all-tab-content";
 import { useToursStore } from "@/stores/useTourStore";
-import { addActiveTabHelper } from "@/utils/mordern-search.utils";
+import { tourSearchUrlHandler } from "@/utils/mordern-search.utils";
 import { TabsListSkeleton } from "./tabs-list-skeleton";
 import SafariCardSkeleton from "./safari-card-skeleton";
+import { useRouter } from "next/navigation";
 
 interface ResultsTabsProps {
-    isLoading: boolean;
     searchItemName: string;
     searchParams: URLSearchParams;
-    router: any;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
 }
@@ -23,12 +22,19 @@ interface ResultsTabsProps {
 export default function ResultsTabs({
     searchItemName,
     searchParams,
-    router,
     setSearchItemId,
     setSearchItemType,
 }: ResultsTabsProps) {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"all" | "parks" | "experiences" | null>(null);
+    const tabFromUrl = searchParams.get("tab");
+
+    // Get type and id from URL (for all results tab)
     const typeInURL = searchParams?.get("type") ?? "";
+    const idInURL = Number(searchParams?.get("id")) || 0;
+
+    // Get Park from URL (for parks tab)
+    const parkIdFromURL = Number(searchParams?.get("park")) || 0;
 
     // Tours Store States
     const pagination = useToursStore((state) => state.pagination);
@@ -36,7 +42,6 @@ export default function ResultsTabs({
 
     // Check URL params on mount to set active results tab
     useEffect(() => {
-        const tabFromUrl = searchParams.get("tab");
         if (tabFromUrl === "parks" && typeInURL === "country") {
             setActiveTab("parks");
         } else if (tabFromUrl === "experiences") {
@@ -44,15 +49,7 @@ export default function ResultsTabs({
         } else {
             setActiveTab("all");
         }
-    }, [searchParams]);
-
-    // Add active tab to URL whenever it changes(is applied)
-    useEffect(() => {
-        if (activeTab === null) return;
-        addActiveTabHelper({ activeTab, searchParams, router })
-    }, [activeTab]);
-
-
+    }, [tabFromUrl, typeInURL]);
 
     return (
         <>
@@ -114,8 +111,9 @@ export default function ResultsTabs({
 
                     {/* All Tours Tab Content */}
                     <TabsContent value="all" className="space-y-12">
-                        <AllTabContent searchParams={searchParams} tabFromUrl={activeTab}
+                        <AllTabContent searchParams={searchParams}
                             setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
+                            typeInURL={typeInURL} idInURL={idInURL} activeTab={activeTab}
                         />
                     </TabsContent>
 
@@ -124,6 +122,7 @@ export default function ResultsTabs({
                         {/* Parks */}
                         <ParksTabContent searchParams={searchParams} countryName={searchItemName}
                             tabFromUrl={activeTab} setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
+                            parkIdFromURL={parkIdFromURL} activeTab={activeTab}
                         />
                     </TabsContent>
                 </Tabs>

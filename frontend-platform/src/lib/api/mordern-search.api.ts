@@ -21,7 +21,6 @@ export const getToursByCountryId = async (
     sortBy: SortToursType
 ): Promise<TourSearchResponse> => {
     try {
-        console.log("Fetching Tours for Country");
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
             `/api/tours/country/${countryId}`,
             {
@@ -35,8 +34,6 @@ export const getToursByCountryId = async (
                 }
             }
         );
-
-        console.log("Tours fetched for country: ", response.data.data.tours.length);
 
         return response.data.data;
     } catch (error) {
@@ -52,7 +49,6 @@ export const getToursByParkId = async (
     sortBy: SortToursType
 ): Promise<TourSearchResponse> => {
     try {
-        console.log("Fetching tours for park");
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
             `/api/tours/park/${parkId}`,
             {
@@ -66,8 +62,6 @@ export const getToursByParkId = async (
                 }
             }
         );
-
-        console.log("Tours fetched for park: ", response.data.data.tours.length);
 
         return response.data.data;
     } catch (error) {

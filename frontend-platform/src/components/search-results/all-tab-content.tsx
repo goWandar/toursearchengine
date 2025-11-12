@@ -3,27 +3,31 @@
 import React, { useEffect } from "react";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import ModernSafariCard from "./modern-safari-card";
-import { getFilterQueriesFromSearchParams } from "@/utils/mordern-search.utils";
+import { tourSearchUrlHandler } from "@/utils/mordern-search.utils";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
+import { useRouter } from "next/navigation";
 
 interface AllTabContentProps {
     searchParams: URLSearchParams;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
-    tabFromUrl: string | null;
+    idInURL: number;
+    typeInURL: string;
+    activeTab: "all" | "parks" | "experiences";
 }
 
 const AllTabContent = ({
     searchParams,
     setSearchItemType,
     setSearchItemId,
-    tabFromUrl,
+    idInURL,
+    typeInURL,
+    activeTab,
 }: AllTabContentProps) => {
-    const idInURL = Number(searchParams?.get("id")) || 0;
-    const typeInURL = searchParams?.get("type") ?? "";
+    const router = useRouter();
 
     // Tours Store state and actions
     const tours = useToursStore((state) => state.tours);
@@ -46,20 +50,20 @@ const AllTabContent = ({
     useEffect(() => {
         const loadInitialTours = async () => {
             setIsLoading(true);
-            if (!tabFromUrl || tabFromUrl !== "all") return;
-            console.log("*************Tab From URL**************: ", tabFromUrl)
 
             // Implent logic for when id or type is missing***
             if (!idInURL || !typeInURL) return;
 
             try {
+                tourSearchUrlHandler.setActiveTab({ activeTab, searchParams, router });
+
                 // Set search item in parent component (for filtering handlers)
                 setSearchItemType(typeInURL);
                 setSearchItemId(idInURL);
 
                 // Fetch initial filters and sorting from URL
                 const { filtersFromURL, sortingFromURL } =
-                    getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
+                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setIsFiltersApplied);
 
                 setFilters(filtersFromURL);
                 setSortBy(sortingFromURL);

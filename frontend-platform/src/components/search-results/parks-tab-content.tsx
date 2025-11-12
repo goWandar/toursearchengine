@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { Badge } from "@/recipes/badge/badge";
 import { ParkSearchType } from "@/types/types";
-import { getFilterQueriesFromSearchParams, getParksByCountry } from "@/utils/mordern-search.utils";
+import { tourSearchUrlHandler, getParksByCountry } from "@/utils/mordern-search.utils";
 import ModernSafariCard from "./modern-safari-card";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useToursStore } from "@/stores/useTourStore";
+import { useRouter } from "next/navigation";
+
 
 interface ParksTabContentProps {
     searchParams: URLSearchParams;
@@ -15,11 +17,14 @@ interface ParksTabContentProps {
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
     tabFromUrl: string | null;
+    parkIdFromURL: number;
+    activeTab: "all" | "parks" | "experiences";
 }
 
-const ParksTabContent = ({ searchParams, countryName, setSearchItemType, setSearchItemId,
-    tabFromUrl,
+const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemType, setSearchItemId,
+    parkIdFromURL
 }: ParksTabContentProps) => {
+    const router = useRouter();
     const [parks, setParks] = useState<ParkSearchType[]>([]);
     const [selectedPark, setSelectedPark] = useState<ParkSearchType | null>(null);
 
@@ -43,32 +48,39 @@ const ParksTabContent = ({ searchParams, countryName, setSearchItemType, setSear
     // Get Parks by Country Name
     useEffect(() => {
         setIsLoading(true);
-        if (!tabFromUrl || tabFromUrl !== "parks") return;
 
-        console.log("***************Tab From URL*************: ", tabFromUrl)
-
+        // Implement logic for when countryName is missing***
+        if (!countryName) return;
         try {
-            // Implement logic for when countryName is missing*** 
-
             getParksByCountry(countryName, setParks);
         } catch (error) {
             console.error("Error fetching parks:", error);
         }
-    }, [countryName, searchParams, tabFromUrl]);
+    }, [countryName]);
 
+    // Set selected park when parks are loaded or parkIdFromURL changes
     useEffect(() => {
         if (!parks.length) return;
+        // Set selected park based on URL or default to first park
+        const parkFromURL = parks.find((park) => park.id === parkIdFromURL);
+        if (parkFromURL) {
+            setSelectedPark(parkFromURL);
+        } else {
+            setSelectedPark(parks[0]);
+        }
 
-        // Set either the first park or selected park as current
-        setSelectedPark(selectedPark ?? parks[1]);
     }, [parks]);
 
     // Load tours on mount or whenever selected park changes
     useEffect(() => {
         const loadToursForSelectedPark = async () => {
+            setIsLoading(true);
             if (!selectedPark) return;
 
             try {
+
+                // Set selected active tab and park in URL
+                tourSearchUrlHandler.setActiveTab({ activeTab, parkId: selectedPark.id, searchParams, router });
 
                 // Set search item in parent component(for filtering handlers)
                 setSearchItemType(selectedPark.type);
@@ -76,7 +88,7 @@ const ParksTabContent = ({ searchParams, countryName, setSearchItemType, setSear
 
                 // Fetch initial filters and sorting from URL
                 const { filtersFromURL, sortingFromURL } =
-                    getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
+                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setIsFiltersApplied);
 
                 setFilters(filtersFromURL);
                 setSortBy(sortingFromURL);

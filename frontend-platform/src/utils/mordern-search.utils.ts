@@ -198,162 +198,160 @@ export const getUniqueSeasons = (prices: Price[]): string[] => {
     return Array.from(new Set(prices.map((p) => p.seasonName).filter(Boolean))) as string[];
 };
 
-// Get filters from URLSearchParams (search-results.tsx)
-export function getFilterQueriesFromSearchParams(
-    searchParams: URLSearchParams,
-    setIsFiltersApplied: (value: boolean) => void
-) {
-    // Extract params
-    const accommodationParam = searchParams.get("acc");
-    const durationParam = searchParams.get("dur");
-    const budgetParam = searchParams.get("bud");
-    const sortParam = searchParams.get("sort");
+export const tourSearchUrlHandler = {
+    // Get filters from URLSearchParams
+    getFiltersFromUrl(
+        searchParams: URLSearchParams,
+        setIsFiltersApplied: (value: boolean) => void
+    ) {
+        const accommodationParam = searchParams.get("acc");
+        const durationParam = searchParams.get("dur");
+        const budgetParam = searchParams.get("bud");
+        const sortParam = searchParams.get("sort");
 
-    // Parse accommodation
-    const accommodation = accommodationParam
-        ? accommodationParam.split("|")
-        : [];
+        const accommodation = accommodationParam
+            ? accommodationParam.split("|")
+            : [];
 
-    // Parse duration
-    const duration: [number, number] = durationParam
-        ? durationParam
-            .split("-")
-            .map(Number)
-            .slice(0, 2) as [number, number]
-        : [1, 14];
+        const duration: [number, number] = durationParam
+            ? durationParam
+                .split("-")
+                .map(Number)
+                .slice(0, 2) as [number, number]
+            : [1, 14];
 
-    // Parse budget
-    const budget: [number, number] = budgetParam
-        ? budgetParam
-            .split("-")
-            .map(Number)
-            .slice(0, 2) as [number, number]
-        : [100, 20000];
+        const budget: [number, number] = budgetParam
+            ? budgetParam
+                .split("-")
+                .map(Number)
+                .slice(0, 2) as [number, number]
+            : [100, 20000];
 
-    // Parse sort
-    const sorting: SortToursType = (sortParam as SortToursType) || "relevance";
+        const sorting: SortToursType = (sortParam as SortToursType) || "relevance";
 
-    // Determine if any filters should be applied
-    const filtersApplied = accommodation.length > 0 || duration[0] !== 1 ||
-        duration[1] !== 14 || budget[0] !== 100 || budget[1] !== 20000;
-    if (filtersApplied) {
-        setIsFiltersApplied(true);
-    }
+        const filtersApplied =
+            accommodation.length > 0 ||
+            duration[0] !== 1 ||
+            duration[1] !== 14 ||
+            budget[0] !== 100 ||
+            budget[1] !== 20000;
 
-    return {
-        filtersFromURL: {
-            accommodation,
-            duration,
-            budget,
-        },
-        sortingFromURL: sorting,
-    };
-};
+        if (filtersApplied) {
+            setIsFiltersApplied(true);
+        }
 
-// Update URL with filters query params
-export function applyFiltersHelper({
-    filters,
-    searchParams,
-    router,
-}: {
-    filters: TourFiltersType;
-    searchParams: URLSearchParams;
-    router: AppRouterInstance;
-}) {
-    // Create a modifiable copy of the URLSearchParams
-    const params = new URLSearchParams(searchParams.toString());
+        return {
+            filtersFromURL: {
+                accommodation,
+                duration,
+                budget,
+            },
+            sortingFromURL: sorting,
+        };
+    },
 
-    // 1. Accommodation filter
-    if (filters.accommodation.length > 0) {
-        params.set("acc", filters.accommodation.join("|"));
-    } else {
+    // Apply filters to URL
+    setFilters({
+        filters,
+        searchParams,
+        router,
+    }: {
+        filters: TourFiltersType;
+        searchParams: URLSearchParams;
+        router: AppRouterInstance;
+    }) {
+        const params = new URLSearchParams(searchParams.toString());
+
+        // Accommodation
+        if (filters.accommodation.length > 0) {
+            params.set("acc", filters.accommodation.join("|"));
+        } else {
+            params.delete("acc");
+        }
+
+        // Duration
+        const [minDur, maxDur] = filters.duration;
+        if (!(minDur === 1 && maxDur === 14)) {
+            params.set("dur", `${minDur}-${maxDur}`);
+        } else {
+            params.delete("dur");
+        }
+
+        // Budget
+        const [minBudget, maxBudget] = filters.budget;
+        if (!(minBudget === 100 && maxBudget === 20000)) {
+            params.set("bud", `${minBudget}-${maxBudget}`);
+        } else {
+            params.delete("bud");
+        }
+
+        router.replace(`?${params.toString()}`);
+    },
+
+    // Remove filters from URL
+    resetFilters({
+        searchParams,
+        router,
+    }: {
+        searchParams: URLSearchParams;
+        router: AppRouterInstance;
+    }) {
+        const params = new URLSearchParams(searchParams.toString());
         params.delete("acc");
-    }
-
-    // 2. Duration filter
-    const [minDur, maxDur] = filters.duration;
-    if (!(minDur === 1 && maxDur === 14)) {
-        params.set("dur", `${minDur}-${maxDur}`);
-    } else {
         params.delete("dur");
-    }
-
-    // 3. Budget filter
-    const [minBudget, maxBudget] = filters.budget;
-    if (!(minBudget === 100 && maxBudget === 20000)) {
-        params.set("bud", `${minBudget}-${maxBudget}`);
-    } else {
         params.delete("bud");
+        router.replace(`?${params.toString()}`);
+    },
+
+    // Apply sorting to URL
+    setSortBy({
+        sortBy,
+        searchParams,
+        router,
+    }: {
+        sortBy: SortToursType;
+        searchParams: URLSearchParams;
+        router: AppRouterInstance;
+    }) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (sortBy !== "relevance") {
+            params.set("sort", sortBy);
+        } else {
+            params.delete("sort");
+        }
+        router.replace(`?${params.toString()}`);
+    },
+
+    // Set active tab and optionally the park param in URL
+    setActiveTab({
+        activeTab,
+        parkId,
+        searchParams,
+        router,
+    }: {
+        activeTab: "all" | "parks" | "experiences";
+        parkId?: number; // optional, only set when needed
+        searchParams: URLSearchParams;
+        router: AppRouterInstance;
+    }) {
+        const params = new URLSearchParams(searchParams.toString());
+
+        // Handle active tab
+        if (activeTab !== "all") {
+            params.set("tab", activeTab);
+        } else {
+            params.delete("tab");
+            params.delete("park"); // also delete park when resetting tab
+        }
+
+        // Handle park param if provided
+        if (parkId !== undefined) {
+            params.set("park", String(parkId));
+        }
+
+        router.replace(`?${params.toString()}`);
     }
-
-    // 4. Update URL without reloading
-    router.replace(`?${params.toString()}`);
-}
-
-// Reset filter query params in URL
-export function resetFiltersHelper({
-    searchParams,
-    router,
-}: {
-    searchParams: URLSearchParams;
-    router: AppRouterInstance;
-}) {
-    // Create a modifiable copy of the URLSearchParams
-    const params = new URLSearchParams(searchParams.toString());
-
-    // Remove specific filter params
-    params.delete("acc");
-    params.delete("dur");
-    params.delete("bud");
-
-    // Update the URL without reloading
-    router.replace(`?${params.toString()}`);
 };
-
-
-// Add the tour sort type to the query params in URL
-export function applySortByHelper({
-    sortBy,
-    searchParams,
-    router,
-}: {
-    sortBy: SortToursType;
-    searchParams: URLSearchParams;
-    router: AppRouterInstance;
-}) {
-
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (sortBy !== 'relevance') {
-        params.set('sort', sortBy);
-    } else {
-        params.delete('sort');
-    }
-
-    router.replace(`?${params.toString()}`);
-};
-
-// Add the tour sort type to the query params in URL
-export function addActiveTabHelper({
-    activeTab,
-    searchParams,
-    router,
-}: {
-    activeTab: "all" | "parks" | "experiences";
-    searchParams: URLSearchParams;
-    router: AppRouterInstance;
-}) {
-
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (activeTab !== 'all') {
-        params.set('tab', activeTab);
-    } else {
-        params.delete('tab');
-    }
-
-    router.replace(`?${params.toString()}`);
-}
 
 
 

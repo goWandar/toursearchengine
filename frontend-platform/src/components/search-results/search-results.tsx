@@ -18,7 +18,7 @@ export const SearchResults = () => {
     const [type, setType] = useState<string>(typeFromURL);
 
     // Tours hook
-    const { isLoading, loadTours, resetPagination, pagination } = useToursStore()
+    const { loadTours, resetPagination, pagination } = useToursStore()
 
     // Filters Hook
     const { filters, setFilters, sortBy, setSortBy, applyFilters, resetFilters,
@@ -62,14 +62,14 @@ export const SearchResults = () => {
     return (
         <div className='container mx-auto px-6 py-12'>
             {/* Search Results Filters - Header */}
-            <ResultsFilters name={name} isLoading={isLoading}
+            <ResultsFilters name={name}
                 filters={filters} setFilters={setFilters} applyFilters={handleApplyFilters} resetFilters={handleResetFilters}
                 handleSortTours={handleSortTours} sortBy={sortBy} pagination={pagination}
             />
 
             {/* Search Results Content */}
-            <ResultsTabs isLoading={isLoading} searchItemName={name} searchParams={searchParams}
-                router={router} setSearchItemType={setType} setSearchItemId={setId}
+            <ResultsTabs searchItemName={name} searchParams={searchParams}
+                setSearchItemType={setType} setSearchItemId={setId}
             />
         </div >
     )
