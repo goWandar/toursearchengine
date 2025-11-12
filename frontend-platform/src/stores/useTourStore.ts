@@ -41,11 +41,7 @@ export const useToursStore = create<ToursState>((set, get) => ({
     loadTours: async (idParam, typeParam, filters, sortBy) => {
         if (!idParam || !typeParam) return;
 
-        set({ isLoading: true, tours: [] });
-
         try {
-            const { pagination } = get();
-
 
             await fetchTours(
                 idParam,

@@ -1,4 +1,5 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
+import { useToursStore } from "@/stores/useTourStore";
 import { paginationType, Park, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType, TourHandlerDeps } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";

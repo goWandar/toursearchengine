@@ -43,7 +43,7 @@ export default function ResultsTabs({
         } else {
             setActiveTab("all");
         }
-    }, []);
+    }, [searchParams]);
 
     // Add active tab to URL whenever it changes(is applied)
     useEffect(() => {
@@ -113,7 +113,7 @@ export default function ResultsTabs({
 
                     {/* All Tours Tab Content */}
                     <TabsContent value="all" className="space-y-12">
-                        <AllTabContent searchParams={searchParams}
+                        <AllTabContent searchParams={searchParams} tabFromUrl={activeTab}
                             setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
                         />
                     </TabsContent>
@@ -121,8 +121,8 @@ export default function ResultsTabs({
                     {/* Parks Tab Content */}
                     <TabsContent value="parks" className="space-y-12">
                         {/* Parks */}
-                        <ParksTabContent searchParams={searchParams} countryName={searchItemName} setSearchItemId={setSearchItemId}
-                            setSearchItemType={setSearchItemType}
+                        <ParksTabContent searchParams={searchParams} countryName={searchItemName}
+                            tabFromUrl={activeTab} setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
                         />
                     </TabsContent>
                 </Tabs>

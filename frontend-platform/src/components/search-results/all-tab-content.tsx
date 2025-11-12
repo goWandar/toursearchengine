@@ -13,48 +13,70 @@ interface AllTabContentProps {
     searchParams: URLSearchParams;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
+    tabFromUrl: string | null;
 }
 
 const AllTabContent = ({
     searchParams,
     setSearchItemType,
     setSearchItemId,
+    tabFromUrl,
 }: AllTabContentProps) => {
     const idInURL = Number(searchParams?.get("id")) || 0;
     const typeInURL = searchParams?.get("type") ?? "";
 
-    // Tours Store
-    const { tours, pagination, isLoading, isLoadingMore, loadTours,
-        loadMoreTours, resetPagination } = useToursStore();
+    // Tours Store state and actions
+    const tours = useToursStore((state) => state.tours);
+    const pagination = useToursStore((state) => state.pagination);
+    const isLoading = useToursStore((state) => state.isLoading);
+    const isLoadingMore = useToursStore((state) => state.isLoadingMore);
+    const loadTours = useToursStore((state) => state.loadTours);
+    const loadMoreTours = useToursStore((state) => state.loadMoreTours);
+    const resetPagination = useToursStore((state) => state.resetPagination);
+    const setIsLoading = useToursStore((state) => state.setIsLoading);
 
-    // Filters Store
-    const { filters, setFilters, sortBy, setSortBy, setIsFiltersApplied } = useFiltersStore();
+    // Filters Store state and actions
+    const filters = useFiltersStore((state) => state.filters);
+    const sortBy = useFiltersStore((state) => state.sortBy);
+    const setFilters = useFiltersStore((state) => state.setFilters);
+    const setSortBy = useFiltersStore((state) => state.setSortBy);
+    const setIsFiltersApplied = useFiltersStore((state) => state.setIsFiltersApplied);
 
     // Load tours with initial filters from URL on mount
     useEffect(() => {
         const loadInitialTours = async () => {
-            if (!searchParams) return;
+            setIsLoading(true);
+            if (!tabFromUrl || tabFromUrl !== "all") return;
+            console.log("*************Tab From URL**************: ", tabFromUrl)
 
+            // Implent logic for when id or type is missing***
+            if (!idInURL || !typeInURL) return;
 
-            // Set search item in parent component(for filtering handlers) 
-            setSearchItemType(typeInURL);
-            setSearchItemId(idInURL);
+            try {
+                // Set search item in parent component (for filtering handlers)
+                setSearchItemType(typeInURL);
+                setSearchItemId(idInURL);
 
-            // Fetch initial filters and sorting from URL
-            const { filtersFromURL, sortingFromURL } =
-                getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
+                // Fetch initial filters and sorting from URL
+                const { filtersFromURL, sortingFromURL } =
+                    getFilterQueriesFromSearchParams(searchParams, setIsFiltersApplied);
 
-            setFilters(filtersFromURL);
-            setSortBy(sortingFromURL);
+                setFilters(filtersFromURL);
+                setSortBy(sortingFromURL);
 
-            resetPagination();
+                resetPagination();
 
-            // Load tours with initial filters and sorting
-            await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL);
+                // Load tours with initial filters and sorting
+                await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL);
+            } catch (error) {
+                console.error("Error loading initial tours:", error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         loadInitialTours();
-    }, [idInURL, typeInURL, setSearchItemId, setSearchItemType]);
+    }, [idInURL, typeInURL]);
 
     return (
         <>
