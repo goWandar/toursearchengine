@@ -42,6 +42,7 @@ export const useToursStore = create<ToursState>((set, get) => ({
         if (!idParam || !typeParam) return;
 
         try {
+            set({ isLoading: true });
 
             await fetchTours(
                 idParam,

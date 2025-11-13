@@ -25,7 +25,6 @@ export default function ResultsTabs({
     setSearchItemId,
     setSearchItemType,
 }: ResultsTabsProps) {
-    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"all" | "parks" | "experiences" | null>(null);
     const tabFromUrl = searchParams.get("tab");
 
