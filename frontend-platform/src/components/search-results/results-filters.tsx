@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/recipes/button/button";
-import { Filter, ChevronDown, RotateCcw, FilterIcon } from "lucide-react";
+import { Filter, ChevronDown, RotateCcw, FilterIcon, SortAscIcon, SortDescIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/recipes/popover/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/recipes/select/select";
 import { paginationType, SortToursType, TourFiltersType } from "@/types/types";
@@ -23,9 +23,8 @@ interface ResultsFiltersProps {
 }
 
 const ResultsFilters = ({ name, pagination, filters, setFilters, applyFilters,
-    resetFilters, handleSortTours, sortBy
-}
-    : ResultsFiltersProps) => {
+    resetFilters, handleSortTours, sortBy }: ResultsFiltersProps) => {
+
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const accommodationTypes = [
         { displayName: "Mixed", name: "mixed" },
@@ -200,16 +199,46 @@ const ResultsFilters = ({ name, pagination, filters, setFilters, applyFilters,
                     </PopoverContent>
                 </Popover>
 
+                {/* Sort By Menu */}
                 <Select disabled={isLoading} value={sortBy} onValueChange={(value: SortToursType) => handleSortTours && handleSortTours(value)}>
-                    <SelectTrigger className="w-40 bg-white shadow-sm border-gray-200 rounded-full">
-                        <SelectValue />
+                    <SelectTrigger className="flex items-center space-x-2 bg-white shadow-sm border-gray-200 hover:bg-gray-50 rounded-full px-6">
+                        <SortDescIcon className="h-4 w-4" /> Sort By
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="relevance" onClick={() => handleSortTours && handleSortTours("relevance")}>Relevance</SelectItem>
-                        {/* <SelectItem value="price-low" >Price: Low to High</SelectItem> */}
-                        {/* <SelectItem value="price-high">Price: High to Low</SelectItem> */}
-                        {/* <SelectItem value="rating">Highest Rated</SelectItem> */}
-                        <SelectItem value="duration" onClick={() => handleSortTours && handleSortTours("duration")}>Duration</SelectItem>
+                        <SelectItem
+                            value="default"
+                            onClick={() => handleSortTours && handleSortTours("default")}
+                        >
+                            Default
+                        </SelectItem>
+
+                        <SelectItem
+                            value="duration_short_long"
+                            onClick={() => handleSortTours && handleSortTours("duration_short_long")}
+                        >
+                            Duration: Short to Long
+                        </SelectItem>
+
+                        <SelectItem
+                            value="duration_long_short"
+                            onClick={() => handleSortTours && handleSortTours("duration_long_short")}
+                        >
+                            Duration: Long to Short
+                        </SelectItem>
+
+                        <SelectItem
+                            value="budget_low_high"
+                            onClick={() => handleSortTours && handleSortTours("budget_low_high")}
+                        >
+                            Budget: Low to High
+                        </SelectItem>
+
+                        <SelectItem
+                            value="budget_high_low"
+                            onClick={() => handleSortTours && handleSortTours("budget_high_low")}
+                        >
+                            Budget: High to Low
+                        </SelectItem>
                     </SelectContent>
                 </Select>
             </div>

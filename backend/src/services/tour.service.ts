@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { notFound, serverError, success } from '../utils/genericResponseHandler.js';
+import { serverError, success } from '../utils/genericResponseHandler.js';
 
 import { prisma } from '../db/prisma.js';
-import { parseTourQueryParams } from '../utils/tourServices.utils.js';
+import { buildWhereClause, fetchTours, parseTourQueryParams } from '../utils/tourServices.utils.js';
 
 export const TourService = {
 
@@ -10,6 +10,8 @@ export const TourService = {
   async getToursByCountryId(req: Request, res: Response): Promise<Response> {
     try {
       const countryId = parseInt(req.params.countryId);
+
+      // Get Filters & Pagination params
       const {
         page,
         limit,
@@ -20,68 +22,25 @@ export const TourService = {
         sortBy,
       } = parseTourQueryParams(req.query);
 
-      // Build the where clause
-      const where: any = {
+      // Build where clause
+      const where = buildWhereClause.byCountryId({
         countryId,
-        archived: false,
-        ...(accommodation.length
-          ? { accommodationType: { in: accommodation } }
-          : {}),
-        durationInDays: { gte: duration[0], lte: duration[1] },
-        ...(budget
-          ? {
-            prices: {
-              some: {
-                pricePerPerson: {
-                  gte: budget[0],
-                  lte: budget[1],
-                },
-              },
-            },
-          }
-          : {}),
-      };
+        accommodation,
+        duration,
+        budget
+      });
 
-      // Determine orderBy
-      let orderBy: any;
-      switch (sortBy) {
-        case 'duration':
-          orderBy = { durationInDays: 'asc' }; // shortest to longest
-          break;
-        case 'relevance':
-        default:
-          orderBy = { dateCreated: 'asc' };
-      }
+      // Fetch tours and total count
+      const { tours, total } = await fetchTours({
+        prisma,
+        where,
+        sortBy,
+        skip,
+        limit,
+      })
 
-      const [tours, total] = await Promise.all([
-        prisma.tour.findMany({
-          where,
-          skip,
-          take: limit,
-          orderBy,
-          include: {
-            operator: { select: { id: true, name: true } },
-            country: { select: { id: true, name: true } },
-            images: true,
-            prices: true,
-            tourParks: {
-              include: { park: { select: { id: true, name: true } } },
-            },
-          },
-        }),
-        prisma.tour.count({ where }),
-      ]);
-
-      if (!tours.length) return notFound(res, 'No tours found for this country');
-
-      // Flatten parks array for each tour
-      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
-        ...rest,
-        parks: tourParks.map(tp => tp.park),
-      }));
-
-      return success(res, 'Tours fetched successfully', {
-        tours: formattedTours,
+      return success(res, "Tours fetched successfully", {
+        tours,
         pagination: {
           page,
           limit,
@@ -90,20 +49,22 @@ export const TourService = {
           hasMore: page * limit < total,
         },
       });
+
     } catch (error) {
       return serverError(
         res,
-        'Failed to fetch tours by country ID',
+        "Failed to fetch tours by country ID",
         error instanceof Error ? error : new Error(String(error))
       );
     }
   },
 
-
   // Get tours by park ID
   async getToursByParkId(req: Request, res: Response): Promise<Response> {
     try {
       const parkId = parseInt(req.params.parkId);
+
+      // Get Filters & Pagination params
       const {
         page,
         limit,
@@ -114,90 +75,26 @@ export const TourService = {
         sortBy,
       } = parseTourQueryParams(req.query);
 
-      // Determine sorting logic
-      let orderBy: any;
-      switch (sortBy) {
-        case 'duration':
-          orderBy = { durationInDays: 'asc' }; // shortest to longest
-          break;
-        case 'relevance':
-        default:
-          orderBy = { dateCreated: 'asc' }; // default relevance
-      }
+      // Build where clause
+      const where = buildWhereClause.byParkId({
+        parkId,
+        accommodation,
+        duration,
+        budget,
+      });
 
-      // Fetch tours + count in parallel
-      const [tours, total] = await Promise.all([
-        prisma.tour.findMany({
-          where: {
-            tourParks: { some: { parkId } },
-            archived: false,
-            ...(accommodation.length
-              ? { accommodationType: { in: accommodation } }
-              : {}),
-            durationInDays: { gte: duration[0], lte: duration[1] },
-            ...(budget
-              ? {
-                prices: {
-                  some: {
-                    pricePerPerson: {
-                      gte: budget[0],
-                      lte: budget[1],
-                    },
-                  },
-                },
-              }
-              : {}),
-          },
-          skip,
-          take: limit,
-          orderBy, // ✅ use dynamic orderBy here
-          include: {
-            operator: { select: { id: true, name: true } },
-            country: { select: { id: true, name: true } },
-            images: true,
-            prices: true,
-            tourParks: {
-              include: { park: { select: { id: true, name: true } } },
-            },
-          },
-        }),
+      // Fetch tours and total count
+      const { tours, total } = await fetchTours({
+        prisma,
+        where,
+        sortBy,
+        skip,
+        limit,
+      })
 
-        prisma.tour.count({
-          where: {
-            tourParks: { some: { parkId } },
-            archived: false,
-            ...(accommodation.length
-              ? { accommodationType: { in: accommodation } }
-              : {}),
-            durationInDays: { gte: duration[0], lte: duration[1] },
-            ...(budget
-              ? {
-                prices: {
-                  some: {
-                    pricePerPerson: {
-                      gte: budget[0],
-                      lte: budget[1],
-                    },
-                  },
-                },
-              }
-              : {}),
-          },
-        }),
-      ]);
 
-      if (!tours.length) return notFound(res, 'No tours found for this park');
-
-      // Flatten parks and remove the one used for filtering
-      const formattedTours = tours.map(({ tourParks, ...rest }) => ({
-        ...rest,
-        parks: tourParks
-          .filter(tp => tp.park.id !== parkId)
-          .map(tp => tp.park),
-      }));
-
-      return success(res, 'Tours fetched successfully', {
-        tours: formattedTours,
+      return success(res, "Tours fetched successfully", {
+        tours,
         pagination: {
           page,
           limit,
@@ -206,10 +103,11 @@ export const TourService = {
           hasMore: page * limit < total,
         },
       });
+
     } catch (error) {
       return serverError(
         res,
-        'Failed to fetch tours by park ID',
+        "Failed to fetch tours by park ID",
         error instanceof Error ? error : new Error(String(error))
       );
     }

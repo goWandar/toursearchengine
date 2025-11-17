@@ -120,7 +120,12 @@ export interface TourFiltersType {
     duration: [number, number];
 }
 
-export type SortToursType = 'relevance' | 'duration';
+export type SortToursType =
+    | "default"
+    | "duration_short_long"
+    | "duration_long_short"
+    | "budget_low_high"
+    | "budget_high_low";
 
 
 export type TourHandlerDeps = {

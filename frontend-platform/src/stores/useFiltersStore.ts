@@ -48,7 +48,7 @@ interface FiltersState {
 
 export const useFiltersStore = create<FiltersState>((set) => ({
     filters: DEFAULT_FILTERS,
-    sortBy: "relevance",
+    sortBy: "default",
     isFiltersApplied: false,
 
     setFilters: (filters) => set({ filters }),
