@@ -23,14 +23,12 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
 
     // Tours Store State
     const sortBy = useFiltersStore((state) => state.sortBy);
-    const setSortBy = useFiltersStore((state) => state.setSortBy);
     const sortTours = useFiltersStore((state) => state.sortTours);
     const filters = useFiltersStore((state) => state.filters);
     const setFilters = useFiltersStore((state) => state.setFilters);
     const applyFilters = useFiltersStore((state) => state.applyFilters);
     const resetFilters = useFiltersStore((state) => state.resetFilters);
     const appliedFilters = useFiltersStore((state) => state.appliedFilters);
-    const setAppliedFilters = useFiltersStore((state) => state.setAppliedFilters);
 
     // Tours Store state
     const isLoading = useToursStore((state) => state.isLoading);
@@ -41,36 +39,29 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
     const handleApplyFilters = () => applyFilters({
         idParam: searchItemId,
         typeParam: searchItemType,
-        filters,
-        sortBy,
         searchParams,
         router,
         resetPagination,
         loadTours,
-        setAppliedFilters
     });
 
     const handleResetFilters = () => resetFilters({
         idParam: searchItemId,
         typeParam: searchItemType,
         searchParams,
-        sortBy,
         router,
         resetPagination,
         loadTours,
-        setAppliedFilters
     });
 
     const handleSortTours = (sort: SortToursType) => sortTours({
         idParam: searchItemId,
         typeParam: searchItemType,
-        filters,
         sortBy: sort,
         searchParams,
         router,
         resetPagination,
         loadTours,
-        setSortBy
     });
 
 
@@ -103,8 +94,8 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
                 <FiltersPopover
                     filters={filters}
                     setFilters={setFilters}
-                    applyFilters={handleApplyFilters}
-                    resetFilters={handleResetFilters}
+                    handleApplyFilters={handleApplyFilters}
+                    handleResetFilters={handleResetFilters}
                     isLoading={isLoading}
                 />
 

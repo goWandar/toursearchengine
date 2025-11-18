@@ -15,16 +15,16 @@ interface FiltersPopoverProps {
         duration: [number, number];
         accommodation: string[];
     }) => void;
-    applyFilters: () => void;
-    resetFilters: () => void;
+    handleApplyFilters: () => void;
+    handleResetFilters: () => void;
     isLoading: boolean;
 }
 
 const FiltersPopover = ({
     filters,
     setFilters,
-    applyFilters,
-    resetFilters,
+    handleApplyFilters,
+    handleResetFilters,
     isLoading
 }: FiltersPopoverProps
 ) => {
@@ -124,7 +124,7 @@ const FiltersPopover = ({
                         <Button
                             variant="outline"
                             onClick={() => {
-                                resetFilters();
+                                handleResetFilters();
                                 setIsPopoverOpen(false);
                             }}>
                             <RotateCcw className="mr-2 h-4 w-4" />
@@ -134,7 +134,7 @@ const FiltersPopover = ({
                         <Button
                             variant="outline"
                             onClick={() => {
-                                applyFilters();
+                                handleApplyFilters();
                                 setIsPopoverOpen(false);
                             }}>
                             <Filter className="mr-2 h-4 w-4" />

@@ -13,76 +13,96 @@ interface FiltersState {
     resetFilters: (deps: {
         idParam: number;
         typeParam: string;
-        sortBy: SortToursType;
         searchParams: any;
         router: any;
         resetPagination: () => void;
-        loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
-        setAppliedFilters: (value: TourFiltersType) => void;
+        loadTours: (
+            idParam: number,
+            typeParam: string,
+            filters: TourFiltersType,
+            sortBy: SortToursType
+        ) => Promise<void>;
     }) => Promise<void>;
 
     applyFilters: (deps: {
         idParam: number;
         typeParam: string;
-        filters: TourFiltersType;
-        sortBy: SortToursType;
         searchParams: any;
         router: any;
         resetPagination: () => void;
-        loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
-        setAppliedFilters: (value: TourFiltersType) => void;
+        loadTours: (
+            idParam: number,
+            typeParam: string,
+            filters: TourFiltersType,
+            sortBy: SortToursType
+        ) => Promise<void>;
     }) => Promise<void>;
 
     sortTours: (deps: {
         idParam: number;
         typeParam: string;
-        filters: TourFiltersType;
-        sortBy: SortToursType;
         searchParams: any;
         router: any;
         resetPagination: () => void;
-        loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
-        setSortBy: (value: SortToursType) => void;
+        loadTours: (
+            idParam: number,
+            typeParam: string,
+            filters: TourFiltersType,
+            sortBy: SortToursType
+        ) => Promise<void>;
+        sortBy: SortToursType;
     }) => Promise<void>;
 }
 
-export const useFiltersStore = create<FiltersState>((set) => ({
+export const useFiltersStore = create<FiltersState>((set, get) => ({
     filters: DEFAULT_FILTERS,
     sortBy: "default",
     appliedFilters: DEFAULT_FILTERS,
 
     setFilters: (filters) => set({ filters }),
     setSortBy: (sortBy) => set({ sortBy }),
-
     setAppliedFilters: (appliedFilters) => set({ appliedFilters }),
 
-    resetFilters: async ({ idParam, typeParam, searchParams, sortBy, router, resetPagination, loadTours, setAppliedFilters }) => {
+    resetFilters: async ({ idParam, typeParam, searchParams, router, resetPagination, loadTours }) => {
         try {
-            setAppliedFilters(DEFAULT_FILTERS);
-            set({ filters: DEFAULT_FILTERS, sortBy: sortBy });
+            const { sortBy } = get();
+
+            set({
+                filters: DEFAULT_FILTERS,
+                appliedFilters: DEFAULT_FILTERS,
+            });
+
             tourSearchUrlHandler.resetFilters({ searchParams, router });
             resetPagination();
+
             await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy);
         } catch (error) {
             console.error("Error resetting filters:", error);
         }
     },
 
-    applyFilters: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours, setAppliedFilters }) => {
+    applyFilters: async ({ idParam, typeParam, searchParams, router, resetPagination, loadTours }) => {
         try {
-            setAppliedFilters(filters);
+            const { filters, sortBy } = get();
+
+            set({ appliedFilters: filters });
+
             resetPagination();
             tourSearchUrlHandler.setFilters({ filters, searchParams, router });
+
             await loadTours(idParam, typeParam, filters, sortBy);
         } catch (error) {
             console.error("Error applying filters:", error);
         }
     },
 
-    sortTours: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours, setSortBy }) => {
+    sortTours: async ({ idParam, typeParam, searchParams, router, resetPagination, loadTours, sortBy }) => {
         try {
+            const { filters } = get();
+
+            set({ sortBy });
             tourSearchUrlHandler.setSortBy({ sortBy, searchParams, router });
-            if (setSortBy) setSortBy(sortBy);
+
             resetPagination();
             await loadTours(idParam, typeParam, filters, sortBy);
         } catch (error) {
