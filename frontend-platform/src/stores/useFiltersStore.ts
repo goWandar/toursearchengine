@@ -5,10 +5,10 @@ import { tourSearchUrlHandler, DEFAULT_FILTERS } from "@/utils/mordern-search.ut
 interface FiltersState {
     filters: TourFiltersType;
     sortBy: SortToursType;
-    isFiltersApplied: boolean;
+    appliedFilters: TourFiltersType;
     setFilters: (filters: TourFiltersType) => void;
     setSortBy: (sortBy: SortToursType) => void;
-    setIsFiltersApplied: (value: boolean) => void;
+    setAppliedFilters: (appliedFilters: TourFiltersType) => void;
 
     resetFilters: (deps: {
         idParam: number;
@@ -18,7 +18,7 @@ interface FiltersState {
         router: any;
         resetPagination: () => void;
         loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
-        setIsFiltersApplied: (value: boolean) => void;
+        setAppliedFilters: (value: TourFiltersType) => void;
     }) => Promise<void>;
 
     applyFilters: (deps: {
@@ -30,7 +30,7 @@ interface FiltersState {
         router: any;
         resetPagination: () => void;
         loadTours: (idParam: number, typeParam: string, filters: TourFiltersType, sortBy: SortToursType) => Promise<void>;
-        setIsFiltersApplied: (value: boolean) => void;
+        setAppliedFilters: (value: TourFiltersType) => void;
     }) => Promise<void>;
 
     sortTours: (deps: {
@@ -49,16 +49,16 @@ interface FiltersState {
 export const useFiltersStore = create<FiltersState>((set) => ({
     filters: DEFAULT_FILTERS,
     sortBy: "default",
-    isFiltersApplied: false,
+    appliedFilters: DEFAULT_FILTERS,
 
     setFilters: (filters) => set({ filters }),
     setSortBy: (sortBy) => set({ sortBy }),
 
-    setIsFiltersApplied: (value) => set({ isFiltersApplied: value }),
+    setAppliedFilters: (appliedFilters) => set({ appliedFilters }),
 
-    resetFilters: async ({ idParam, typeParam, searchParams, sortBy, router, resetPagination, loadTours, setIsFiltersApplied }) => {
+    resetFilters: async ({ idParam, typeParam, searchParams, sortBy, router, resetPagination, loadTours, setAppliedFilters }) => {
         try {
-            setIsFiltersApplied(false);
+            setAppliedFilters(DEFAULT_FILTERS);
             set({ filters: DEFAULT_FILTERS, sortBy: sortBy });
             tourSearchUrlHandler.resetFilters({ searchParams, router });
             resetPagination();
@@ -68,9 +68,9 @@ export const useFiltersStore = create<FiltersState>((set) => ({
         }
     },
 
-    applyFilters: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours, setIsFiltersApplied }) => {
+    applyFilters: async ({ idParam, typeParam, filters, sortBy, searchParams, router, resetPagination, loadTours, setAppliedFilters }) => {
         try {
-            setIsFiltersApplied(true);
+            setAppliedFilters(filters);
             resetPagination();
             tourSearchUrlHandler.setFilters({ filters, searchParams, router });
             await loadTours(idParam, typeParam, filters, sortBy);

@@ -202,7 +202,7 @@ export const tourSearchUrlHandler = {
     // Get filters from URLSearchParams
     getFiltersFromUrl(
         searchParams: URLSearchParams,
-        setIsFiltersApplied: (value: boolean) => void
+        setAppliedFilters: (filters: TourFiltersType) => void
     ) {
         const accommodationParam = searchParams.get("acc");
         const durationParam = searchParams.get("dur");
@@ -229,16 +229,13 @@ export const tourSearchUrlHandler = {
 
         const sorting: SortToursType = (sortParam as SortToursType) || "relevance";
 
-        const filtersApplied =
-            accommodation.length > 0 ||
-            duration[0] !== 1 ||
-            duration[1] !== 14 ||
-            budget[0] !== 100 ||
-            budget[1] !== 20000;
+        // Update applied filters in store
+        setAppliedFilters({
+            accommodation,
+            duration,
+            budget,
+        });
 
-        if (filtersApplied) {
-            setIsFiltersApplied(true);
-        }
 
         return {
             filtersFromURL: {
@@ -314,7 +311,7 @@ export const tourSearchUrlHandler = {
         router: AppRouterInstance;
     }) {
         const params = new URLSearchParams(searchParams.toString());
-        if (sortBy !== "relevance") {
+        if (sortBy !== "default") {
             params.set("sort", sortBy);
         } else {
             params.delete("sort");

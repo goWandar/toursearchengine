@@ -44,7 +44,7 @@ const AllTabContent = ({
     const sortBy = useFiltersStore((state) => state.sortBy);
     const setFilters = useFiltersStore((state) => state.setFilters);
     const setSortBy = useFiltersStore((state) => state.setSortBy);
-    const setIsFiltersApplied = useFiltersStore((state) => state.setIsFiltersApplied);
+    const setAppliedFilters = useFiltersStore((state) => state.setAppliedFilters);
 
     // Load tours with initial filters from URL on mount
     useEffect(() => {
@@ -63,7 +63,7 @@ const AllTabContent = ({
 
                 // Fetch initial filters and sorting from URL
                 const { filtersFromURL, sortingFromURL } =
-                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setIsFiltersApplied);
+                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
 
                 setFilters(filtersFromURL);
                 setSortBy(sortingFromURL);

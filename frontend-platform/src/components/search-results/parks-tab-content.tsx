@@ -43,7 +43,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
     const sortBy = useFiltersStore((state) => state.sortBy);
     const setFilters = useFiltersStore((state) => state.setFilters);
     const setSortBy = useFiltersStore((state) => state.setSortBy);
-    const setIsFiltersApplied = useFiltersStore((state) => state.setIsFiltersApplied);
+    const setAppliedFilters = useFiltersStore((state) => state.setAppliedFilters);
 
     // Get Parks by Country Name
     useEffect(() => {
@@ -88,7 +88,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
 
                 // Fetch initial filters and sorting from URL
                 const { filtersFromURL, sortingFromURL } =
-                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setIsFiltersApplied);
+                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
 
                 setFilters(filtersFromURL);
                 setSortBy(sortingFromURL);
@@ -119,7 +119,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                                 onClick={() => setSelectedPark(park)}
                                 variant="secondary"
                                 className={`
-                  cursor-pointer transition-colors rounded-full px-4 py-2
+                  cursor-pointer transition-colors rounded-full md:px-4 md:py-2
                   ${isSelected
                                         ? "bg-orange-100 text-orange-700"
                                         : "bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-700"
@@ -133,6 +133,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                 </div>
             </div>
 
+            {/* Tour Results */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {isLoading
                     ? Array.from({ length: 12 }).map((_, i) => <SafariCardSkeleton key={i} />)

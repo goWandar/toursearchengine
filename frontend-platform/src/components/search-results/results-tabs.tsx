@@ -7,10 +7,8 @@ import { Button } from "@/recipes/button/button";
 import ParksTabContent from "./parks-tab-content";
 import AllTabContent from "./all-tab-content";
 import { useToursStore } from "@/stores/useTourStore";
-import { tourSearchUrlHandler } from "@/utils/mordern-search.utils";
 import { TabsListSkeleton } from "./tabs-list-skeleton";
 import SafariCardSkeleton from "./safari-card-skeleton";
-import { useRouter } from "next/navigation";
 
 interface ResultsTabsProps {
     searchItemName: string;
