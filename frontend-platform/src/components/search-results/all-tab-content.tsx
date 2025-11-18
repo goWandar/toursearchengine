@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import ModernSafariCard from "./modern-safari-card";
-import { tourSearchUrlHandler } from "@/utils/mordern-search.utils";
+import { loadInitialTours, tourSearchUrlHandler } from "@/utils/mordern-search.utils";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
@@ -48,38 +48,22 @@ const AllTabContent = ({
 
     // Load tours with initial filters from URL on mount
     useEffect(() => {
-        const loadInitialTours = async () => {
-            setIsLoading(true);
-
-            // Implent logic for when id or type is missing***
-            if (!idInURL || !typeInURL) return;
-
-            try {
-                tourSearchUrlHandler.setActiveTab({ activeTab, searchParams, router });
-
-                // Set search item in parent component (for filtering handlers)
-                setSearchItemType(typeInURL);
-                setSearchItemId(idInURL);
-
-                // Fetch initial filters and sorting from URL
-                const { filtersFromURL, sortingFromURL } =
-                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
-
-                setFilters(filtersFromURL);
-                setSortBy(sortingFromURL);
-
-                resetPagination();
-
-                // Load tours with initial filters and sorting
-                await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL);
-            } catch (error) {
-                console.error("Error loading initial tours:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadInitialTours();
+        loadInitialTours({
+            idInURL,
+            typeInURL,
+            activeTab,
+            searchParams,
+            router,
+            setIsLoading,
+            setSearchItemType,
+            setSearchItemId,
+            setAppliedFilters,
+            setFilters,
+            setSortBy,
+            resetPagination,
+            loadTours,
+            tourSearchUrlHandler
+        });
     }, [idInURL, typeInURL]);
 
     return (

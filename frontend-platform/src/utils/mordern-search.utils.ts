@@ -1,6 +1,5 @@
 import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { useToursStore } from "@/stores/useTourStore";
-import { paginationType, Park, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType, TourHandlerDeps } from "@/types/types";
+import { LoadInitialToursParams, LoadToursByParkDeps, paginationType, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -227,7 +226,7 @@ export const tourSearchUrlHandler = {
                 .slice(0, 2) as [number, number]
             : [100, 20000];
 
-        const sorting: SortToursType = (sortParam as SortToursType) || "relevance";
+        const sorting: SortToursType = (sortParam as SortToursType) || "default";
 
         // Update applied filters in store
         setAppliedFilters({
@@ -350,8 +349,6 @@ export const tourSearchUrlHandler = {
     }
 };
 
-
-
 // Get Parks by Country Name (parks-tab-content.tsx)
 export function getParksByCountry(country: string, setParks: React.Dispatch<React.SetStateAction<ParkSearchType[]>>) {
     // Retrieve data from localStorage
@@ -376,4 +373,98 @@ export function getParksByCountry(country: string, setParks: React.Dispatch<Reac
     }
 };
 
+export const loadToursForSelectedPark = async ({
+    selectedPark,
+    activeTab,
+    searchParams,
+    router,
+    setSearchItemType,
+    setSearchItemId,
+    setAppliedFilters,
+    setFilters,
+    setSortBy,
+    resetPagination,
+    loadTours,
+    setIsLoading,
+}: LoadToursByParkDeps) => {
+    if (!selectedPark) return;
 
+    setIsLoading(true);
+    try {
+        // Set selected active tab and park in URL
+        tourSearchUrlHandler.setActiveTab({
+            activeTab,
+            parkId: selectedPark.id,
+            searchParams,
+            router,
+        });
+
+        // Set search item in parent component (for filtering handlers)
+        setSearchItemType(selectedPark.type);
+        setSearchItemId(selectedPark.id);
+
+        // Fetch initial filters and sorting from URL
+        const { filtersFromURL, sortingFromURL } =
+            tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
+
+        setFilters(filtersFromURL);
+        setSortBy(sortingFromURL);
+
+        resetPagination();
+
+        // Load tours based on selected park
+        await loadTours(selectedPark.id, selectedPark.type, filtersFromURL, sortingFromURL);
+    } catch (error) {
+        console.error("Error loading tours:", error);
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+export const loadInitialTours = async ({
+    idInURL,
+    typeInURL,
+    activeTab,
+    searchParams,
+    router,
+
+    setIsLoading,
+    setSearchItemType,
+    setSearchItemId,
+    setAppliedFilters,
+    setFilters,
+    setSortBy,
+    resetPagination,
+    loadTours,
+    tourSearchUrlHandler,
+}: LoadInitialToursParams) => {
+    setIsLoading(true);
+
+    try {
+        // If ID or type is missing, this page shouldn't load tours
+        if (!idInURL || !typeInURL) return;
+
+        // Sync active tab with URL
+        tourSearchUrlHandler.setActiveTab({ activeTab, searchParams, router });
+
+        // Set search item for parent component (used by filter handlers)
+        setSearchItemType(typeInURL);
+        setSearchItemId(idInURL);
+
+        // Extract filters & sorting from URL
+        const { filtersFromURL, sortingFromURL } =
+            tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
+
+        setFilters(filtersFromURL);
+        setSortBy(sortingFromURL);
+
+        resetPagination();
+
+        // Load tours using the initial values
+        await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL);
+    } catch (error) {
+        console.error("Error loading initial tours:", error);
+    } finally {
+        setIsLoading(false);
+    }
+};

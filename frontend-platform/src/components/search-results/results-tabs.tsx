@@ -9,6 +9,7 @@ import AllTabContent from "./all-tab-content";
 import { useToursStore } from "@/stores/useTourStore";
 import { TabsListSkeleton } from "./tabs-list-skeleton";
 import SafariCardSkeleton from "./safari-card-skeleton";
+import { ActiveTabType } from "@/types/types";
 
 interface ResultsTabsProps {
     searchItemName: string;
@@ -23,7 +24,7 @@ export default function ResultsTabs({
     setSearchItemId,
     setSearchItemType,
 }: ResultsTabsProps) {
-    const [activeTab, setActiveTab] = useState<"all" | "parks" | "experiences" | null>(null);
+    const [activeTab, setActiveTab] = useState<ActiveTabType | null>(null);
     const tabFromUrl = searchParams.get("tab");
 
     // Get type and id from URL (for all results tab)

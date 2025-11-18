@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { Badge } from "@/recipes/badge/badge";
-import { ParkSearchType } from "@/types/types";
-import { tourSearchUrlHandler, getParksByCountry } from "@/utils/mordern-search.utils";
+import { ActiveTabType, ParkSearchType } from "@/types/types";
+import { tourSearchUrlHandler, getParksByCountry, loadToursForSelectedPark } from "@/utils/mordern-search.utils";
 import ModernSafariCard from "./modern-safari-card";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { Button } from "@/recipes/button/button";
@@ -18,7 +18,7 @@ interface ParksTabContentProps {
     setSearchItemId: (id: number) => void;
     tabFromUrl: string | null;
     parkIdFromURL: number;
-    activeTab: "all" | "parks" | "experiences";
+    activeTab: ActiveTabType;
 }
 
 const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemType, setSearchItemId,
@@ -73,37 +73,12 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
 
     // Load tours on mount or whenever selected park changes
     useEffect(() => {
-        const loadToursForSelectedPark = async () => {
-            setIsLoading(true);
-            if (!selectedPark) return;
-
-            try {
-
-                // Set selected active tab and park in URL
-                tourSearchUrlHandler.setActiveTab({ activeTab, parkId: selectedPark.id, searchParams, router });
-
-                // Set search item in parent component(for filtering handlers)
-                setSearchItemType(selectedPark.type);
-                setSearchItemId(selectedPark.id);
-
-                // Fetch initial filters and sorting from URL
-                const { filtersFromURL, sortingFromURL } =
-                    tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
-
-                setFilters(filtersFromURL);
-                setSortBy(sortingFromURL);
-
-                resetPagination();
-
-                // Load tours based on Selected Park
-                await loadTours(selectedPark.id, selectedPark.type, filtersFromURL, sortingFromURL)
-            } catch (error) {
-                console.error("Error loading tours:", error)
-            } finally {
-                setIsLoading(false)
-            };
-        };
-        loadToursForSelectedPark();
+        loadToursForSelectedPark({
+            selectedPark, activeTab, searchParams,
+            router, setSearchItemType, setSearchItemId,
+            setAppliedFilters, setFilters, setSortBy,
+            resetPagination, loadTours, setIsLoading
+        });
     }, [selectedPark]);
 
     return (
