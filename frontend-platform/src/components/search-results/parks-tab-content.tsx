@@ -45,31 +45,29 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
     const setSortBy = useFiltersStore((state) => state.setSortBy);
     const setAppliedFilters = useFiltersStore((state) => state.setAppliedFilters);
 
-    // Get Parks by Country Name
     useEffect(() => {
-        setIsLoading(true);
-
-        // Implement logic for when countryName is missing***
         if (!countryName) return;
-        try {
-            getParksByCountry(countryName, setParks);
-        } catch (error) {
-            console.error("Error fetching parks:", error);
-        }
+
+        const fetchParks = async () => {
+            setIsLoading(true);
+
+            try {
+                const parks = await getParksByCountry(countryName);
+                setParks(parks);
+
+                // Set selected park immediately
+                const parkFromURL = parks.find(park => park.id === parkIdFromURL);
+                setSelectedPark(parkFromURL || parks[0]);
+            } catch (error) {
+                console.error("Failed to load parks:", error);
+                // Optionally set an error state to show in the UI
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchParks();
     }, [countryName]);
-
-    // Set selected park when parks are loaded or parkIdFromURL changes
-    useEffect(() => {
-        if (!parks.length) return;
-        // Set selected park based on URL or default to first park
-        const parkFromURL = parks.find((park) => park.id === parkIdFromURL);
-        if (parkFromURL) {
-            setSelectedPark(parkFromURL);
-        } else {
-            setSelectedPark(parks[0]);
-        }
-
-    }, [parks]);
 
     // Load tours on mount or whenever selected park changes
     useEffect(() => {

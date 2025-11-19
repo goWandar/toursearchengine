@@ -1,4 +1,4 @@
-import { getParksAndCountries, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
+import { getParksAndCountries, getParksByCountryName, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
 import { LoadInitialToursParams, LoadToursByParkDeps, paginationType, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -350,12 +350,15 @@ export const tourSearchUrlHandler = {
 };
 
 // Get Parks by Country Name (parks-tab-content.tsx)
-export function getParksByCountry(country: string, setParks: React.Dispatch<React.SetStateAction<ParkSearchType[]>>) {
+export async function getParksByCountry(country: string) {
     // Retrieve data from localStorage
     const parksAndCountries = localStorage.getItem("parksAndCountries");
 
     if (!parksAndCountries) {
-        return;
+        // Load parks directly from the API if not in localStorage
+        const parks = await getParksByCountryName(country);
+
+        return parks;
     }
 
     try {
@@ -367,12 +370,14 @@ export function getParksByCountry(country: string, setParks: React.Dispatch<Reac
             (park) => park.country.trim().toLowerCase() === country.trim().toLowerCase()
         );
 
-        setParks(matchingParks);
+        return matchingParks;
+
     } catch (error) {
-        throw new Error(`Failed to parse parks from localStorage: ${error}`);
+        throw new Error(`Error Loading Parks`);
     }
 };
 
+// Load Tours for Selected Park (parks-tab-content.tsx)
 export const loadToursForSelectedPark = async ({
     selectedPark,
     activeTab,
@@ -387,6 +392,7 @@ export const loadToursForSelectedPark = async ({
     loadTours,
     setIsLoading,
 }: LoadToursByParkDeps) => {
+
     if (!selectedPark) return;
 
     setIsLoading(true);
@@ -421,6 +427,7 @@ export const loadToursForSelectedPark = async ({
     }
 };
 
+// Load Initial Tours with URL Filters (all-tab-content.tsx)
 export const loadInitialTours = async ({
     idInURL,
     typeInURL,

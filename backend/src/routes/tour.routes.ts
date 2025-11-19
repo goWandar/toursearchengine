@@ -17,4 +17,9 @@ router.get('/tours/country-park/suggestions', async (req: Request, res: Response
   await TourService.getAllParksAndCountries(req, res);
 });
 
+router.get('/parks/:countryName', async (req: Request, res: Response) => {
+  await TourService.getParksByCountryName(req, res);
+});
+
+
 export default router;

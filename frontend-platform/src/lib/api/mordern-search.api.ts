@@ -1,5 +1,5 @@
 import { useToursStore } from '@/stores/useTourStore';
-import { paginationType, ParksCountriesType, SortToursType, TourFiltersType, TourSearchResponse } from '@/types/types';
+import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse } from '@/types/types';
 import axiosClient from '@/utils/axios-retry-client';
 
 // Get All Parks and Countries Suggestions
@@ -64,6 +64,21 @@ export const getToursByParkId = async (
         );
 
         return response.data.data;
+    } catch (error) {
+        throw new Error('Failed to fetch tours');
+    }
+}
+
+// Get Parks By CountryName
+export const getParksByCountryName = async (
+    countryName: string
+): Promise<ParkSearchType[]> => {
+    try {
+        const response = await axiosClient.get<{ data: { parks: ParkSearchType[] } }>(
+            `/api/parks/${countryName}`
+        );
+
+        return response.data.data.parks;
     } catch (error) {
         throw new Error('Failed to fetch tours');
     }

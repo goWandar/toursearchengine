@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { serverError, success } from '../utils/genericResponseHandler.js';
+import { badRequest, serverError, success } from '../utils/genericResponseHandler.js';
 
 import { prisma } from '../db/prisma.js';
 import { buildWhereClause, fetchTours, parseTourQueryParams } from '../utils/tourServices.utils.js';
@@ -183,6 +183,54 @@ export const TourService = {
         res,
         'Failed to fetch parks and countries',
         error instanceof Error ? error : new Error(String(error)),
+      );
+    }
+  },
+
+  // Get parks by country name
+  async getParksByCountryName(req: Request, res: Response): Promise<Response> {
+    try {
+      const { countryName } = req.params;
+
+      if (!countryName) {
+        return badRequest(res, "Country name is required");
+      }
+
+      const parks = await prisma.park.findMany({
+        where: {
+          country: {
+            equals: countryName,
+            mode: 'insensitive',
+          },
+          tourParks: {
+            some: {},
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          country: true,
+          keyword: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      const parksWithType = parks.map(p => ({
+        ...p,
+        type: "park",
+      }));
+
+      return success(res, `Parks in ${countryName} fetched successfully`, {
+        parks: parksWithType,
+      });
+    } catch (error) {
+      return serverError(
+        res,
+        "Failed to fetch parks by country name",
+        error instanceof Error ? error : new Error(String(error))
       );
     }
   }

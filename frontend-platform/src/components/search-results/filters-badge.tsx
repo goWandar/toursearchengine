@@ -15,8 +15,6 @@ const FiltersBadge = ({
     DEFAULT_FILTERS
 }: FiltersBadgeProps) => {
 
-    console.log("SortBy in FiltersBadge:", sortBy);
-
     // Checks
     const hasBudget =
         appliedFilters.budget[0] !== DEFAULT_FILTERS.budget[0] ||
