@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
-import { serverError, success } from '../utils/genericResponseHandler.js';
-
+import { setResponse } from '../utils/genericResponseHandler.js';
 import { prisma } from '../db/prisma.js';
 
 export const CountryService = {
-  async getAllCountries(req: Request, res: Response): Promise<Response> {
+  async getAllCountries(req: Request, res: Response) {
     try {
       const countries = await prisma.country.findMany({
         select: {
@@ -21,13 +20,17 @@ export const CountryService = {
         type: 'country',
       }));
 
-      return success(res, 'Countries fetched successfully', countriesWithType);
-    } catch (error) {
-      return serverError(
+      return setResponse.success({
         res,
-        'Failed to fetch countries',
-        error instanceof Error ? error : new Error(String(error)),
-      );
+        message: 'Countries fetched successfully',
+        data: countriesWithType,
+      });
+    } catch (error) {
+      return setResponse.serverError({
+        res,
+        message: 'Failed to fetch countries',
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
     }
   },
 };

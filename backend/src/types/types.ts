@@ -1,3 +1,5 @@
+import type { Response } from 'express';
+
 export interface User {
   id: string;
   name: string;
@@ -32,7 +34,7 @@ export interface Tour {
   archived: boolean;
   images: Image[];
   prices: Price[];
-  parksId:  Park['id'][];
+  parksId: Park['id'][];
 }
 
 export interface Image {
@@ -93,3 +95,12 @@ export type TourFiltersType = {
   accommodation?: string[];
   duration?: [number, number];
 };
+
+// Request Return Type Interface
+export interface RequestResponseType<T = any> {
+  res: Response;
+  message?: string;
+  data?: T | null;
+  code?: string;
+  error?: Error | string;
+}

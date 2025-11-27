@@ -1,5 +1,4 @@
 import { TourRaw, TourReturnType } from "../types/free-search.types.js";
-import { Image, Price, Tour } from "../types/types.js";
 
 // Fetch Tours Params Interface
 interface FetchToursParams {
@@ -25,17 +24,28 @@ export function parseTourQueryParams(query: any) {
             ? [String(accommodationParam)]
             : [];
 
-    // Duration range
-    const durationRaw = query.duration as string[];
-    const duration: [number, number] = durationRaw
-        ? durationRaw.map(Number) as [number, number]
-        : [0, Number.MAX_SAFE_INTEGER];
+    // Helper to parse ranges
+    const parseRange = (raw: any, defaultMin: number, defaultMax: number): [number, number] => {
+        if (!raw) return [defaultMin, defaultMax];
 
-    // Budget range
-    const budgetRaw = query.budget as string[];
-    const budget: [number, number] = budgetRaw
-        ? budgetRaw.map(Number) as [number, number]
-        : [0, Number.MAX_SAFE_INTEGER];
+        const arr = Array.isArray(raw) ? raw : [raw];
+        const nums = arr.map(Number).filter(n => !isNaN(n));
+
+        if (nums.length === 2) return [nums[0], nums[1]];
+        if (nums.length === 1) return [nums[0], defaultMax];
+        return [defaultMin, defaultMax];
+    };
+
+    // Duration range with sensible default
+    const duration = parseRange(query.duration, 1, 14);
+
+    // Budget range with sensible default
+    const budget = parseRange(query.budget, 1, 20000);
+
+    // Persons (default 2)
+    const personsRaw = query.persons;
+    const persons = personsRaw ? Number(personsRaw) : 2;
+    const validatedPersons = !isNaN(persons) && persons > 0 ? persons : 2;
 
     // Sorting
     const allowedSorts = [
@@ -45,10 +55,8 @@ export function parseTourQueryParams(query: any) {
         "budget_low_high",
         "budget_high_low",
     ];
-    const sortBy =
-        allowedSorts.includes(query.sortBy as string) ?
-            (query.sortBy as string) :
-            "default";
+
+    const sortBy = allowedSorts.includes(query.sortBy) ? query.sortBy : "default";
 
     return {
         page,
@@ -57,6 +65,7 @@ export function parseTourQueryParams(query: any) {
         accommodation,
         duration,
         budget,
+        persons: validatedPersons,
         sortBy,
     };
 }
@@ -68,10 +77,12 @@ export const buildWhereClause = {
         accommodation,
         duration,
         budget,
+        persons,
     }: {
         accommodation: string[];
         duration: [number, number];
         budget?: [number, number];
+        persons: number
     }) {
         return {
             archived: false,
@@ -85,18 +96,20 @@ export const buildWhereClause = {
                 lte: duration[1],
             },
 
-            ...(budget
-                ? {
-                    prices: {
-                        some: {
+            // Match prices for the selected number of people
+            prices: {
+                some: {
+                    numOfPeople: persons,
+                    ...(budget
+                        ? {
                             pricePerPerson: {
                                 gte: budget[0],
                                 lte: budget[1],
                             },
-                        },
-                    },
-                }
-                : {}),
+                        }
+                        : {}),
+                },
+            },
         };
     },
 
@@ -106,15 +119,17 @@ export const buildWhereClause = {
         accommodation,
         duration,
         budget,
+        persons,
     }: {
         countryId: number;
         accommodation: string[];
         duration: [number, number];
         budget?: [number, number];
+        persons: number
     }) {
         return {
             countryId,
-            ...this.baseFilters({ accommodation, duration, budget }),
+            ...this.baseFilters({ accommodation, duration, budget, persons }),
         };
     },
 
@@ -124,15 +139,17 @@ export const buildWhereClause = {
         accommodation,
         duration,
         budget,
+        persons,
     }: {
         parkId: number;
         accommodation: string[];
         duration: [number, number];
         budget?: [number, number];
+        persons: number
     }) {
         return {
             tourParks: { some: { parkId } },
-            ...this.baseFilters({ accommodation, duration, budget }),
+            ...this.baseFilters({ accommodation, duration, budget, persons }),
         };
     },
 };
@@ -209,7 +226,17 @@ export async function fetchTours({
         );
     }
 
-    // STEP 4: Apply pagination AFTER sorting (if fetched all)
+    // Step 4: Filter prices by numOfPeople if specified in where clause
+    if (where.prices?.some?.numOfPeople) {
+        const targetPersons = where.prices.some.numOfPeople;
+
+        formattedTours = formattedTours.map(tour => ({
+            ...tour,
+            prices: tour.prices.filter(p => p.numOfPeople === targetPersons),
+        }));
+    }
+
+    // STEP 5: Apply pagination AFTER sorting (if fetched all)
     if (fetchAll) {
         formattedTours = formattedTours.slice(skip, skip + limit);
     }

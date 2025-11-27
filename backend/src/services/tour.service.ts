@@ -1,33 +1,28 @@
 import { Request, Response } from 'express';
-import { badRequest, serverError, success } from '../utils/genericResponseHandler.js';
 
 import { prisma } from '../db/prisma.js';
 import { buildWhereClause, fetchTours, parseTourQueryParams } from '../utils/tourServices.utils.js';
+import { setResponse } from '../utils/genericResponseHandler.js';
 
 export const TourService = {
 
-  // Get tours by country ID
+  // Get tours by country ID (Search Results)
   async getToursByCountryId(req: Request, res: Response): Promise<Response> {
     try {
       const countryId = parseInt(req.params.countryId);
 
-      // Get Filters & Pagination params
-      const {
-        page,
-        limit,
-        skip,
-        accommodation,
-        duration,
-        budget,
-        sortBy,
-      } = parseTourQueryParams(req.query);
+      // Parse tour query params
+      const { page, limit, skip,
+        accommodation, duration,
+        budget, sortBy, persons } = parseTourQueryParams(req.query);
 
       // Build where clause
       const where = buildWhereClause.byCountryId({
         countryId,
         accommodation,
         duration,
-        budget
+        budget,
+        persons
       });
 
       // Fetch tours and total count
@@ -37,29 +32,32 @@ export const TourService = {
         sortBy,
         skip,
         limit,
-      })
-
-      return success(res, "Tours fetched successfully", {
-        tours,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-          hasMore: page * limit < total,
-        },
       });
 
-    } catch (error) {
-      return serverError(
+      return setResponse.success({
         res,
-        "Failed to fetch tours by country ID",
-        error instanceof Error ? error : new Error(String(error))
-      );
+        message: "Tours fetched successfully",
+        data: {
+          tours,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            hasMore: page * limit < total,
+          },
+        },
+      });
+    } catch (error) {
+      return setResponse.serverError({
+        res,
+        message: "Failed to fetch tours by country ID",
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
     }
   },
 
-  // Get tours by park ID
+  // Get tours by park ID (Search Results)
   async getToursByParkId(req: Request, res: Response): Promise<Response> {
     try {
       const parkId = parseInt(req.params.parkId);
@@ -73,6 +71,7 @@ export const TourService = {
         duration,
         budget,
         sortBy,
+        persons
       } = parseTourQueryParams(req.query);
 
       // Build where clause
@@ -81,6 +80,7 @@ export const TourService = {
         accommodation,
         duration,
         budget,
+        persons
       });
 
       // Fetch tours and total count
@@ -93,27 +93,31 @@ export const TourService = {
       })
 
 
-      return success(res, "Tours fetched successfully", {
-        tours,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-          hasMore: page * limit < total,
-        },
+      return setResponse.success({
+        res,
+        message: "Tours fetched successfully",
+        data: {
+          tours,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            hasMore: page * limit < total,
+          },
+        }
       });
 
     } catch (error) {
-      return serverError(
+      return setResponse.serverError({
         res,
-        "Failed to fetch tours by park ID",
-        error instanceof Error ? error : new Error(String(error))
-      );
+        message: "Failed to fetch tours by park ID",
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
     }
   },
 
-  // Get parks and tours suggestions
+  // Get parks and tours suggestions (Input Suggestions)
   async getAllParksAndCountries(req: Request, res: Response): Promise<Response> {
     try {
       // Fetch parks
@@ -172,29 +176,29 @@ export const TourService = {
       ];
 
       // Return all in one response
-      return success(res, 'Parks and countries fetched successfully', {
-        parks: parksWithType,
-        countries: countriesWithType,
-        popularParks,
-        trendingSearches,
+      return setResponse.success({
+        res,
+        message: 'Parks and countries fetched successfully',
+        data: {
+          parks: parksWithType,
+          countries: countriesWithType,
+          popularParks,
+          trendingSearches,
+        }
       });
     } catch (error) {
-      return serverError(
+      return setResponse.serverError({
         res,
-        'Failed to fetch parks and countries',
-        error instanceof Error ? error : new Error(String(error)),
-      );
+        message: 'Failed to fetch parks and countries',
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
     }
   },
 
-  // Get parks by country name
+  // Get parks by country name (Search Results)
   async getParksByCountryName(req: Request, res: Response): Promise<Response> {
     try {
       const { countryName } = req.params;
-
-      if (!countryName) {
-        return badRequest(res, "Country name is required");
-      }
 
       const parks = await prisma.park.findMany({
         where: {
@@ -223,15 +227,20 @@ export const TourService = {
         type: "park",
       }));
 
-      return success(res, `Parks in ${countryName} fetched successfully`, {
-        parks: parksWithType,
-      });
-    } catch (error) {
-      return serverError(
+      return setResponse.success({
         res,
-        "Failed to fetch parks by country name",
-        error instanceof Error ? error : new Error(String(error))
-      );
+        message: `Parks in ${countryName} fetched successfully`,
+        data: {
+          parks: parksWithType,
+        }
+      });
+
+    } catch (error) {
+      return setResponse.serverError({
+        res,
+        message: "Failed to fetch parks by country name",
+        error: error instanceof Error ? error : new Error(String(error))
+      });
     }
   }
 };
