@@ -8,8 +8,9 @@ import { useToursStore } from "@/stores/useTourStore";
 import FiltersPopover from "./filters-popover";
 import { useRouter } from "next/navigation";
 import SortSelect from "./sort-select";
-import { DEFAULT_FILTERS } from "@/utils/mordern-search.utils";
 import FiltersBadge from "./filters-badge";
+import { DEFAULT_FILTERS } from "@/utils/constants.utils";
+import DynamicPricing from "./dynamic-pricing";
 
 interface ResultsHeaderProps {
     searchParams: URLSearchParams;
@@ -31,9 +32,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
     const appliedFilters = useFiltersStore((state) => state.appliedFilters);
 
     // Tours Store state
-    const isLoading = useToursStore((state) => state.isLoading);
-    const loadTours = useToursStore((state) => state.loadTours);
-    const resetPagination = useToursStore((state) => state.resetPagination);
+    const resultsState = useToursStore((state) => state.resultsState);
     const pagination = useToursStore((state) => state.pagination);
 
     const handleApplyFilters = () => applyFilters({
@@ -41,8 +40,6 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
         typeParam: searchItemType,
         searchParams,
         router,
-        resetPagination,
-        loadTours,
     });
 
     const handleResetFilters = () => resetFilters({
@@ -50,8 +47,6 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
         typeParam: searchItemType,
         searchParams,
         router,
-        resetPagination,
-        loadTours,
     });
 
     const handleSortTours = (sort: SortToursType) => sortTours({
@@ -60,8 +55,6 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
         sortBy: sort,
         searchParams,
         router,
-        resetPagination,
-        loadTours,
     });
 
 
@@ -83,7 +76,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
                     />
                 </div>
                 {/* Results Count */}
-                {(!isLoading && pagination.total > 0)
+                {(resultsState === "returned" && pagination.total > 0)
                     && (
                         <p className="text-lg text-gray-600">{pagination.total} results found</p>
                     )}
@@ -96,18 +89,17 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
                     setFilters={setFilters}
                     handleApplyFilters={handleApplyFilters}
                     handleResetFilters={handleResetFilters}
-                    isLoading={isLoading}
+                    resultsState={resultsState}
                 />
 
                 {/* Sort Tours Selector */}
                 <SortSelect
                     handleSortTours={handleSortTours}
                     sortBy={sortBy}
-                    isLoading={isLoading}
+                    resultsState={resultsState}
                 />
 
             </div>
-
         </div>
     );
 };

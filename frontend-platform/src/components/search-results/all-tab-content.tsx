@@ -9,6 +9,7 @@ import { ChevronDown } from "lucide-react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
+import DynamicPricing from "./dynamic-pricing";
 
 interface AllTabContentProps {
     searchParams: URLSearchParams;
@@ -32,19 +33,14 @@ const AllTabContent = ({
     // Tours Store state and actions
     const tours = useToursStore((state) => state.tours);
     const pagination = useToursStore((state) => state.pagination);
-    const isLoading = useToursStore((state) => state.isLoading);
     const isLoadingMore = useToursStore((state) => state.isLoadingMore);
-    const loadTours = useToursStore((state) => state.loadTours);
     const loadMoreTours = useToursStore((state) => state.loadMoreTours);
-    const resetPagination = useToursStore((state) => state.resetPagination);
-    const setIsLoading = useToursStore((state) => state.setIsLoading);
+    const resultsState = useToursStore((state) => state.resultsState);
 
     // Filters Store state and actions
     const filters = useFiltersStore((state) => state.filters);
     const sortBy = useFiltersStore((state) => state.sortBy);
-    const setFilters = useFiltersStore((state) => state.setFilters);
-    const setSortBy = useFiltersStore((state) => state.setSortBy);
-    const setAppliedFilters = useFiltersStore((state) => state.setAppliedFilters);
+    const pricedBy = useFiltersStore((state) => state.pricedBy);
 
     // Load tours with initial filters from URL on mount
     useEffect(() => {
@@ -54,28 +50,24 @@ const AllTabContent = ({
             activeTab,
             searchParams,
             router,
-            setIsLoading,
             setSearchItemType,
             setSearchItemId,
-            setAppliedFilters,
-            setFilters,
-            setSortBy,
-            resetPagination,
-            loadTours,
             tourSearchUrlHandler
         });
     }, [idInURL, typeInURL]);
 
     return (
         <>
+            <DynamicPricing typeParam={typeInURL} idParam={idInURL} searchParams={searchParams} />
+            {/* Tour Results */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {isLoading
-                    ? Array.from({ length: 12 }).map((_, i) => (
-                        <SafariCardSkeleton key={i} />
-                    ))
-                    : tours.map((tour, idx) => (
-                        <ModernSafariCard key={idx} data={tour} showCarousel={true} />
-                    ))}
+                {resultsState === "loading" && Array.from({ length: 12 }).map((_, i) => <SafariCardSkeleton key={i} />)}
+
+                {resultsState === "returned" && tours.map((tour, idx) => <ModernSafariCard key={idx} data={tour} showCarousel />)}
+            </div>
+            <div>
+                {resultsState === "void" && <p>Uh oh, No Tours found</p>}
+                {resultsState === "error" && <p>Oopsy, An unexpected error occured. Please try again</p>}
             </div>
 
             {/* Insights Section (placeholder) */}
@@ -85,7 +77,7 @@ const AllTabContent = ({
             <div className="flex justify-center">
                 {pagination.hasMore && (
                     <Button
-                        onClick={() => loadMoreTours(idInURL, typeInURL, filters, sortBy)}
+                        onClick={() => loadMoreTours(idInURL, typeInURL, filters, sortBy, pricedBy)}
                         className="flex items-center"
                         loading={isLoadingMore}
                         disabled={isLoadingMore}

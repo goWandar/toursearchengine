@@ -1,11 +1,9 @@
 import { getParksAndCountries, getParksByCountryName, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
-import { LoadInitialToursParams, LoadToursByParkDeps, paginationType, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType } from "@/types/types";
+import { useFiltersStore } from "@/stores/useFiltersStore";
+import { useToursStore } from "@/stores/useTourStore";
+import { FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByParkParams, paginationType, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType, ToursPricedByType } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-// Default filter and pagination values
-export const DEFAULT_FILTERS: TourFiltersType = { accommodation: [], budget: [100, 20000], duration: [1, 14] }
-export const DEFAULT_PAGINATION: paginationType = { page: 1, limit: 12, total: 0, totalPages: 0, hasMore: false }
 
 // GET Parks and Countries Search Suggestions from DB
 const fetchParksCountries = async (
@@ -31,7 +29,7 @@ const fetchParksCountries = async (
         return parksCountries;
 
     } catch (error) {
-        console.error("Failed to fetch parks or countries", error);
+        throw new Error("Failed to fetch parks and countries");
     }
 };
 
@@ -75,6 +73,7 @@ export const getSearchSuggestions = async (
             localStorage.setItem("parksAndCountries", JSON.stringify(parksCountries));
         }
     } catch (error) {
+        // Handle UI when error occurs ❗
         console.error("Failed to get search suggestions", error);
         setSuggestionsList([]);
     } finally {
@@ -118,6 +117,7 @@ export const fetchTours = async (
     isLoadMore: boolean = false,
     filters: TourFiltersType,
     sortBy: SortToursType,
+    pricedBy: ToursPricedByType,
 ) => {
     try {
 
@@ -128,9 +128,9 @@ export const fetchTours = async (
         let fetchedTours: { tours: Tour[]; pagination: paginationType };
 
         if (type === 'park') {
-            fetchedTours = await getToursByParkId(id, updatedPaginationMeta, filters, sortBy);
+            fetchedTours = await getToursByParkId(id, updatedPaginationMeta, filters, sortBy, pricedBy);
         } else if (type === 'country') {
-            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta, filters, sortBy);
+            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta, filters, sortBy, pricedBy);
         } else {
             throw new Error(`Unknown type: ${type}`);
         }
@@ -147,7 +147,7 @@ export const fetchTours = async (
 
         return fetchedTours;
     } catch (error) {
-        console.error("Failed to fetch tours", error);
+        throw error;
     }
 };
 
@@ -202,31 +202,29 @@ export const tourSearchUrlHandler = {
     getFiltersFromUrl(
         searchParams: URLSearchParams,
         setAppliedFilters: (filters: TourFiltersType) => void
-    ) {
+    ): FiltersFromUrlReturnType {
         const accommodationParam = searchParams.get("acc");
         const durationParam = searchParams.get("dur");
         const budgetParam = searchParams.get("bud");
         const sortParam = searchParams.get("sort");
+        const personsParam = searchParams.get("per");
 
         const accommodation = accommodationParam
             ? accommodationParam.split("|")
             : [];
 
         const duration: [number, number] = durationParam
-            ? durationParam
-                .split("-")
-                .map(Number)
-                .slice(0, 2) as [number, number]
+            ? durationParam.split("-").map(Number).slice(0, 2) as [number, number]
             : [1, 14];
 
         const budget: [number, number] = budgetParam
-            ? budgetParam
-                .split("-")
-                .map(Number)
-                .slice(0, 2) as [number, number]
+            ? budgetParam.split("-").map(Number).slice(0, 2) as [number, number]
             : [100, 20000];
 
         const sorting: SortToursType = (sortParam as SortToursType) || "default";
+
+        // Persons: get from URL, convert to number, default to 2
+        const persons = personsParam ? Number(personsParam) : 2;
 
         // Update applied filters in store
         setAppliedFilters({
@@ -235,7 +233,6 @@ export const tourSearchUrlHandler = {
             budget,
         });
 
-
         return {
             filtersFromURL: {
                 accommodation,
@@ -243,6 +240,9 @@ export const tourSearchUrlHandler = {
                 budget,
             },
             sortingFromURL: sorting,
+            pricedByFromURL: {
+                persons,
+            },
         };
     },
 
@@ -346,7 +346,32 @@ export const tourSearchUrlHandler = {
         }
 
         router.replace(`?${params.toString()}`);
-    }
+    },
+
+    // Apply Tours Priced By to URL
+    setPricedBy({
+        pricedBy,
+        searchParams,
+        router,
+    }: {
+        pricedBy: ToursPricedByType;
+        searchParams: URLSearchParams;
+        router: AppRouterInstance;
+    }) {
+        const params = new URLSearchParams(searchParams.toString());
+
+        // Accommodation
+        if (pricedBy.persons !== 2) {
+            params.set("per", String(pricedBy.persons));
+        } else {
+            params.delete("per");
+        }
+
+        // Implement seasons soon...
+
+        router.replace(`?${params.toString()}`);
+    },
+
 };
 
 // Get Parks by Country Name (parks-tab-content.tsx)
@@ -373,6 +398,7 @@ export async function getParksByCountry(country: string) {
         return matchingParks;
 
     } catch (error) {
+        // Handle UI when error occurs ❗
         throw new Error(`Error Loading Parks`);
     }
 };
@@ -384,19 +410,19 @@ export const loadToursForSelectedPark = async ({
     searchParams,
     router,
     setSearchItemType,
-    setSearchItemId,
-    setAppliedFilters,
-    setFilters,
-    setSortBy,
-    resetPagination,
-    loadTours,
-    setIsLoading,
-}: LoadToursByParkDeps) => {
-
-    if (!selectedPark) return;
-
-    setIsLoading(true);
+    setSearchItemId
+}: LoadToursByParkParams) => {
     try {
+
+        // Get States and Actions from Tours Store
+        const { setResultsState, loadTours, resetPagination } = useToursStore.getState();
+
+        // Get States and Actions from Filters Store
+        const { setAppliedFilters, setFilters, setSortBy, setPricedBy } = useFiltersStore.getState();
+
+        setResultsState("loading");
+        if (!selectedPark) return;
+
         // Set selected active tab and park in URL
         tourSearchUrlHandler.setActiveTab({
             activeTab,
@@ -410,20 +436,30 @@ export const loadToursForSelectedPark = async ({
         setSearchItemId(selectedPark.id);
 
         // Fetch initial filters and sorting from URL
-        const { filtersFromURL, sortingFromURL } =
+        const { filtersFromURL, sortingFromURL, pricedByFromURL } =
             tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
 
         setFilters(filtersFromURL);
         setSortBy(sortingFromURL);
+        setPricedBy(pricedByFromURL);
 
         resetPagination();
 
         // Load tours based on selected park
-        await loadTours(selectedPark.id, selectedPark.type, filtersFromURL, sortingFromURL);
+        const tourResults = await loadTours(selectedPark.id, selectedPark.type, filtersFromURL, sortingFromURL, pricedByFromURL);
+
+        if (tourResults) {
+            if (tourResults.tours.length < 1) {
+                setResultsState("void");
+            } else {
+                setResultsState("returned");
+            }
+        }
+
     } catch (error) {
-        console.error("Error loading tours:", error);
-    } finally {
-        setIsLoading(false);
+        const { setResultsState } = useToursStore.getState();
+        setResultsState("error");
+        console.error("Error loading tours");
     }
 };
 
@@ -434,20 +470,20 @@ export const loadInitialTours = async ({
     activeTab,
     searchParams,
     router,
-
-    setIsLoading,
     setSearchItemType,
     setSearchItemId,
-    setAppliedFilters,
-    setFilters,
-    setSortBy,
-    resetPagination,
-    loadTours,
     tourSearchUrlHandler,
 }: LoadInitialToursParams) => {
-    setIsLoading(true);
-
     try {
+
+        // Get States and Actions from Tours Store
+        const { setResultsState, loadTours, resetPagination } = useToursStore.getState();
+
+        // Get States and Actions from Filters Store
+        const { setAppliedFilters, setFilters, setSortBy, setPricedBy } = useFiltersStore.getState();
+
+        setResultsState("loading");
+
         // If ID or type is missing, this page shouldn't load tours
         if (!idInURL || !typeInURL) return;
 
@@ -459,19 +495,29 @@ export const loadInitialTours = async ({
         setSearchItemId(idInURL);
 
         // Extract filters & sorting from URL
-        const { filtersFromURL, sortingFromURL } =
+        const { filtersFromURL, sortingFromURL, pricedByFromURL } =
             tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
 
         setFilters(filtersFromURL);
         setSortBy(sortingFromURL);
+        setPricedBy(pricedByFromURL);
 
         resetPagination();
 
         // Load tours using the initial values
-        await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL);
+        const tourResults = await loadTours(idInURL, typeInURL, filtersFromURL, sortingFromURL, pricedByFromURL);
+
+        if (tourResults) {
+            if (tourResults.tours.length < 1) {
+                setResultsState("void");
+            } else {
+                setResultsState("returned");
+            }
+        }
+
     } catch (error) {
-        console.error("Error loading initial tours:", error);
-    } finally {
-        setIsLoading(false);
+        const { setResultsState } = useToursStore.getState();
+        setResultsState("error");
+        console.error("Error loading initial tours");
     }
 };

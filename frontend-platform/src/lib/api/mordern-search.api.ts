@@ -1,5 +1,5 @@
 import { useToursStore } from '@/stores/useTourStore';
-import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse } from '@/types/types';
+import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse, ToursPricedByType } from '@/types/types';
 import axiosClient from '@/utils/axios-retry-client';
 
 // Get All Parks and Countries Suggestions
@@ -18,7 +18,8 @@ export const getToursByCountryId = async (
     countryId: number,
     paginationMeta: paginationType,
     filters: TourFiltersType,
-    sortBy: SortToursType
+    sortBy: SortToursType,
+    pricedBy: ToursPricedByType
 ): Promise<TourSearchResponse> => {
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
@@ -30,13 +31,14 @@ export const getToursByCountryId = async (
                     duration: filters.duration,
                     accommodation: filters.accommodation,
                     budget: filters.budget,
-                    sortBy: sortBy
+                    sortBy: sortBy,
+                    persons: pricedBy.persons
                 }
             }
         );
 
         return response.data.data;
-    } catch (error) {
+    } catch (error: any) {
         throw new Error('Failed to fetch tours');
     }
 };
@@ -46,7 +48,8 @@ export const getToursByParkId = async (
     parkId: number,
     paginationMeta: paginationType,
     filters: TourFiltersType,
-    sortBy: SortToursType
+    sortBy: SortToursType,
+    pricedBy: ToursPricedByType
 ): Promise<TourSearchResponse> => {
     try {
         const response = await axiosClient.get<{ data: TourSearchResponse }>(
@@ -58,7 +61,8 @@ export const getToursByParkId = async (
                     duration: filters.duration,
                     accommodation: filters.accommodation,
                     budget: filters.budget,
-                    sortBy: sortBy
+                    sortBy: sortBy,
+                    persons: pricedBy.persons
                 }
             }
         );
@@ -80,6 +84,6 @@ export const getParksByCountryName = async (
 
         return response.data.data.parks;
     } catch (error) {
-        throw new Error('Failed to fetch tours');
+        throw new Error('Failed to fetch parks by country name');
     }
 }

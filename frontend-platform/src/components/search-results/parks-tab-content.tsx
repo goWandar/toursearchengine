@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { Badge } from "@/recipes/badge/badge";
 import { ActiveTabType, ParkSearchType } from "@/types/types";
-import { tourSearchUrlHandler, getParksByCountry, loadToursForSelectedPark } from "@/utils/mordern-search.utils";
+import { getParksByCountry, loadToursForSelectedPark } from "@/utils/mordern-search.utils";
 import ModernSafariCard from "./modern-safari-card";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
+import DynamicPricing from "./dynamic-pricing";
 
 
 interface ParksTabContentProps {
@@ -31,25 +32,21 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
     // Tours Store state and actions
     const tours = useToursStore((state) => state.tours);
     const pagination = useToursStore((state) => state.pagination);
-    const isLoading = useToursStore((state) => state.isLoading);
     const isLoadingMore = useToursStore((state) => state.isLoadingMore);
-    const loadTours = useToursStore((state) => state.loadTours);
     const loadMoreTours = useToursStore((state) => state.loadMoreTours);
-    const resetPagination = useToursStore((state) => state.resetPagination);
-    const setIsLoading = useToursStore((state) => state.setIsLoading);
+    const resultsState = useToursStore((state) => state.resultsState);
+    const setResultsState = useToursStore((state) => state.setResultsState);
 
     // Filters Store state and actions
     const filters = useFiltersStore((state) => state.filters);
     const sortBy = useFiltersStore((state) => state.sortBy);
-    const setFilters = useFiltersStore((state) => state.setFilters);
-    const setSortBy = useFiltersStore((state) => state.setSortBy);
-    const setAppliedFilters = useFiltersStore((state) => state.setAppliedFilters);
+    const pricedBy = useFiltersStore((state) => state.pricedBy);
 
     useEffect(() => {
         if (!countryName) return;
 
         const fetchParks = async () => {
-            setIsLoading(true);
+            setResultsState("loading");
 
             try {
                 const parks = await getParksByCountry(countryName);
@@ -58,11 +55,10 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                 // Set selected park immediately
                 const parkFromURL = parks.find(park => park.id === parkIdFromURL);
                 setSelectedPark(parkFromURL || parks[0]);
+
             } catch (error) {
-                console.error("Failed to load parks:", error);
-                // Optionally set an error state to show in the UI
-            } finally {
-                setIsLoading(false);
+                setResultsState("error")
+                console.error("Error loading parks:", error);
             }
         };
 
@@ -74,13 +70,15 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
         loadToursForSelectedPark({
             selectedPark, activeTab, searchParams,
             router, setSearchItemType, setSearchItemId,
-            setAppliedFilters, setFilters, setSortBy,
-            resetPagination, loadTours, setIsLoading
         });
     }, [selectedPark]);
 
     return (
         <>
+            {
+                selectedPark &&
+                <DynamicPricing typeParam={selectedPark?.type} idParam={selectedPark?.id} searchParams={searchParams} />
+            }
             <div className="bg-white rounded-2xl p-6 shadow-sm border">
                 <div className="flex flex-wrap gap-3">
                     {parks.map((park, idx) => {
@@ -108,9 +106,13 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
 
             {/* Tour Results */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {isLoading
-                    ? Array.from({ length: 12 }).map((_, i) => <SafariCardSkeleton key={i} />)
-                    : tours.map((tour, idx) => <ModernSafariCard key={idx} data={tour} showCarousel />)}
+                {resultsState === "loading" && Array.from({ length: 12 }).map((_, i) => <SafariCardSkeleton key={i} />)}
+
+                {resultsState === "returned" && tours.map((tour, idx) => <ModernSafariCard key={idx} data={tour} showCarousel />)}
+            </div>
+            <div>
+                {resultsState === "void" && <p>Uh oh, No Tours found</p>}
+                {resultsState === "error" && <p>Oopsy, An unexpected error occured. Please try again</p>}
             </div>
 
             {/* Load More Button */}
@@ -118,7 +120,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                 {pagination.hasMore && (
                     <Button
                         onClick={() =>
-                            loadMoreTours(selectedPark?.id ?? 0, selectedPark?.type ?? "", filters, sortBy)
+                            loadMoreTours(selectedPark?.id ?? 0, selectedPark?.type ?? "", filters, sortBy, pricedBy)
                         }
                         className="flex items-center"
                         loading={isLoadingMore}

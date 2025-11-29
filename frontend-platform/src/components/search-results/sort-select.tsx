@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/recipes/select/select'
+import { ResultsStateType } from '@/types/free-search.types';
 import { SortToursType } from '@/types/types';
 import { SortDescIcon } from 'lucide-react'
 import React from 'react'
@@ -6,18 +7,18 @@ import React from 'react'
 interface SortSelectProps {
     handleSortTours?: (value: SortToursType) => void;
     sortBy: SortToursType;
-    isLoading: boolean;
+    resultsState: ResultsStateType
 }
 
 const SortSelect = ({
     handleSortTours,
     sortBy,
-    isLoading
+    resultsState
 }: SortSelectProps
 ) => {
     return (
         <div className='max-w-[180px]'>
-            <Select disabled={isLoading} value={sortBy} onValueChange={(value: SortToursType) => handleSortTours && handleSortTours(value)}>
+            <Select disabled={resultsState === "loading"} value={sortBy} onValueChange={(value: SortToursType) => handleSortTours && handleSortTours(value)}>
                 <SelectTrigger className="flex items-center space-x-2 bg-white shadow-sm border-gray-200 hover:bg-gray-50 rounded-full px-6">
                     <SortDescIcon className="h-4 w-4" /> Sort By
                 </SelectTrigger>

@@ -18,12 +18,12 @@ export const GroupSizeSelector = ({
 }: GroupSizeSelectorProps) => {
 
     return (
-        <div className="mb-6 space-y-3">
-            <CardDescription>Select the number of travelers for your safari</CardDescription>
+        <div className="mb-6 space-y-3 max-w-88">
+            {/* <CardDescription>Select the number of travelers for your safari</CardDescription> */}
 
             <div className="space-y-2">
-                <Label htmlFor="group-slider" className="flex items-center justify-between">
-                    Number of Travelers
+                <Label htmlFor="group-slider" className="flex items-center justify-between font-medium">
+                    Number of Travelers ?
                     <Badge variant="secondary">
                         {groupSize[0]} {groupSize[0] === 1 ? 'person' : 'people'}
                     </Badge>
@@ -40,9 +40,13 @@ export const GroupSizeSelector = ({
                 />
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{minPeople} {minPeople > 1 ? 'people' : 'person'}</span>
-                <span className="text-muted-foreground">{maxPeople} {maxPeople > 1 ? 'people' : 'person'}</span>
+            <div className="flex items-center justify-between text-xs gap-2">
+                <span className="w-7 h-6 flex items-center justify-center text-muted-foreground bg-muted rounded-full">
+                    {minPeople}
+                </span>
+                <span className="w-7 h-6 flex items-center justify-center text-muted-foreground bg-muted rounded-full">
+                    {maxPeople}
+                </span>
             </div>
         </div>
     );

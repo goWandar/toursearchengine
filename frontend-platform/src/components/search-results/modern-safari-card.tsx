@@ -115,9 +115,9 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                 </div>
 
                 {/* Group Size Selector */}
-                <GroupSizeSelector groupSize={groupSize}
+                {/* <GroupSizeSelector groupSize={groupSize}
                     onGroupSizeChange={setGroupSize} minPeople={minPeople} maxPeople={maxPeople}
-                />
+                /> */}
 
                 {/* Duration and Accommodation */}
                 <div className="flex items-center gap-6 mb-4 text-sm">

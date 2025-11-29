@@ -1,15 +1,20 @@
 import { create } from "zustand";
-import { DEFAULT_PAGINATION, fetchTours } from "@/utils/mordern-search.utils";
-import { paginationType, Tour, TourFiltersType, SortToursType } from "@/types/types";
+import { fetchTours } from "@/utils/mordern-search.utils";
+import { paginationType, Tour, TourFiltersType, SortToursType, TourSearchResponse, ToursPricedByType } from "@/types/types";
+import { ResultsStateType } from "@/types/free-search.types";
+import { DEFAULT_PAGINATION } from "@/utils/constants.utils";
+
+
 
 export interface ToursState {
     tours: Tour[];
     pagination: paginationType;
-    isLoading: boolean;
+
+    resultsState: ResultsStateType;
     isLoadingMore: boolean;
 
     setPagination: (pagination: paginationType) => void;
-    setIsLoading: (value: boolean) => void;
+    setResultsState: (value: ResultsStateType) => void;
     resetPagination: () => void;
 
     loadTours: (
@@ -17,34 +22,36 @@ export interface ToursState {
         typeParam: string,
         filters: TourFiltersType,
         sortBy: SortToursType,
-    ) => Promise<void>;
+        pricedBy: ToursPricedByType
+    ) => Promise<void | TourSearchResponse>;
 
     loadMoreTours: (
         idParam: number,
         typeParam: string,
         filters: TourFiltersType,
-        sortBy: SortToursType
+        sortBy: SortToursType,
+        pricedBy: ToursPricedByType
     ) => Promise<void>;
 }
 
 export const useToursStore = create<ToursState>((set, get) => ({
     tours: [],
     pagination: DEFAULT_PAGINATION,
-    isLoading: false,
+
+    resultsState: "loading",
     isLoadingMore: false,
 
     setPagination: (pagination) => set({ pagination }),
-    setIsLoading: (value) => set({ isLoading: value }),
+    setResultsState: (value) => set({ resultsState: value }),
     resetPagination: () => set({ pagination: DEFAULT_PAGINATION }),
 
     // Load tours with given filters
-    loadTours: async (idParam, typeParam, filters, sortBy) => {
+    loadTours: async (idParam, typeParam, filters, sortBy, pricedBy) => {
         if (!idParam || !typeParam) return;
 
         try {
-            set({ isLoading: true });
 
-            await fetchTours(
+            return await fetchTours(
                 idParam,
                 typeParam,
                 DEFAULT_PAGINATION,
@@ -60,14 +67,16 @@ export const useToursStore = create<ToursState>((set, get) => ({
                 false,
                 filters,
                 sortBy,
+                pricedBy
             );
-        } finally {
-            set({ isLoading: false });
+
+        } catch (err) {
+            throw err;
         }
     },
 
     // Load more tours with given filters
-    loadMoreTours: async (idParam, typeParam, filters, sortBy) => {
+    loadMoreTours: async (idParam, typeParam, filters, sortBy, pricedBy) => {
         if (!idParam || !typeParam) return;
 
         const { pagination } = get();
@@ -89,7 +98,8 @@ export const useToursStore = create<ToursState>((set, get) => ({
                     })),
                 true,
                 filters,
-                sortBy
+                sortBy,
+                pricedBy
             );
         } finally {
             set({ isLoadingMore: false });

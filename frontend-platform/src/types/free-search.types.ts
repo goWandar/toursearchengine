@@ -1,0 +1,1 @@
+export type ResultsStateType = "void" | "loading" | "returned" | "error";

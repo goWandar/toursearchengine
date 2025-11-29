@@ -1,6 +1,7 @@
 import { Button } from '@/recipes/button/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/recipes/popover/popover'
 import { Slider } from '@/recipes/slider/slider'
+import { ResultsStateType } from '@/types/free-search.types'
 import { ChevronDown, Filter, RotateCcw } from 'lucide-react'
 import React, { useState } from 'react'
 
@@ -17,7 +18,7 @@ interface FiltersPopoverProps {
     }) => void;
     handleApplyFilters: () => void;
     handleResetFilters: () => void;
-    isLoading: boolean;
+    resultsState: ResultsStateType
 }
 
 const FiltersPopover = ({
@@ -25,7 +26,7 @@ const FiltersPopover = ({
     setFilters,
     handleApplyFilters,
     handleResetFilters,
-    isLoading
+    resultsState
 }: FiltersPopoverProps
 ) => {
 
@@ -40,7 +41,7 @@ const FiltersPopover = ({
             <PopoverTrigger asChild>
                 <Button
                     onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                    disabled={isLoading}
+                    disabled={resultsState === "loading"}
                     variant="outline"
                     className="flex items-center space-x-2 bg-white shadow-sm border-gray-200 hover:bg-gray-50 rounded-full px-6"
                 >

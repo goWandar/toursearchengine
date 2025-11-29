@@ -1,3 +1,5 @@
+import { ResultsStateType } from "./free-search.types";
+
 // Tour Related Types
 export interface Tour {
     id: number;
@@ -120,6 +122,10 @@ export interface TourFiltersType {
     duration: [number, number];
 }
 
+export interface ToursPricedByType {
+    persons: number;
+}
+
 export type SortToursType =
     | "default"
     | "duration_short_long"
@@ -148,50 +154,23 @@ export type TourHandlerDeps = {
     setSortBy?: (value: SortToursType) => void;
 };
 
-export interface LoadToursByParkDeps {
+export interface LoadToursByParkParams {
     selectedPark: { id: number; type: string } | null;
     activeTab: ActiveTabType;
     searchParams: URLSearchParams;
     router: any;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
-    setAppliedFilters: (filters: TourFiltersType) => void;
-    setFilters: (filters: TourFiltersType) => void;
-    setSortBy: (sortBy: SortToursType) => void;
-    resetPagination: () => void;
-    loadTours: (
-        idParam: number,
-        typeParam: string,
-        filters: TourFiltersType,
-        sortBy: SortToursType
-    ) => Promise<void>;
-    setIsLoading: (loading: boolean) => void;
 }
 
 export interface LoadInitialToursParams {
     idInURL: number;
     typeInURL: string;
-
     activeTab: string;
     searchParams: URLSearchParams;
     router: any;
-
-    setIsLoading: (value: boolean) => void;
     setSearchItemType: (value: string) => void;
     setSearchItemId: (value: number) => void;
-    setAppliedFilters: (filters: any) => void;
-    setFilters: (filters: any) => void;
-    setSortBy: (sort: any) => void;
-
-    resetPagination: () => void;
-
-    loadTours: (
-        idParam: number,
-        typeParam: string,
-        filters: TourFiltersType,
-        sortBy: SortToursType,
-    ) => Promise<void>;
-
     tourSearchUrlHandler: {
         setActiveTab: (args: any) => void;
         getFiltersFromUrl: (
@@ -203,3 +182,15 @@ export interface LoadInitialToursParams {
         };
     };
 }
+
+export type FiltersFromUrlReturnType = {
+    filtersFromURL: {
+        accommodation: string[];
+        duration: [number, number];
+        budget: [number, number];
+    };
+    sortingFromURL: SortToursType;
+    pricedByFromURL: {
+        persons: number;
+    };
+};
