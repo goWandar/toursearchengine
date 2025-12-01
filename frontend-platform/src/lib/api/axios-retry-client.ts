@@ -12,9 +12,6 @@ const axiosClient = axios.create({
 axiosRetry(axiosClient, {
     retries: 3,
     retryDelay: axiosRetry.exponentialDelay,
-    onRetry: (retryCount: number, error: Error) => {
-        console.log(`Retrying request...`);
-    },
     retryCondition: (error: any) => {
         // Retry on network errors or idempotent request errors (5xx)
         return axiosRetry.isNetworkOrIdempotentRequestError(error);

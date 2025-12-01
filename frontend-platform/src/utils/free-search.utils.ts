@@ -1,4 +1,4 @@
-import { getParksAndCountries, getParksByCountryName, getToursByCountryId, getToursByParkId } from "@/lib/api/free-search.api";
+import { getParksAndCountries, getParksByCountryName } from "@/lib/api/free-search.api";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
 import { FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByParkParams, ParksCountriesType, ParkSearchType, SortToursType, SuggestionType, TourFiltersType, ToursPricedByType } from "@/types/free-search.types";

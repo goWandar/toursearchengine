@@ -1,3 +1,12 @@
+// Toast Store Type 
+export interface ToastState {
+    showToast: boolean;
+    toastMessage: string;
+
+    setShowToast: (value: boolean) => void;
+    setToastMessage: (value: string) => void;
+}
+
 // Tour Related Types
 export interface Tour {
     id: number;

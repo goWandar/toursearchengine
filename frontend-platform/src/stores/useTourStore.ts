@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { ToursStateType } from "@/types/free-search.types";
 import { DEFAULT_PAGINATION } from "@/utils/constants.utils";
 import { getToursByCountryId, getToursByParkId } from "@/lib/api/free-search.api";
+import { useToastStore } from "./useToastStore";
 
 export const useToursStore = create<ToursStateType>((set, get) => ({
     tours: [],
@@ -105,7 +106,6 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
 
         const { pagination } = get();
         set({ isLoadingMore: true });
-
         try {
             await get().internalFetchTours(
                 idParam,
@@ -130,7 +130,18 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
                 sortBy,
                 pricedBy
             );
-        } finally {
+        }
+        catch {
+            console.error("Error loading more tours");
+            const { triggerToast } = useToastStore.getState();
+
+            triggerToast({
+                title: "Error",
+                description: "Unable to load more tours. Please try again.",
+                variant: "destructive",
+            });
+        }
+        finally {
             set({ isLoadingMore: false });
         }
     },

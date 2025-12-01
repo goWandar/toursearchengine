@@ -1,10 +1,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/recipes/accordion/accordion';
-import { Badge } from '@/recipes/badge/badge';
 import { Button } from '@/recipes/button/button';
 import { Card, CardContent, CardTitle } from '@/recipes/card/card';
 import { Tour } from '@/types/types';
 import { useState } from 'react'
-import { GroupSizeSelector } from './group-size-selector';
 import { filterPricesBySeason, formatSeasonPeriod, getPriceForGroupSize, getUniqueSeasons } from '@/utils/free-search.utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/recipes/select/select';
 import ImageCarousel from './image-carousel';
@@ -70,19 +68,9 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
             <CardContent className="p-6">
                 {/* Title */}
                 <CardTitle className="text-xl font-bold mb-4">{data.title}</CardTitle>
-                <div className="grid grid-cols-[70%_30%] mb-4">
-                    {/* Pricing */}
-                    <div className='flex flex-col justify-end items-end'>
-                        {currentPrice &&
-                            <div className="text-2xl font-bold text-green-800">
-                                ${currentPrice.pricePerPerson.toLocaleString()}
-                            </div>}
-                        <div className="text-sm text-gray-600">per person</div>
-                    </div>
-                </div>
 
                 {/* Safari Seasons Select*/}
-                <div className="flex flex-col mb-4 justify-center">
+                {/* <div className="flex flex-col mb-4 justify-center">
 
                     {uniqueSeasons.length > 0 && (
                         <Select
@@ -106,43 +94,49 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                         </Select>
                     )
                     }
-                </div>
+                </div> */}
 
-                {/* Group Size Selector */}
-                {/* <GroupSizeSelector groupSize={groupSize}
-                    onGroupSizeChange={setGroupSize} minPeople={minPeople} maxPeople={maxPeople}
-                /> */}
-
-                {/* Duration and Accommodation */}
-                <div className="flex items-center gap-6 mb-4 text-sm">
-                    <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span>
-                            {data.durationInDays} {data.durationInDays === 1 ? "day" : "days"}
-                        </span>
-                    </div>
-                    {/* Accomodation with hover card for more info */}
-                    <HoverCard>
-                        <HoverCardTrigger asChild>
-                            <div className="flex items-center gap-2">
-                                <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-                                <span>{data.accommodationType}</span>
-                            </div>
-                        </HoverCardTrigger>
-                        {data.accommodationType === "mixed" && (
-                            <HoverCardContent>
-                                <div className="space-y-2">
-                                    <p className="text-sm text-muted-foreground">
-                                        Mix of <span className='font-bold'>lodges</span> and <span className='font-bold'>camps</span> for a varied safari adventure.
-                                    </p>
+                <div className='flex flex-row justify-between items-center'>
+                    {/* Duration and Accommodation */}
+                    <div className="flex items-center gap-6 mb-4 text-sm">
+                        <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>
+                                {data.durationInDays} {data.durationInDays === 1 ? "day" : "days"}
+                            </span>
+                        </div>
+                        {/* Accomodation with hover card for more info */}
+                        <HoverCard>
+                            <HoverCardTrigger asChild>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    <span>{data.accommodationType}</span>
                                 </div>
-                            </HoverCardContent>
-                        )}
-                    </HoverCard>
+                            </HoverCardTrigger>
+                            {data.accommodationType === "mixed" && (
+                                <HoverCardContent>
+                                    <div className="space-y-2">
+                                        <p className="text-sm text-muted-foreground">
+                                            Mix of <span className='font-bold'>lodges</span> and <span className='font-bold'>camps</span> for a varied safari adventure.
+                                        </p>
+                                    </div>
+                                </HoverCardContent>
+                            )}
+                        </HoverCard>
+                    </div>
+
+                    {/* Pricing */}
+                    <div className='flex flex-col mb-4'>
+                        {currentPrice &&
+                            <div className="text-2xl font-bold text-green-800">
+                                ${currentPrice.pricePerPerson.toLocaleString()}
+                            </div>}
+                        <div className="text-sm text-gray-600">per person</div>
+                    </div>
                 </div>
 
                 {/* What's Included/Excluded using Accordion */}
