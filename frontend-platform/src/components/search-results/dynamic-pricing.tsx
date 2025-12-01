@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { GroupSizeSelector } from './group-size-selector'
 import { useFiltersStore } from '@/stores/useFiltersStore'
 import { useRouter } from 'next/navigation';

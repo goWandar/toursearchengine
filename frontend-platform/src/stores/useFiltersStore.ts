@@ -1,50 +1,8 @@
 import { create } from "zustand";
-import { TourFiltersType, SortToursType, ToursPricedByType } from "@/types/types";
-import { tourSearchUrlHandler } from "@/utils/mordern-search.utils";
+import { tourSearchUrlHandler } from "@/utils/free-search.utils";
 import { useToursStore } from "./useTourStore";
 import { DEFAULT_FILTERS } from "@/utils/constants.utils";
-
-interface FiltersState {
-    filters: TourFiltersType;
-    sortBy: SortToursType;
-    pricedBy: ToursPricedByType;
-    appliedFilters: TourFiltersType;
-
-    setFilters: (filters: TourFiltersType) => void;
-    setSortBy: (sortBy: SortToursType) => void;
-    setAppliedFilters: (appliedFilters: TourFiltersType) => void;
-    setPricedBy: (pricedBy: ToursPricedByType) => void;
-
-    resetFilters: (deps: {
-        idParam: number;
-        typeParam: string;
-        searchParams: any;
-        router: any;
-    }) => Promise<void>;
-
-    applyFilters: (deps: {
-        idParam: number;
-        typeParam: string;
-        searchParams: any;
-        router: any;
-    }) => Promise<void>;
-
-    sortTours: (deps: {
-        idParam: number;
-        typeParam: string;
-        searchParams: any;
-        router: any;
-        sortBy: SortToursType;
-    }) => Promise<void>;
-
-    setNumberOfPersons: (deps: {
-        idParam: number;
-        typeParam: string;
-        searchParams: any;
-        router: any;
-        priceBy: ToursPricedByType;
-    }) => Promise<void>;
-}
+import { FiltersState } from "@/types/free-search.types";
 
 export const useFiltersStore = create<FiltersState>((set, get) => ({
     filters: DEFAULT_FILTERS,

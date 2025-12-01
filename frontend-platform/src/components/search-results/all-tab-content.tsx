@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import ModernSafariCard from "./modern-safari-card";
-import { loadInitialTours, tourSearchUrlHandler } from "@/utils/mordern-search.utils";
+import { loadInitialTours, tourSearchUrlHandler } from "@/utils/free-search.utils";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useFiltersStore } from "@/stores/useFiltersStore";

@@ -1,5 +1,4 @@
 import { Badge } from '@/recipes/badge/badge';
-import { CardDescription } from '@/recipes/card/card';
 import { Label } from '@/recipes/label/label';
 import { Slider } from '@/recipes/slider/slider';
 

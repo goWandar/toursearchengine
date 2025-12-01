@@ -1,8 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/recipes/select/select'
-import { ResultsStateType } from '@/types/free-search.types';
-import { SortToursType } from '@/types/types';
+import { ResultsStateType, SortToursType } from '@/types/free-search.types';
 import { SortDescIcon } from 'lucide-react'
-import React from 'react'
 
 interface SortSelectProps {
     handleSortTours?: (value: SortToursType) => void;

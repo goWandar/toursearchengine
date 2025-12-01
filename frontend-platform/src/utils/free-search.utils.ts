@@ -1,7 +1,8 @@
-import { getParksAndCountries, getParksByCountryName, getToursByCountryId, getToursByParkId } from "@/lib/api/mordern-search.api";
+import { getParksAndCountries, getParksByCountryName, getToursByCountryId, getToursByParkId } from "@/lib/api/free-search.api";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
-import { FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByParkParams, paginationType, ParksCountriesType, ParkSearchType, Price, SortToursType, SuggestionType, Tour, TourFiltersType, ToursPricedByType } from "@/types/types";
+import { FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByParkParams, ParksCountriesType, ParkSearchType, SortToursType, SuggestionType, TourFiltersType, ToursPricedByType } from "@/types/free-search.types";
+import { Price } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -106,51 +107,6 @@ export const handleSearch = (
     // Set Filtered Suggestions
     setFilteredSuggestions(filteredResults);
 }
-
-// GET Park's/Countries Tour Results (useTours.tsx)
-export const fetchTours = async (
-    id: number,
-    type: string,
-    paginationMeta: paginationType,
-    setTourResults: React.Dispatch<React.SetStateAction<Tour[]>>,
-    setPaginationMeta: React.Dispatch<React.SetStateAction<paginationType>>,
-    isLoadMore: boolean = false,
-    filters: TourFiltersType,
-    sortBy: SortToursType,
-    pricedBy: ToursPricedByType,
-) => {
-    try {
-
-        // Determine page for this fetch
-        const pageToFetch = isLoadMore ? paginationMeta.page + 1 : paginationMeta.page;
-        const updatedPaginationMeta = { ...paginationMeta, page: pageToFetch };
-
-        let fetchedTours: { tours: Tour[]; pagination: paginationType };
-
-        if (type === 'park') {
-            fetchedTours = await getToursByParkId(id, updatedPaginationMeta, filters, sortBy, pricedBy);
-        } else if (type === 'country') {
-            fetchedTours = await getToursByCountryId(id, updatedPaginationMeta, filters, sortBy, pricedBy);
-        } else {
-            throw new Error(`Unknown type: ${type}`);
-        }
-
-        // Append or replace results
-        setTourResults(prev =>
-            isLoadMore ? [...prev, ...fetchedTours.tours] : fetchedTours.tours
-        );
-
-        // Update pagination meta
-        setPaginationMeta(fetchedTours.pagination);
-
-        // Set total results
-
-        return fetchedTours;
-    } catch (error) {
-        throw error;
-    }
-};
-
 
 // Get price of selected group size (modern-safari-card.tsx)
 export const getPriceForGroupSize = (

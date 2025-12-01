@@ -1,8 +1,5 @@
 "use client";
 
-import { FilterIcon, SortAscIcon, SortDescIcon } from "lucide-react";
-import { SortToursType } from "@/types/types";
-import { Badge } from "@/recipes/badge/badge";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
 import FiltersPopover from "./filters-popover";
@@ -10,7 +7,7 @@ import { useRouter } from "next/navigation";
 import SortSelect from "./sort-select";
 import FiltersBadge from "./filters-badge";
 import { DEFAULT_FILTERS } from "@/utils/constants.utils";
-import DynamicPricing from "./dynamic-pricing";
+import { SortToursType } from "@/types/free-search.types";
 
 interface ResultsHeaderProps {
     searchParams: URLSearchParams;

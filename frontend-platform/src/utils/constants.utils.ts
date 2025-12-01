@@ -1,4 +1,4 @@
-import { paginationType, TourFiltersType } from "@/types/types"
+import { paginationType, TourFiltersType } from "@/types/free-search.types"
 
 // Default filter values
 export const DEFAULT_FILTERS: TourFiltersType = { accommodation: [], budget: [100, 20000], duration: [1, 14] }

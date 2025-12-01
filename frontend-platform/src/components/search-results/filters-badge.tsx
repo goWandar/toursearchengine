@@ -1,7 +1,6 @@
 import { Badge } from '@/recipes/badge/badge';
-import { TourFiltersType } from '@/types/types';
+import { TourFiltersType } from '@/types/free-search.types';
 import { FilterIcon, SortDescIcon } from 'lucide-react';
-import React, { useEffect } from 'react'
 
 interface FiltersBadgeProps {
     appliedFilters: TourFiltersType;

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/recipes/input/input';
-import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
+import { getSearchSuggestions, handleSearch } from '@/utils/free-search.utils';
 import { ParkSearchType, SuggestionType } from '@/types/types';
 import { useRouter } from 'next/navigation'
 import { SearchSuggestions } from './search-suggestions';

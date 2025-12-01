@@ -9,7 +9,7 @@ import AllTabContent from "./all-tab-content";
 import { useToursStore } from "@/stores/useTourStore";
 import { TabsListSkeleton } from "./tabs-list-skeleton";
 import SafariCardSkeleton from "./safari-card-skeleton";
-import { ActiveTabType } from "@/types/types";
+import { ActiveTabType } from "@/types/free-search.types";
 
 interface ResultsTabsProps {
     searchItemName: string;

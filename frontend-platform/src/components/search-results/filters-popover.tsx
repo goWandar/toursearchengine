@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/recipes/popover/popov
 import { Slider } from '@/recipes/slider/slider'
 import { ResultsStateType } from '@/types/free-search.types'
 import { ChevronDown, Filter, RotateCcw } from 'lucide-react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 interface FiltersPopoverProps {
     filters: {

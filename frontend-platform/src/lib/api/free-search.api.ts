@@ -1,6 +1,5 @@
-import { useToursStore } from '@/stores/useTourStore';
-import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse, ToursPricedByType } from '@/types/types';
-import axiosClient from '@/utils/axios-retry-client';
+import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse, ToursPricedByType } from '@/types/free-search.types';
+import axiosClient from './axios-retry-client';
 
 // Get All Parks and Countries Suggestions
 export const getParksAndCountries = async (): Promise<ParksCountriesType> => {

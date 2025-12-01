@@ -5,7 +5,7 @@ import { Card, CardContent, CardTitle } from '@/recipes/card/card';
 import { Tour } from '@/types/types';
 import { useState } from 'react'
 import { GroupSizeSelector } from './group-size-selector';
-import { filterPricesBySeason, formatSeasonPeriod, getPriceForGroupSize, getUniqueSeasons } from '@/utils/mordern-search.utils';
+import { filterPricesBySeason, formatSeasonPeriod, getPriceForGroupSize, getUniqueSeasons } from '@/utils/free-search.utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/recipes/select/select';
 import ImageCarousel from './image-carousel';
 import Image from 'next/image';
@@ -71,12 +71,6 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                 {/* Title */}
                 <CardTitle className="text-xl font-bold mb-4">{data.title}</CardTitle>
                 <div className="grid grid-cols-[70%_30%] mb-4">
-                    {/* Experiences / Tags */}
-                    <div className="flex flex-wrap gap-2">
-                        <Badge variant="info" className="text-xs">Big 5</Badge>
-                        <Badge variant="info" className="text-xs">Great Migration</Badge>
-                        <Badge variant="info" className="text-xs">Cultural Experience</Badge>
-                    </div>
                     {/* Pricing */}
                     <div className='flex flex-col justify-end items-end'>
                         {currentPrice &&

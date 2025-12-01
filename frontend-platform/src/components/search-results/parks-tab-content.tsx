@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { Badge } from "@/recipes/badge/badge";
-import { ActiveTabType, ParkSearchType } from "@/types/types";
-import { getParksByCountry, loadToursForSelectedPark } from "@/utils/mordern-search.utils";
+import { getParksByCountry, loadToursForSelectedPark } from "@/utils/free-search.utils";
 import ModernSafariCard from "./modern-safari-card";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { Button } from "@/recipes/button/button";
@@ -10,6 +9,7 @@ import { ChevronDown } from "lucide-react";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
 import DynamicPricing from "./dynamic-pricing";
+import { ActiveTabType, ParkSearchType } from "@/types/free-search.types";
 
 
 interface ParksTabContentProps {
