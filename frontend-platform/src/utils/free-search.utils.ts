@@ -71,13 +71,13 @@ export const getSearchSuggestions = async (
             setTrendingSearches
         );
 
+        // Set parks and countries in localStorage if just fetched from DB
         if (parksCountries) {
             localStorage.setItem("parksAndCountries", JSON.stringify(parksCountries));
         }
     } catch (error) {
-        console.log("Error fetching search suggestions:", error);
+        // Send toast notification to user
         const { triggerToast } = useToastStore.getState();
-
         triggerToast({
             title: "Error",
             description: "Failed to load search suggestions. Please try to refresh page.",
