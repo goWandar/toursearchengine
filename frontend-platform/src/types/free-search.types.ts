@@ -101,21 +101,11 @@ export interface LoadToursByParkParams {
 export interface LoadInitialToursParams {
     idInURL: number;
     typeInURL: string;
-    activeTab: string;
+    activeTab: ActiveTabType;
     searchParams: URLSearchParams;
     router: any;
     setSearchItemType: (value: string) => void;
     setSearchItemId: (value: number) => void;
-    tourSearchUrlHandler: {
-        setActiveTab: (args: any) => void;
-        getFiltersFromUrl: (
-            params: URLSearchParams,
-            setAppliedFilters: (filters: any) => void
-        ) => {
-            filtersFromURL: any;
-            sortingFromURL: any;
-        };
-    };
 }
 
 // Get Filters from URL method - Return Type (modern-search.utils.ts)

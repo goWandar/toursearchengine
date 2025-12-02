@@ -58,7 +58,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
 
             } catch (error) {
                 setResultsState("error")
-                console.error("Error loading parks:", error);
+                console.error("Error loading parks");
             }
         };
 

@@ -10,6 +10,7 @@ import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
 import DynamicPricing from "./dynamic-pricing";
+import { ActiveTabType } from "@/types/free-search.types";
 
 interface AllTabContentProps {
     searchParams: URLSearchParams;
@@ -17,7 +18,7 @@ interface AllTabContentProps {
     setSearchItemId: (id: number) => void;
     idInURL: number;
     typeInURL: string;
-    activeTab: "all" | "parks" | "experiences";
+    activeTab: ActiveTabType;
 }
 
 const AllTabContent = ({
@@ -52,7 +53,6 @@ const AllTabContent = ({
             router,
             setSearchItemType,
             setSearchItemId,
-            tourSearchUrlHandler
         });
     }, [idInURL, typeInURL]);
 

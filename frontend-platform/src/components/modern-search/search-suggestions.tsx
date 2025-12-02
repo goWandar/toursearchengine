@@ -2,8 +2,8 @@
 
 import { MapPin, Palmtree, Globe2Icon, TrendingUp } from 'lucide-react';
 import { CommandGroup, CommandItem, CommandList, CommandEmpty, Command, } from '@/recipes/command/command';
-import { ParkSearchType, SuggestionType } from '@/types/types';
 import { Skeleton } from '@/recipes/skeleton/skeleton';
+import { ParkSearchType, SuggestionType } from '@/types/free-search.types';
 
 interface SearchSuggestionsProps {
     isLoading: boolean;
@@ -12,6 +12,7 @@ interface SearchSuggestionsProps {
     popularParks: ParkSearchType[];
     trendingSearches: SuggestionType[];
     handleDestinationSelect: (type: string, id: number, name: string) => void;
+    errorMessage: string | null;
 }
 
 export function SearchSuggestions({
@@ -21,6 +22,7 @@ export function SearchSuggestions({
     popularParks,
     trendingSearches,
     handleDestinationSelect,
+    errorMessage
 }: SearchSuggestionsProps) {
     const capitalize = (str: string) =>
         str
@@ -99,59 +101,63 @@ export function SearchSuggestions({
                     // No Results Found
                     <CommandEmpty>No destinations found.</CommandEmpty>
                 ) : (
-                    // Default Suggestions
-                    <>
-                        {/* Popular Parks Section */}
-                        <CommandGroup>
-                            <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
-                                <MapPin className="h-4 w-4 text-teal-600" />
-                                Popular Parks
-                            </div>
-                            {popularParks.map((park, idx) => (
-                                <CommandItem
-                                    key={idx}
-                                    onSelect={() =>
-                                        handleDestinationSelect(park.type, park.id, park.name)
-                                    }
-                                    className="cursor-pointer flex flex-col items-start px-4 py-3"
-                                >
-                                    {/* Capitalize first letter only */}
-                                    <div className="font-medium text-gray-900">{capitalize(park.keyword)}</div>
-                                    {park.type === 'park' && 'country' in park ? (
-                                        <div className="text-sm text-gray-500">{park.country}</div>
-                                    ) : null}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-
-                        {/* Trending Searches Section */}
-                        <CommandGroup>
-                            <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
-                                <TrendingUp className="h-4 w-4 text-orange-600" />
-                                Trending Searches
-                            </div>
-                            <div className="px-2 pb-2">
-                                <div className="flex flex-wrap gap-2">
-                                    {trendingSearches.map((search, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => handleDestinationSelect(search.type, search.id, search.name)}
-                                            className="flex items-center pl-3 pr-5 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
-                                        >
-                                            {search.type === 'park' ? (
-                                                <Palmtree className="h-4 w-4 text-gray-400 mr-2" />
-                                            ) : (
-                                                <Globe2Icon className="h-4 w-4 text-gray-400 mr-2" />
-                                            )}
-                                            {search.type === 'park' && 'keyword' in search
-                                                ? capitalize(search.keyword)
-                                                : search.name}
-                                        </button>
-                                    ))}
+                    errorMessage ? (
+                        // Error Message If app fails to fetch suggestions
+                        <CommandEmpty><p className='text-red-500'>{errorMessage}</p></CommandEmpty>
+                    ) : (
+                        // Default Suggestions
+                        <>
+                            {/* Popular Parks Section */}
+                            <CommandGroup>
+                                <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 border-b border-gray-100">
+                                    <MapPin className="h-4 w-4 text-teal-600" />
+                                    Popular Parks
                                 </div>
-                            </div>
-                        </CommandGroup>
-                    </>
+                                {popularParks.map((park, idx) => (
+                                    <CommandItem
+                                        key={idx}
+                                        onSelect={() =>
+                                            handleDestinationSelect(park.type, park.id, park.name)
+                                        }
+                                        className="cursor-pointer flex flex-col items-start px-4 py-3"
+                                    >
+                                        {/* Capitalize first letter only */}
+                                        <div className="font-medium text-gray-900">{capitalize(park.keyword)}</div>
+                                        {park.type === 'park' && 'country' in park ? (
+                                            <div className="text-sm text-gray-500">{park.country}</div>
+                                        ) : null}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+
+                            {/* Trending Searches Section */}
+                            <CommandGroup>
+                                <div className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700">
+                                    <TrendingUp className="h-4 w-4 text-orange-600" />
+                                    Trending Searches
+                                </div>
+                                <div className="px-2 pb-2">
+                                    <div className="flex flex-wrap gap-2">
+                                        {trendingSearches.map((search, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleDestinationSelect(search.type, search.id, search.name)}
+                                                className="flex items-center pl-3 pr-5 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
+                                            >
+                                                {search.type === 'park' ? (
+                                                    <Palmtree className="h-4 w-4 text-gray-400 mr-2" />
+                                                ) : (
+                                                    <Globe2Icon className="h-4 w-4 text-gray-400 mr-2" />
+                                                )}
+                                                {search.type === 'park' && 'keyword' in search
+                                                    ? capitalize(search.keyword)
+                                                    : search.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </CommandGroup>
+                        </>)
                 )}
             </CommandList>
         </Command>

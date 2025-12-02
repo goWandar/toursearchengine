@@ -70,7 +70,7 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                 <CardTitle className="text-xl font-bold mb-4">{data.title}</CardTitle>
 
                 {/* Safari Seasons Select*/}
-                {/* <div className="flex flex-col mb-4 justify-center">
+                <div className="flex flex-col mb-4 justify-center">
 
                     {uniqueSeasons.length > 0 && (
                         <Select
@@ -94,7 +94,7 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                         </Select>
                     )
                     }
-                </div> */}
+                </div>
 
                 <div className='flex flex-row justify-between items-center'>
                     {/* Duration and Accommodation */}

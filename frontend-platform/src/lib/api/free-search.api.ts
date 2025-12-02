@@ -1,7 +1,7 @@
 import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse, ToursPricedByType } from '@/types/free-search.types';
 import axiosClient from './axios-retry-client';
 
-// Get All Parks and Countries Suggestions
+// Get All Parks and Countries Suggestions(free-search.utils.ts)
 export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
     try {
         const response = await axiosClient.get(`/api/tours/country-park/suggestions`);
@@ -38,7 +38,7 @@ export const getToursByCountryId = async (
 
         return response.data.data;
     } catch (error: any) {
-        throw new Error('Failed to fetch tours');
+        throw new Error('Failed to fetch tours by country id');
     }
 };
 
@@ -68,7 +68,7 @@ export const getToursByParkId = async (
 
         return response.data.data;
     } catch (error) {
-        throw new Error('Failed to fetch tours');
+        throw new Error('Failed to fetch tours by park id');
     }
 }
 

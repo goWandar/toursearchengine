@@ -1,5 +1,6 @@
 import { getParksAndCountries, getParksByCountryName } from "@/lib/api/free-search.api";
 import { useFiltersStore } from "@/stores/useFiltersStore";
+import { useToastStore } from "@/stores/useToastStore";
 import { useToursStore } from "@/stores/useTourStore";
 import { FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByParkParams, ParksCountriesType, ParkSearchType, SortToursType, SuggestionType, TourFiltersType, ToursPricedByType } from "@/types/free-search.types";
 import { Price } from "@/types/types";
@@ -74,9 +75,17 @@ export const getSearchSuggestions = async (
             localStorage.setItem("parksAndCountries", JSON.stringify(parksCountries));
         }
     } catch (error) {
-        // Handle UI when error occurs ❗
-        console.error("Failed to get search suggestions", error);
+        console.log("Error fetching search suggestions:", error);
+        const { triggerToast } = useToastStore.getState();
+
+        triggerToast({
+            title: "Error",
+            description: "Failed to load search suggestions. Please try to refresh page.",
+            variant: "destructive",
+        });
+
         setSuggestionsList([]);
+        throw new Error("Failed to fetch search suggestions");
     } finally {
         setIsLoading(false);
     }
@@ -335,14 +344,14 @@ export async function getParksByCountry(country: string) {
     // Retrieve data from localStorage
     const parksAndCountries = localStorage.getItem("parksAndCountries");
 
-    if (!parksAndCountries) {
-        // Load parks directly from the API if not in localStorage
-        const parks = await getParksByCountryName(country);
-
-        return parks;
-    }
-
     try {
+        if (!parksAndCountries) {
+            // Load parks directly from the API if not in localStorage
+            const parks = await getParksByCountryName(country);
+
+            return parks;
+        }
+
         const parsedData: ParksCountriesType = JSON.parse(parksAndCountries);
         const parks: ParkSearchType[] = parsedData.parks;
 
@@ -354,8 +363,7 @@ export async function getParksByCountry(country: string) {
         return matchingParks;
 
     } catch (error) {
-        // Handle UI when error occurs ❗
-        throw new Error(`Error Loading Parks`);
+        throw Error(`Error Loading Parks By Country Name`);
     }
 };
 
@@ -369,7 +377,6 @@ export const loadToursForSelectedPark = async ({
     setSearchItemId
 }: LoadToursByParkParams) => {
     try {
-
         // Get States and Actions from Tours Store
         const { setResultsState, loadTours, resetPagination } = useToursStore.getState();
 
@@ -428,7 +435,6 @@ export const loadInitialTours = async ({
     router,
     setSearchItemType,
     setSearchItemId,
-    tourSearchUrlHandler,
 }: LoadInitialToursParams) => {
     try {
 
