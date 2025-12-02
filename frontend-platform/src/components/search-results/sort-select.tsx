@@ -17,7 +17,7 @@ const SortSelect = ({
     return (
         <div className='max-w-[180px]'>
             <Select disabled={resultsState === "loading"} value={sortBy} onValueChange={(value: SortToursType) => handleSortTours && handleSortTours(value)}>
-                <SelectTrigger className="flex items-center space-x-2 bg-white shadow-sm border-gray-200 hover:bg-gray-50 rounded-full px-6">
+                <SelectTrigger className="flex items-center space-x-2 bg-white shadow-sm text-xs sm:text-sm border-gray-200 hover:bg-gray-50 rounded-full px-6">
                     <SortDescIcon className="h-4 w-4" /> Sort By
                 </SelectTrigger>
                 <SelectContent>

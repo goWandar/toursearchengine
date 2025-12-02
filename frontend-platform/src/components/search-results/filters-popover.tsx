@@ -46,7 +46,7 @@ const FiltersPopover = ({
                     className="flex items-center space-x-2 bg-white shadow-sm border-gray-200 hover:bg-gray-50 rounded-full px-6"
                 >
                     <Filter className="h-4 w-4" />
-                    <span>Filters</span>
+                    <span className='text-xs sm:text-sm'>Filters</span>
                     <ChevronDown className="h-3 w-3" />
                 </Button>
             </PopoverTrigger>

@@ -65,8 +65,8 @@ export default function ResultsTabs({
                     <TabsList className="grid w-full grid-cols-3 mb-10 bg-white p-2 rounded-2xl shadow-sm border relative">
                         {/* All Results tab */}
                         <TabsTrigger value="all" asChild disabled={resultsState === "loading"}>
-                            <div className="rounded-xl font-medium relative">
-                                All Results {(activeTab === "all" && pagination.total > 0) && `(${pagination.total})`}
+                            <div className="rounded-xl text-xs sm:text-sm font-medium relative">
+                                All Results <span className="hidden md:block">{(activeTab === "all" && pagination.total > 0) && `(${pagination.total})`}</span>
                                 {activeTab === "all" && (
                                     <Button
                                         size="sm"
@@ -82,8 +82,8 @@ export default function ResultsTabs({
 
                         {/* Parks tab */}
                         {typeInURL === "country" && (
-                            <TabsTrigger value="parks" className="rounded-xl font-medium relative" disabled={resultsState === "loading"}>
-                                Parks {(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}
+                            <TabsTrigger value="parks" className="rounded-xl text-xs sm:text-sm font-medium relative" disabled={resultsState === "loading"}>
+                                Parks <span className="hidden sm:block">{(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}</span>
                                 {activeTab === "parks" && (
                                     <Button size="sm" variant="ghost"
                                         className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-full shadow-sm"
@@ -95,8 +95,8 @@ export default function ResultsTabs({
                         )}
 
                         {/* Experiences tab */}
-                        <TabsTrigger value="experiences" className="rounded-xl font-medium relative" disabled={resultsState === "loading"}>
-                            Experiences {(activeTab === "experiences" && pagination.total > 0) && `(${pagination.total})`}
+                        <TabsTrigger value="experiences" className="rounded-xl text-xs sm:text-sm font-medium relative" disabled={resultsState === "loading"}>
+                            Experiences <span className="hidden sm:block">{(activeTab === "experiences" && pagination.total > 0) && `(${pagination.total})`}</span>
                             {activeTab === "experiences" && (
                                 <Button size="sm" variant="ghost"
                                     className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-full shadow-sm"

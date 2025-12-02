@@ -187,9 +187,9 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
 
                 <div className="flex items-end justify-between">
                     {/* Operator Profile Redirection Button */}
-                    <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white px-5">
+                    <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white px-5 text-xs sm:text-sm">
                         <a target="_blank" rel="noopener noreferrer" className="flex items-center">
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                            <svg fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24"
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round"
@@ -201,11 +201,11 @@ const ModernSafariCard = ({ data, showCarousel = false }: ModernSafariCardProps)
                     </Button>
 
                     {/* Tour Site Redirection Button */}
-                    <Button asChild className="bg-white text-black px-5 border" variant="link">
+                    <Button asChild className="bg-white text-black px-5 lg:px-1 xl:px-5 border text-xs md:text-sm" variant="link">
                         <a href={data.siteURL!} target="_blank" rel="noopener noreferrer"
                             className="flex items-center"
                         >
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                            <svg fill="none" stroke="currentColor"
                                 strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                             >
                                 {/* Box */}

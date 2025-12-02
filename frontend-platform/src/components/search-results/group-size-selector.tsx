@@ -19,7 +19,7 @@ export const GroupSizeSelector = ({
 }: GroupSizeSelectorProps) => {
 
     return (
-        <div className="mb-6 space-y-3 max-w-88">
+        <div className="mb-6 space-y-3 xl:max-w-88">
             {/* <CardDescription>Select the number of travelers for your safari</CardDescription> */}
 
             <div className="space-y-2">
