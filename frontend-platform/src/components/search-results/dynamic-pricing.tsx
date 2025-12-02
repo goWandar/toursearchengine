@@ -8,9 +8,10 @@ interface DynamicPricingProps {
     idParam: number;
     typeParam: string;
     searchParams: any;
+    isLoading: boolean;
 }
 
-const DynamicPricing = ({ idParam, typeParam, searchParams }: DynamicPricingProps) => {
+const DynamicPricing = ({ idParam, typeParam, searchParams, isLoading }: DynamicPricingProps) => {
     const router = useRouter();
     const setNumberOfPersons = useFiltersStore((state) => state.setNumberOfPersons);
     const pricedBy = useFiltersStore((state) => state.pricedBy);
@@ -36,7 +37,7 @@ const DynamicPricing = ({ idParam, typeParam, searchParams }: DynamicPricingProp
 
     // Handler for the slider
     const handleSliderChange = (value: number[]) => {
-        setSliderValue(value[0]);                  
+        setSliderValue(value[0]);
         debouncedHandleGroupSizeChange(value[0]);
     };
 
@@ -44,10 +45,11 @@ const DynamicPricing = ({ idParam, typeParam, searchParams }: DynamicPricingProp
         <div>
             {/* Group Size Selector */}
             <GroupSizeSelector
-                groupSize={[sliderValue]}               
+                groupSize={[sliderValue]}
                 onGroupSizeChange={handleSliderChange}
                 minPeople={2}
                 maxPeople={4}
+                isLoading={isLoading}
             />
         </div>
     )

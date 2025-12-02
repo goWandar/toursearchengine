@@ -75,10 +75,6 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
 
     return (
         <>
-            {
-                selectedPark &&
-                <DynamicPricing typeParam={selectedPark?.type} idParam={selectedPark?.id} searchParams={searchParams} />
-            }
             <div className="bg-white rounded-2xl p-6 shadow-sm border">
                 <div className="flex flex-wrap gap-3">
                     {parks.map((park, idx) => {

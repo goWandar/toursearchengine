@@ -58,7 +58,6 @@ const AllTabContent = ({
 
     return (
         <>
-            <DynamicPricing typeParam={typeInURL} idParam={idInURL} searchParams={searchParams} />
             {/* Tour Results */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {resultsState === "loading" && Array.from({ length: 12 }).map((_, i) => <SafariCardSkeleton key={i} />)}

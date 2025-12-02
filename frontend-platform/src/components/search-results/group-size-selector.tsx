@@ -7,13 +7,15 @@ interface GroupSizeSelectorProps {
     onGroupSizeChange: (value: number[]) => void;
     minPeople: number;
     maxPeople: number;
+    isLoading?: boolean;
 }
 
 export const GroupSizeSelector = ({
     groupSize,
     onGroupSizeChange,
     minPeople,
-    maxPeople
+    maxPeople,
+    isLoading
 }: GroupSizeSelectorProps) => {
 
     return (
@@ -29,6 +31,7 @@ export const GroupSizeSelector = ({
                 </Label>
 
                 <Slider
+                    disabled={isLoading}
                     id="group-slider"
                     value={groupSize}
                     onValueChange={onGroupSizeChange}

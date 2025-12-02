@@ -8,6 +8,7 @@ import SortSelect from "./sort-select";
 import FiltersBadge from "./filters-badge";
 import { DEFAULT_FILTERS } from "@/utils/constants.utils";
 import { SortToursType } from "@/types/free-search.types";
+import DynamicPricing from "./dynamic-pricing";
 
 interface ResultsHeaderProps {
     searchParams: URLSearchParams;
@@ -56,7 +57,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
 
 
     return (
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-start justify-between mb-8">
             {/* Title and Results Count */}
             <div className="mb-3 lg:mb-0">
                 <div>
@@ -79,23 +80,30 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
                     )}
             </div>
 
-            <div className="flex justify-between items-center space-x-4">
-                {/* Filter Tours Popover */}
-                <FiltersPopover
-                    filters={filters}
-                    setFilters={setFilters}
-                    handleApplyFilters={handleApplyFilters}
-                    handleResetFilters={handleResetFilters}
-                    resultsState={resultsState}
-                />
+            <div className="flex flex-col justify-between space-y-8">
+                <div className="flex justify-between items-center space-x-4">
+                    {/* Filter Tours Popover */}
+                    <FiltersPopover
+                        filters={filters}
+                        setFilters={setFilters}
+                        handleApplyFilters={handleApplyFilters}
+                        handleResetFilters={handleResetFilters}
+                        resultsState={resultsState}
+                    />
 
-                {/* Sort Tours Selector */}
-                <SortSelect
-                    handleSortTours={handleSortTours}
-                    sortBy={sortBy}
-                    resultsState={resultsState}
+                    {/* Sort Tours Selector */}
+                    <SortSelect
+                        handleSortTours={handleSortTours}
+                        sortBy={sortBy}
+                        resultsState={resultsState}
+                    />
+                </div>
+                <DynamicPricing
+                    typeParam={searchItemType}
+                    idParam={searchItemId}
+                    searchParams={searchParams}
+                    isLoading={resultsState === "loading"}
                 />
-
             </div>
         </div>
     );
