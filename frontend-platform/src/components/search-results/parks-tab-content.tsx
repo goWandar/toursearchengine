@@ -106,9 +106,9 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
 
                 {resultsState === "returned" && tours.map((tour, idx) => <ModernSafariCard key={idx} data={tour} showCarousel />)}
             </div>
-            <div>
-                {resultsState === "void" && <p>Uh oh, No Tours found</p>}
-                {resultsState === "error" && <p>Oopsy, An unexpected error occured. Please try again</p>}
+            <div className="flex justify-center text-lg font-bold">
+                {resultsState === "void" && <p className="text-gray-500">No Tours found for your selection</p>}
+                {resultsState === "error" && <p className="text-red-300">An unexpected error occured. Please try refreshing this page</p>}
             </div>
 
             {/* Load More Button */}

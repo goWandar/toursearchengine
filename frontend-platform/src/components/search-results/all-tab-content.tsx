@@ -3,13 +3,12 @@
 import { useEffect } from "react";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import ModernSafariCard from "./modern-safari-card";
-import { loadInitialTours, tourSearchUrlHandler } from "@/utils/free-search.utils";
+import { loadInitialTours } from "@/utils/free-search.utils";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
-import DynamicPricing from "./dynamic-pricing";
 import { ActiveTabType } from "@/types/free-search.types";
 
 interface AllTabContentProps {
@@ -64,9 +63,9 @@ const AllTabContent = ({
 
                 {resultsState === "returned" && tours.map((tour, idx) => <ModernSafariCard key={idx} data={tour} showCarousel />)}
             </div>
-            <div>
-                {resultsState === "void" && <p>Uh oh, No Tours found</p>}
-                {resultsState === "error" && <p>Oopsy, An unexpected error occured. Please try again</p>}
+            <div className="flex justify-center text-lg font-bold">
+                {resultsState === "void" && <p className="text-gray-500">No Tours found for your selection</p>}
+                {resultsState === "error" && <p className="text-red-300">An unexpected error occured. Please try refreshing this page</p>}
             </div>
 
             {/* Insights Section (placeholder) */}
