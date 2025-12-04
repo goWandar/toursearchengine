@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { CATEGORIES } from './data/quizCategories.js';
+
 const prisma = new PrismaClient();
 
 interface Category {
@@ -10,78 +12,34 @@ interface Category {
 async function main(): Promise<void> {
   console.log('Adding/Updating Mock Categories & Conflict Groups...');
 
-  // create "conflict groups" as categories if not exist
-  // in Travel Style
-  const travelStyle = await prisma.conflictGroup.upsert({
-    where: { name: 'Travel Style' },
-    update: {},
-    create: {
-      name: 'Travel Style',
-      description: 'Different safari travel styles (cannot mix)',
-    },
-  });
+  // ensure all conflict groups used in categories exist
+  const conflictGroupNames = Array.from(
+    new Set(
+      CATEGORIES.filter((categories) => categories.conflictGroupName).map(
+        (categories) => categories.conflictGroupName as string,
+      ),
+    ),
+  );
 
-  // in group size
-  const groupSize = await prisma.conflictGroup.upsert({
-    where: { name: 'Group Size' },
-    update: {},
-    create: {
-      name: 'Group Size',
-      description: 'Defines group size exclusivity',
-    },
-  });
+  // Lookup table: maps conflict group names to their DB IDs for category linking
+  const conflictGroupMap: Record<string, number> = {};
 
-  // create categories
-  const categories: Category[] = [
-    // Tour categories
-    { name: 'Adventure', description: 'Action-packed safaris' },
-    { name: 'Relaxed', description: 'Slow pace and comfort' },
-    {
-      name: 'Family',
-      description: 'Great for families with kids',
-      conflictGroupId: travelStyle.id,
-    },
-    { name: 'Luxury', description: 'High-end lodges and comfort' },
-    { name: 'Budget', description: 'Affordable yet authentic safaris' },
-    { name: 'Romantic', description: 'Perfect for couples', conflictGroupId: travelStyle.id },
-    { name: 'Wildlife', description: 'Focus on animals and nature' },
-    { name: 'Photography', description: 'For shutterbugs and pros' },
-    { name: 'Migration', description: 'The Great Wildebeest Migration' },
-    { name: 'Culture', description: 'Local traditions and people' },
-    { name: 'Small Groups', description: '2-8 people', conflictGroupId: groupSize.id },
-    { name: 'Large Groups', description: '9+ people', conflictGroupId: groupSize.id },
-
-    // Tag categories for quiz system
-    { name: 'persona', description: 'Travel companion type' },
-    { name: 'style', description: 'Safari style preference' },
-    { name: 'experience-level', description: 'Safari experience level' },
-    { name: 'budget', description: 'Budget range' },
-    { name: 'interest', description: 'Primary interests' },
-    { name: 'wildlife', description: 'Specific wildlife focus' },
-    { name: 'duration', description: 'Trip duration' },
-    { name: 'pace', description: 'Activity pace' },
-    { name: 'accommodation', description: 'Accommodation type' },
-    { name: 'activity', description: 'Activity type' },
-    { name: 'region', description: 'Geographic region' },
-    { name: 'season', description: 'Travel season' },
-    { name: 'crowd-preference', description: 'Crowd tolerance' },
-    { name: 'timing-priority', description: 'Timing factors' },
-    { name: 'weather-tolerance', description: 'Weather preferences' },
-    { name: 'planning-flexibility', description: 'Date flexibility' },
-  ];
-
-  for (const category of categories) {
+  for (const c of CATEGORIES) {
     await prisma.category.upsert({
-      where: { name: category.name },
+      where: { name: c.name },
       update: {
-        description: category.description,
-        conflictGroupId: category.conflictGroupId ?? null,
+        description: c.description,
+        conflictGroupId: c.conflictGroupName ? conflictGroupMap[c.conflictGroupName] : null,
       },
-      create: category,
+      create: {
+        name: c.name,
+        description: c.description,
+        conflictGroupId: c.conflictGroupName ? conflictGroupMap[c.conflictGroupName] : null,
+      },
     });
   }
 
-  console.log(`${categories.length} categories upserted`);
+  console.log(`${CATEGORIES.length} categories upserted`);
 }
 
 main()
