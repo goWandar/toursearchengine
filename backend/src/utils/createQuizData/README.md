@@ -1,6 +1,7 @@
 # Seed Scripts
 
-This directory contains scripts used to seed foundational data for the quiz and categorization system into the database using Prisma.
+This directory contains all seed scripts and data files required to populate categories, personas, tags, and quiz content in the database.
+Each script can be executed independently, and all data lives inside the data/ folder for maintainability and modular updates.
 
 ## Quick Start
 
@@ -14,7 +15,8 @@ cd src/utils/createQuizData
 # Run all seeds in order
 npx tsx addCategories.ts && \
 npx tsx addTags.ts && \
-npx tsx addQuizData.ts
+npx tsx addQuizData.ts && \
+npx tsx addPersonas.ts
 ```
 
 Or run individually (see Usage section below).
@@ -27,18 +29,24 @@ createQuizData
 ├── addCategories.ts                # Seeds categories and conflict groups
 ├── addTags.ts                      # Seeds all tags linked to categories
 ├── addQuizData.ts                  # Seeds quiz stages, questions, options, and insights
+├── addPersonas.ts                  # Seeds quiz personas (NEW)
 └── data/
-    ├── quizQuestions.ts            # Quiz questions data
-    └── quizTags.ts                 # Quiz tags data
+    ├── quizCategories.ts
+    ├── quizPersonas.ts             # Persona definitions (NEW)
+    ├── quizQuestions.ts
+    └── quizTags.ts
 ```
 
 ## Data Organization
 
 **Separated Data Files:**
 
-- Quiz questions are extracted to `data/quizQuestions.ts` for easier maintenance
-- Quiz tags are extracted to `data/quizTags.ts` for easier maintenance
-- Categories remain in `addCategories.ts` due to runtime dependencies on conflict group IDs
+Data Files are in `data/` folder. These files contain the structured seed data used by the scripts. They allow updating quiz/tour data without modifying logic.
+
+- `quizCategories.ts` List of category objects used in addCategories.ts, including optional conflictGroupName fields.
+- `quizPersonas.ts` Persona definitions used in addPersonas.ts (pre-defined safari traveler archetypes).
+- `quizQuestions.ts` All quiz questions, answer options, and metadata used by addQuizData.ts.
+- `quizTags.ts` Tag definitions used in addTags.ts.
 
 ## Prerequisites
 
@@ -46,10 +54,10 @@ createQuizData
 2. **Environment Variables**: Configure `.env` with `DATABASE_URL` and `DIRECT_URL`
 3. **Dependencies**: Install required packages:
 
-   ```bash
+```bash
    npm install @prisma/client
    npm install -D tsx
-   ```
+```
 
 ## Usage
 
@@ -59,13 +67,16 @@ You must run the scripts in the following order:
 
 ```bash
 # Step 1: Seed categories first
-npx tsx createQuizData/addCategories.ts
+npx tsx addCategories.ts
 
 # Step 2: Seed tags (requires categories to exist)
-npx tsx createQuizData/addTags.ts
+npx tsx addTags.ts
 
 # Step 3: Seed quiz data (requires categories to exist)
-npx tsx createQuizData/addQuizData.ts
+npx tsx addQuizData.ts
+
+# Step 4: Seed personas (independent, can run anytime)
+npx tsx addPersonas.ts
 ```
 
 **Important**: Categories must be seeded first as Tags and Quiz Data depend on existing category records.
@@ -94,9 +105,13 @@ npx tsx createQuizData/addQuizData.ts
     Insights: 68/68
     Failed: 0
 
+ PERSONAS:
+    Successfully seeded: 8/8
+    Failed: 0
+
  OVERALL STATISTICS:
-   Total records seeded: 253
-   Total successful: 253
+   Total records seeded: 261
+   Total successful: 261
    Total failures: 0
    Success rate: 100.0%
 ================================================================================
@@ -108,10 +123,10 @@ npx tsx createQuizData/addQuizData.ts
 
 ```bash
  OVERALL STATISTICS:
-   Total records seeded: 253
-   Total successful: 240
-   Total failures: 13
-   Success rate: 94.9%
+   Total records seeded: 261
+   Total successful: 253
+   Total failures: 8
+   Success rate: 96.9%
 ================================================================================
  Seeding completed with some failures. Check the details above.
 ================================================================================
@@ -197,6 +212,39 @@ Questions, Options, and Nudges seeded
 Smart Quiz Data Seeded Successfully
 ```
 
+### Step 4: Personas (NEW)
+
+Seeds pre-defined safari traveler archetypes that match certain tag combinations.
+
+**Personas:**
+
+- **The Adventurous Solo Traveler**: Independent, fearless, seeks remote destinations
+- **The Relaxed Couple**: Values comfort, privacy, and romantic moments
+- **The Family Explorer**: Educational experiences for all ages
+- **The Friends Expedition**: Shared adventures and social experiences
+- **The Wildlife Photographer**: Lives for the perfect shot
+- **The Luxury Connoisseur**: Ultra-luxury lodges and exclusive experiences
+- **The Cultural Immersion Seeker**: Connects with local communities
+- **The Budget-Conscious Explorer**: Authentic experiences at affordable prices
+
+**Persona Matching:**
+Each persona has a `tagMapping` array that defines which user tag selections match that archetype. When a user takes the quiz, their selected tags are compared against each persona's tag mapping to find the best match.
+
+**Expected Output:**
+
+```bash
+[SeedPersonas] Starting persona seeding
+[SeedPersonas] Creating persona "The Adventurous Solo Traveler"...
+[SeedPersonas] Creating persona "The Relaxed Couple"...
+[SeedPersonas] Creating persona "The Family Explorer"...
+[SeedPersonas] Creating persona "The Friends Expedition"...
+[SeedPersonas] Creating persona "The Wildlife Photographer"...
+[SeedPersonas] Creating persona "The Luxury Connoisseur"...
+[SeedPersonas] Creating persona "The Cultural Immersion Seeker"...
+[SeedPersonas] Creating persona "The Budget-Conscious Explorer"...
+[SeedPersonas] Successfully seeded 8 personas
+```
+
 ## Handling Failures
 
 When seeding, failed entries are logged with detailed reasons:
@@ -210,6 +258,9 @@ Error creating tag persona:solo: Category not found: persona
 
 === STEP 3: Seeding Quiz Data ===
 QuizStage not found: Exploring
+
+=== STEP 4: Seeding Personas ===
+Error creating persona: Duplicate name
 ```
 
 ### Failure Reasons
@@ -232,6 +283,7 @@ After reviewing the logs, you can:
 - **Upsert logic**: Prevents duplicates while allowing updates
 - **Foreign key validation**: Ensures tags link to existing categories
 - **Relationship integrity**: Validates quiz options link to valid categories
+- **Persona matching**: Validates tag mappings exist in the database
 
 ### Error Handling
 
@@ -252,31 +304,39 @@ After reviewing the logs, you can:
 
 1. **Category Not Found Error**
 
-   ```bash
+```bash
    Error: Category not found: persona
-   ```
+```
 
-   **Solution**: Ensure `addCategories.ts` runs before `addTags.ts`
+**Solution**: Ensure `addCategories.ts` runs before `addTags.ts`
 
 2. **QuizStage Not Found**
 
-   ```bash
+```bash
    QuizStage not found: Exploring
-   ```
+```
 
-   **Solution**: Check that quiz stages are created before questions
+**Solution**: Check that quiz stages are created before questions
 
-3. **High Skip Count**
+3. **Persona Duplicate Name**
 
-   ```bash
+```bash
+   Error: Unique constraint failed on name
+```
+
+**Solution**: This is normal on re-runs; script will update existing persona
+
+4. **High Skip Count**
+
+```bash
    12 categories upserted (all skipped - already exist)
-   ```
+```
 
-   **Solution**: This is normal behavior on subsequent runs due to upsert logic
+**Solution**: This is normal behavior on subsequent runs due to upsert logic
 
 ### Debugging Tips
 
-- **Check execution order**: Categories → Tags → Quiz Data
+- **Check execution order**: Categories → Tags → Quiz Data → Personas
 - **Validate foreign keys**: Ensure referenced records exist
 - **Review error messages**: Specific validation errors are logged
 - **Test individual scripts**: Run one seed file at a time to isolate issues
@@ -309,14 +369,16 @@ Foreign Key Checks
 - `QuizOption.categoryId` → `Category.id`
 - `QuizInsight.questionId` → `QuizQuestion.id`
 - `Category.conflictGroupId` → `ConflictGroup.id` (optional)
+- `QuizResponse.personaId` → `QuizPersona.id` (optional)
 
 ## Best Practices
 
 1. **Always backup database** before running seed scripts
-2. **Run in correct order**: Categories → Tags → Quiz Data
+2. **Run in correct order**: Categories → Tags → Quiz Data → Personas
 3. **Monitor seed output** for data quality issues
 4. **Test with sample data** first if modifying scripts
 5. **Keep seed files in version control** for reproducibility
+6. **Update personas** based on real user data patterns
 
 ## Re-seeding Data
 
@@ -324,45 +386,97 @@ To re-seed data:
 
 1. **Clear existing data** (if needed):
 
-   ```sql
+```sql
+   -- Clear quiz responses (if re-seeding personas)
+   UPDATE "quiz_responses" SET "personaId" = NULL;
+
+   -- Clear personas
+   DELETE FROM "quiz_personas";
+
    -- Clear quiz data
-   DELETE FROM "QuizInsight";
-   DELETE FROM "QuizOption";
-   DELETE FROM "QuizQuestion";
-   DELETE FROM "QuizStage";
+   DELETE FROM "quiz_insights";
+   DELETE FROM "quiz_options";
+   DELETE FROM "quiz_questions";
+   DELETE FROM "quiz_stages";
 
    -- Clear tags
-   DELETE FROM "Tag";
+   DELETE FROM "tags";
 
    -- Clear categories
-   DELETE FROM "Category";
-   DELETE FROM "ConflictGroup";
-   ```
+   DELETE FROM "categories";
+   DELETE FROM "conflict_groups";
+```
 
 2. **Reset sequences**:
 
-   ```sql
-   ALTER SEQUENCE "QuizStage_id_seq" RESTART WITH 1;
-   ALTER SEQUENCE "QuizQuestion_id_seq" RESTART WITH 1;
-   ALTER SEQUENCE "QuizOption_id_seq" RESTART WITH 1;
-   ALTER SEQUENCE "QuizInsight_id_seq" RESTART WITH 1;
-   ALTER SEQUENCE "Tag_id_seq" RESTART WITH 1;
-   ALTER SEQUENCE "Category_id_seq" RESTART WITH 1;
-   ALTER SEQUENCE "ConflictGroup_id_seq" RESTART WITH 1;
-   ```
+```sql
+   ALTER SEQUENCE "quiz_stages_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "quiz_questions_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "quiz_options_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "quiz_insights_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "quiz_personas_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "tags_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "categories_id_seq" RESTART WITH 1;
+   ALTER SEQUENCE "conflict_groups_id_seq" RESTART WITH 1;
+```
 
 3. **Run seed scripts** again:
 
-   ```bash
-   npx tsx createQuizData/addCategories.ts
-   npx tsx createQuizData/addTags.ts
-   npx tsx createQuizData/addQuizData.ts
-   ```
+```bash
+   npx tsx addCategories.ts
+   npx tsx addTags.ts
+   npx tsx addQuizData.ts
+   npx tsx addPersonas.ts
+```
 
 ## Notes
 
 - Scripts use **upsert** operations to prevent duplicates
 - **Conflict groups** ensure certain categories are mutually exclusive
 - **Quiz insights** provide contextual nudges for each quiz option
+- **Personas** enable personalized user profiles based on quiz results
 - All scripts include **cleanup handlers** to close database connections properly
 - **Category-to-tag mapping** enables powerful filtering and recommendation logic
+- **Persona tag mapping** allows automatic matching of user preferences to traveler archetypes
+
+## Persona System Details
+
+### How Personas Work
+
+1. **User takes quiz** → Selects options with tags
+2. **Tags collected** → e.g., `['persona:solo', 'style:adventurous', 'interest:wildlife']`
+3. **Persona matching** → Compare against each persona's `tagMapping`
+4. **Best match selected** → Persona with highest tag overlap
+5. **Result displayed** → User sees their safari traveler archetype
+
+### Persona Tag Mapping Example
+
+```typescript
+{
+  name: 'The Adventurous Solo Traveler',
+  tagMapping: [
+    'persona:solo',
+    'style:adventurous',
+    'interest:wildlife',
+    'activity:walking-safari',
+    'pace:action-packed',
+  ]
+}
+```
+
+If a user selects 4 out of 5 of these tags, they match 80% with this persona.
+
+### Adding New Personas
+
+1. Edit `data/quizPersonas.ts`
+2. Add new persona object with:
+   - `name`: Unique persona name
+   - `description`: What defines this traveler
+   - `keyTraits`: Array of trait strings
+   - `tagMapping`: Array of tag keys to match against
+   - `imageUrl`: Optional image path
+3. Run `npx tsx addPersonas.ts`
+
+---
+
+**Updated:** December 2024 - Added Personas seed script and documentation
