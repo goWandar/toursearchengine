@@ -98,6 +98,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
                         resultsState={resultsState}
                     />
                 </div>
+                {/* Pricing By Number of People Slider */}
                 <DynamicPricing
                     typeParam={searchItemType}
                     idParam={searchItemId}

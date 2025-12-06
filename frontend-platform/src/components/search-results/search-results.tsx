@@ -16,7 +16,7 @@ export const SearchResults = () => {
 
     return (
         <div className='container mx-auto px-6 py-12'>
-            {/* Search Results Filters - Header */}
+            {/* Search Results' Filters & Title Header */}
             <ResultsHeader name={name} searchParams={searchParams}
                 searchItemId={searchItemId} searchItemType={searchItemType}
             />

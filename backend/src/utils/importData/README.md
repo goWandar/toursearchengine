@@ -1,11 +1,10 @@
-# CSV Import Scripts
+# Import Scripts Documentation
 
 This directory contains scripts used to import tour data from the CSV files(Tours.csv, TourImages.csv, TourPrices.csv, Parks.csv & TourParks.csv) into the database using Prisma.
 
-
 ## File Structure
 
-```
+```bash
 importData
 ├── README.md                       # Instructions for running import scripts (This file)
 ├── importAllTours.ts               # Runs all import scripts in sequence
@@ -34,7 +33,7 @@ importData
 
 **IMPORTANT**: Place your `.csv` files in the `importData/` directory (same level as the import scripts). This must be done manually — these files are excluded from version control (`.gitignore`).
 
-# Import Tour Data
+## Import Tour Data
 
 The scripts expect the following files to exist:
 
@@ -63,7 +62,7 @@ This will automatically:
 
 ### Successful Import Should Show
 
-```
+```bash
 ================================================================================
                           FINAL IMPORT SUMMARY
 ================================================================================
@@ -92,8 +91,7 @@ This will automatically:
 
 ### Partial Success Import Should Show
 
-```
-
+```bash
  OVERALL STATISTICS:
    Total records processed: 83
    Total successful imports: 63
@@ -106,8 +104,7 @@ This will automatically:
 
 ### 100% Unsuccessful Import Should Show
 
-```
-
+```bash
  OVERALL STATISTICS:
    Total records processed: 801
    Total successful imports: 0
@@ -120,7 +117,7 @@ This will automatically:
 
 ### Import Statistics Example
 
-```
+```bash
 Tour Prices import completed.
 Success: 229
 Errors: 0
@@ -131,13 +128,14 @@ Price Statistics:
   Min: 665
   Max: 22990
 ```
+
 ## Handling Failed Tours
 
 **NOTE**: If a tour fails its corresponding images and prices will fail as well
 
 When importing tours, failed entries are logged with detailed reasons and stats, for example:
 
-```
+```bash
 === STEP 1: Importing Tours ===
 Processing tour: 394 - 4 Days/ 3 Nights Budget Safari
 Skipping tour 394: Already exists with uniqueId post-11086
@@ -151,10 +149,10 @@ Skipping price 754: Parent tour 394 failed
 
 ### Failure Reasons
 
-- **Exists** – The record already exists in the database  
-- **Invalid** – Missing one or more required fields  
-- **TourFailed** – Images or prices linked to a tour that failed  
-- **Unexpected** – Any other unhandled error  
+- **Exists** – The record already exists in the database
+- **Invalid** – Missing one or more required fields
+- **TourFailed** – Images or prices linked to a tour that failed
+- **Unexpected** – Any other unhandled error
 
 After reviewing the logs, you can fix the failed records as needed.  
 Once resolved, rerun the script — previously successful entries will fail(as they should), and only the fixed ones will be processed.
@@ -188,7 +186,7 @@ Once resolved, rerun the script — previously successful entries will fail(as t
 
 1. **File Not Found Error**
 
-   ```
+   ```bash
    Error: Tours.csv file not found
    ```
 
@@ -196,7 +194,7 @@ Once resolved, rerun the script — previously successful entries will fail(as t
 
 2. **High Skip Count**
 
-   ```
+   ```bash
    Success: 100, Errors: 0, Skipped: 50
    ```
 
@@ -214,7 +212,7 @@ Once resolved, rerun the script — previously successful entries will fail(as t
 ### Debugging Tips
 
 - **Check CSV headers**: Ensure column names match expected format
-- **Validate data types**: Verify dates, numbers are in correct format  
+- **Validate data types**: Verify dates, numbers are in correct format
 - **Review error logs**: Failed rows show specific validation errors
 - **Test with small dataset**: Try importing subset of data first
 
@@ -228,7 +226,7 @@ Once resolved, rerun the script — previously successful entries will fail(as t
 
 ### Data Flow
 
-```
+```bash
 CSV Files → Papa Parse → Data Validation → Prisma Create → Database
 ```
 
@@ -242,7 +240,7 @@ CSV Files → Papa Parse → Data Validation → Prisma Create → Database
 ## Best Practices
 
 1. **Always backup database** before large imports
-2. **Test with sample data** first  
+2. **Test with sample data** first
 3. **Monitor import statistics** for data quality issues
 4. **Run schema drift checks** after imports
 5. **Keep CSV files in version control** for reproducibility
@@ -254,8 +252,8 @@ To re-import data:
 1. **Clear existing data** (if needed):
 
    This script deletes all tours by calling Prisma’s deleteMany on the Tour model.
-   
-   ```
+
+   ```bash
    npx tsc deleteAllTours.ts
    ```
 
@@ -263,12 +261,11 @@ To re-import data:
 
    This script allows you to delete tours by specifying a tour ID or a range of IDs.
 
-   ```
+   ```bash
    npx tsx deleteTours.ts 10          # Deletes tour with ID 10
    npx tsx deleteTours.ts 10 15       # Deletes tours with IDs from 10 through 15 inclusive
 
    ```
-
 
 1. **Reset sequences**:
 
@@ -278,7 +275,7 @@ To re-import data:
    ALTER SEQUENCE tour_prices_id_seq RESTART WITH 1;
    ```
 
-2. **Run import scripts** again
+1. **Run import scripts** again
 
 ## Notes
 
@@ -287,10 +284,9 @@ To re-import data:
 - **Auto-generated values** are used for missing required fields
 - All scripts include **cleanup handlers** to close database connections properly
 
-# Import Park Data
-  
+## Import Park Data
 
-## Usage
+### Park Data Usage
 
 ### Import Parks
 
@@ -299,9 +295,9 @@ To re-import data:
 npx tsx importParkData.ts
 ```
 
-#### Expected Output
+Expected Output
 
-```
+```bash
 ...
 Imported park: Northern Tuli Game Reserve
 Imported park: Nxai Pan National Park
@@ -313,7 +309,6 @@ Parks import complete: 120 imported, 0 failed
 
 ### Import TourParks
 
-
 **Note:** The tour data from **Tours.csv, TourPrices.csv, TourImages.csv & Parks.csv** needs to be imported in the database before importing the data from the **TourParks.csv** file.
 
 ```bash
@@ -321,9 +316,9 @@ Parks import complete: 120 imported, 0 failed
 npx tsx importTourParkData.ts
 ```
 
-#### Expected Output
+Expected Output
 
-```
+```bash
 ...
 Imported association: TourId 1 with ParkId 2
 Imported association: TourId 2 with ParkId 3

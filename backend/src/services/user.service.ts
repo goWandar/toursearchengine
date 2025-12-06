@@ -2,7 +2,7 @@ import { validateId, validateUserInput } from '../utils/inputValidation.js';
 import { logger } from '../utils/logger.js';
 
 import type { User } from '@prisma/client';
-import { ServiceResponse } from '../types/types.js';
+import { ServiceResponse } from '../types/shared.types.js';
 
 import { PrismaProvider } from '../providers/prisma.provider.js';
 import { SupabaseProvider } from '../providers/supabase.provider.js';

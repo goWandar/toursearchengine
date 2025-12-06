@@ -1,7 +1,7 @@
 import { checkRequiredFields, emailFormattingCheck } from '../utils/inputValidation.js';
 import { logger } from '../utils/logger.js';
 
-import { ServiceResponse } from '../types/types.js';
+import { ServiceResponse } from '../types/shared.types.js';
 
 import { PrismaProvider } from '../providers/prisma.provider.js';
 

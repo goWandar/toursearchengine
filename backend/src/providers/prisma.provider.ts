@@ -1,7 +1,7 @@
 import { prisma } from '../db/prisma.js';
 
 import type { User } from '@prisma/client';
-import { PublicUser, ServiceResponse } from '../types/types.js';
+import { PublicUser, ServiceResponse } from '../types/shared.types.js';
 
 import { handlePrismaRequestError } from '../utils/errorHandler.js';
 

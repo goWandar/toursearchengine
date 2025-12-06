@@ -53,7 +53,7 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
                 throw new Error(`Unknown type: ${type}`);
             }
 
-            // Append or replace
+            // Append for load more or replace replace for initial load/filters change
             setTourResults((prev) =>
                 isLoadMore ? [...prev, ...fetchedTours.tours] : fetchedTours.tours
             );
@@ -67,7 +67,7 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
         }
     },
 
-    // Load Tours(For initial load and filters/sort change)
+    // Load Tours(for initial load and filters/sort change) (free-search.utils.ts)
     loadTours: async (idParam, typeParam, filters, sortBy, pricedBy) => {
         if (!idParam || !typeParam) return;
 

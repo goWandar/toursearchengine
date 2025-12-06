@@ -138,25 +138,186 @@ model Tour {
   operatorId        Int?
   operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
 
-  tourParks TourPark[]
+  tourParks      TourPark[]
+  tourCategories TourCategory[]
 
   @@unique([id, uniqueId])
+  @@index([countryId])
+  @@index([operatorId])
   @@map("tours")
   @@schema("public")
 }
 
-// Quiz Related Models
-model QuizResponse {
-  id             Int      @id @default(autoincrement())
-  userId         Int?
-  sessionId      String
-  quiz1Selection String   @map("quiz_1_selection")
-  quiz2Selection String   @map("quiz_2_selection")
-  quiz3Selection String   @map("quiz_3_selection")
-  quiz4Selection String   @map("quiz_4_selection")
-  dateCreated    DateTime @default(now())
+// CATEGORY & TOUR LINKAGE MODELS
+model ConflictGroup {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?
+  dateCreated DateTime   @default(now())
+  // Relations
+  categories  Category[]
 
+  @@map("conflict_groups")
+  @@schema("public")
+}
+
+model Tag {
+  id          Int          @id @default(autoincrement())
+  key         String       @unique
+  label       String
+  categoryId  Int
+  //Relations
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  quizOptions QuizOption[]
+
+  @@map("tags")
+  @@schema("public")
+}
+
+model Category {
+  id              Int            @id @default(autoincrement())
+  name            String         @unique
+  description     String?
+  isActive        Boolean        @default(true)
+  conflictGroupId Int?
+  conflictGroup   ConflictGroup? @relation(fields: [conflictGroupId], references: [id])
+  dateCreated     DateTime       @default(now())
+  dateModified    DateTime?      @updatedAt
+  // Relations
+  tourCategories  TourCategory[]
+  tags            Tag[]
+
+  @@map("categories")
+  @@schema("public")
+}
+
+model TourCategory {
+  tourId       Int
+  tourUniqueId String
+  categoryId   Int
+  weight       Float    @default(1.0)
+  dateCreated  DateTime @default(now())
+  // Relations
+  tour         Tour     @relation(fields: [tourId, tourUniqueId], references: [id, uniqueId], onDelete: Cascade)
+  category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([tourId, tourUniqueId, categoryId])
+  @@map("tour_categories")
+  @@schema("public")
+}
+
+// Quiz/Recommendation Engine Models
+model QuizStage {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique
+  description String?
+  orderIndex  Int            @default(1)
+  isActive    Boolean        @default(true)
+  dateCreated DateTime       @default(now())
+  // Relations
+  questions   QuizQuestion[] @relation("StageQuestions")
+  responses   QuizResponse[]
+
+  @@map("quiz_stages")
+  @@schema("public")
+}
+
+model QuizResponse {
+  id                 Int          @id @default(autoincrement())
+  userId             Int?
+  sessionId          String
+  stageId            Int?
+  confidenceLevel    Int?
+  quizSelections     Json?
+  resultsJson        Json?
+  dateCreated        DateTime     @default(now())
+  // Relations
+  stage              QuizStage?   @relation(fields: [stageId], references: [id])
+  answers            QuizAnswer[]
+  recommendedPersona QuizPersona? @relation("PersonaResponses", fields: [personaId], references: [id])
+  personaId          Int?
+
+  @@index([sessionId])
   @@map("quiz_responses")
+  @@schema("public")
+}
+
+model QuizPersona {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique
+  description String?
+  keyTraits   String[]
+  tagMapping  String[]
+  imageUrl    String?
+  dateCreated DateTime       @default(now())
+  // Relations
+  responses   QuizResponse[] @relation("PersonaResponses")
+
+  @@map("quiz_personas")
+  @@schema("public")
+}
+
+model QuizQuestion {
+  id          Int           @id @default(autoincrement())
+  question    String
+  description String?
+  orderIndex  Int           @unique
+  isActive    Boolean       @default(true)
+  dateCreated DateTime      @default(now())
+  // Relations
+  stageId     Int?
+  stage       QuizStage?    @relation("StageQuestions", fields: [stageId], references: [id])
+  options     QuizOption[]
+  insights    QuizInsight[] @relation("QuestionInsights")
+
+  @@map("quiz_questions")
+  @@schema("public")
+}
+
+model QuizOption {
+  id          Int           @id @default(autoincrement())
+  questionId  Int
+  tagId       Int
+  optionText  String
+  orderIndex  Int
+  isActive    Boolean       @default(true)
+  dateCreated DateTime      @default(now())
+  // Relations
+  question    QuizQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  tag         Tag           @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  insights    QuizInsight[] @relation("OptionInsights")
+
+  @@unique([questionId, tagId])
+  @@map("quiz_options")
+  @@schema("public")
+}
+
+model QuizInsight {
+  id          Int           @id @default(autoincrement())
+  questionId  Int?
+  optionId    Int?
+  insightText String        @unique
+  contextType String?
+  dateCreated DateTime      @default(now())
+  // Relations
+  question    QuizQuestion? @relation("QuestionInsights", fields: [questionId], references: [id], onDelete: Cascade)
+  option      QuizOption?   @relation("OptionInsights", fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_insights")
+  @@schema("public")
+}
+
+model QuizAnswer {
+  id             Int          @id @default(autoincrement())
+  responseId     Int
+  questionId     Int
+  selectedOption Int
+  dateCreated    DateTime     @default(now())
+  // Relations
+  response       QuizResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+
+  @@unique([responseId, questionId])
+  @@map("quiz_answers")
   @@schema("public")
 }
 

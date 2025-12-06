@@ -346,7 +346,7 @@ export async function getParksByCountry(country: string) {
 
     try {
         if (!parksAndCountries) {
-            // Load parks directly from the API if not in localStorage
+            // Load parks directly from the Database if not in localStorage
             const parks = await getParksByCountryName(country);
 
             return parks;
@@ -402,6 +402,8 @@ export const loadToursForSelectedPark = async ({
         const { filtersFromURL, sortingFromURL, pricedByFromURL } =
             tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
 
+
+        // Set filters from url into state
         setFilters(filtersFromURL);
         setSortBy(sortingFromURL);
         setPricedBy(pricedByFromURL);
@@ -445,21 +447,20 @@ export const loadInitialTours = async ({
         const { setAppliedFilters, setFilters, setSortBy, setPricedBy } = useFiltersStore.getState();
 
         setResultsState("loading");
-
-        // If ID or type is missing, this page shouldn't load tours
         if (!idInURL || !typeInURL) return;
 
-        // Sync active tab with URL
+        // Add active tab to URL (in this case it's removed)
         tourSearchUrlHandler.setActiveTab({ activeTab, searchParams, router });
 
         // Set search item for parent component (used by filter handlers)
         setSearchItemType(typeInURL);
         setSearchItemId(idInURL);
 
-        // Extract filters & sorting from URL
+        // Extract selected filters & sorting from URL
         const { filtersFromURL, sortingFromURL, pricedByFromURL } =
             tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
 
+        // Set filters from url in state
         setFilters(filtersFromURL);
         setSortBy(sortingFromURL);
         setPricedBy(pricedByFromURL);
@@ -472,12 +473,14 @@ export const loadInitialTours = async ({
         if (tourResults) {
             if (tourResults.tours.length < 1) {
                 setResultsState("void");
-            } else {
+            }
+            else {
                 setResultsState("returned");
             }
         }
 
     } catch (error) {
+        // Set Results State to error if error occurs
         const { setResultsState } = useToursStore.getState();
         setResultsState("error");
         console.error("Error loading initial tours");

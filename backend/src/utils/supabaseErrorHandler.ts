@@ -1,6 +1,6 @@
 import { logger } from './logger.js';
 
-import { ServiceError } from '../types/types.js';
+import { ServiceError } from '../types/shared.types.js';
 
 export function formatSupabaseError(
   operation: string,

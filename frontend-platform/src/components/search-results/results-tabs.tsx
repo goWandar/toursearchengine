@@ -38,13 +38,18 @@ export default function ResultsTabs({
     const pagination = useToursStore((state) => state.pagination);
     const resultsState = useToursStore((state) => state.resultsState);
 
-    // Check URL params on mount to set active results tab
+    // Check set results tab based on URL "tab" param
     useEffect(() => {
+        // Set Tab to Parks
         if (tabFromUrl === "parks" && typeInURL === "country") {
             setActiveTab("parks");
-        } else if (tabFromUrl === "experiences") {
+        }
+        // Set Tab to Experiences 
+        else if (tabFromUrl === "experiences") {
             setActiveTab("experiences");
-        } else {
+        }
+        // Set Tab to "all" Results
+        else {
             setActiveTab("all");
         }
     }, [tabFromUrl, typeInURL]);

@@ -1,7 +1,7 @@
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { getSupabaseWithToken, supabase, supabaseAdmin } from '../config/supabase.js';
 
-import { ServiceResponse as SupabaseResult } from '../types/types.js';
+import { ServiceResponse as SupabaseResult } from '../types/shared.types.js';
 
 import { formatSupabaseError } from '../utils/supabaseErrorHandler.js';
 

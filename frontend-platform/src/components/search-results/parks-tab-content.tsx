@@ -8,7 +8,6 @@ import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
-import DynamicPricing from "./dynamic-pricing";
 import { ActiveTabType, ParkSearchType } from "@/types/free-search.types";
 
 
@@ -107,7 +106,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                 {resultsState === "returned" && tours.map((tour, idx) => <ModernSafariCard key={idx} data={tour} showCarousel />)}
             </div>
             <div className="flex justify-center text-lg font-bold">
-                {resultsState === "void" && <p className="text-gray-500">No Tours found for your selection</p>}
+                {resultsState === "void" && <p className="text-gray-300">No tours found that match your selection</p>}
                 {resultsState === "error" && <p className="text-red-300">An unexpected error occured. Please try refreshing this page</p>}
             </div>
 

@@ -12,7 +12,7 @@ export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
     }
 }
 
-// Get Tours by Country ID
+// Get Tours by Country ID(useTourStore.ts)
 export const getToursByCountryId = async (
     countryId: number,
     paginationMeta: paginationType,
@@ -42,7 +42,7 @@ export const getToursByCountryId = async (
     }
 };
 
-// Get Tours by Park ID
+// Get Tours by Park ID(useTourStore.ts)
 export const getToursByParkId = async (
     parkId: number,
     paginationMeta: paginationType,
@@ -72,7 +72,7 @@ export const getToursByParkId = async (
     }
 }
 
-// Get Parks By CountryName
+// Get Parks By CountryName(free-search.utils.ts)
 export const getParksByCountryName = async (
     countryName: string
 ): Promise<ParkSearchType[]> => {
