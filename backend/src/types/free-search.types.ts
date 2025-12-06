@@ -1,4 +1,4 @@
-import { Image, Price } from "./types.js";
+import { Image, Price } from "./shared.types.js";
 
 // Tour Raw Interface (from DB)
 export interface TourRaw {

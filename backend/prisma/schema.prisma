@@ -73,6 +73,32 @@ model TourPark {
   @@schema("public")
 }
 
+model Experience {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  description  String
+  keyword      String?
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime? @updatedAt
+
+  tourExperiences TourExperience[]
+
+  @@map("experiences")
+  @@schema("public")
+}
+
+model TourExperience {
+  tourId       Int
+  experienceId Int
+
+  tour       Tour       @relation(fields: [tourId], references: [id])
+  experience Experience @relation(fields: [experienceId], references: [id])
+
+  @@id([tourId, experienceId])
+  @@map("_TourExperiences")
+  @@schema("public")
+}
+
 model Operator {
   id           Int       @id @default(autoincrement())
   name         String    @unique
@@ -138,8 +164,9 @@ model Tour {
   operatorId        Int?
   operator          Operator?   @relation(fields: [operatorId], references: [id], onDelete: SetNull)
 
-  tourParks      TourPark[]
-  tourCategories TourCategory[]
+  tourParks       TourPark[]
+  tourExperiences TourExperience[]
+  tourCategories  TourCategory[]
 
   @@unique([id, uniqueId])
   @@index([countryId])
