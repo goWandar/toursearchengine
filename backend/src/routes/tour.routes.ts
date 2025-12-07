@@ -15,15 +15,25 @@ router.get('/tours/park/:parkId', async (req: Request, res: Response) => {
   await TourService.getToursByParkId(req, res);
 });
 
+// Get tours by experience ID
+router.get('/tours/experience/:experienceId', async (req: Request, res: Response) => {
+  await TourService.getToursByExperienceId(req, res);
+});
+
 
 // Get park & country search suggestions
-router.get('/tours/country-park/suggestions', async (req: Request, res: Response) => {
-  await TourService.getAllParksAndCountries(req, res);
+router.get('/tours/search-items', async (req: Request, res: Response) => {
+  await TourService.getSearchItems(req, res);
 });
 
 // Get parks by country name
 router.get('/parks/:countryName', async (req: Request, res: Response) => {
   await TourService.getParksByCountryName(req, res);
+});
+
+// Get experiences
+router.get('/experiences', async (req: Request, res: Response) => {
+  await TourService.getExperiences(req, res);
 });
 
 

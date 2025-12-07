@@ -15,8 +15,8 @@ interface AllTabContentProps {
     searchParams: URLSearchParams;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
-    idInURL: number;
-    typeInURL: string;
+    destinationIdInUrl: number;
+    destinationTypeInUrl: string;
     activeTab: ActiveTabType;
 }
 
@@ -24,8 +24,8 @@ const AllTabContent = ({
     searchParams,
     setSearchItemType,
     setSearchItemId,
-    idInURL,
-    typeInURL,
+    destinationIdInUrl,
+    destinationTypeInUrl,
     activeTab,
 }: AllTabContentProps) => {
     const router = useRouter();
@@ -45,15 +45,15 @@ const AllTabContent = ({
     // Load tours with initial filters from URL on mount
     useEffect(() => {
         loadInitialTours({
-            idInURL,
-            typeInURL,
+            idInURL: destinationIdInUrl,
+            typeInURL: destinationTypeInUrl,
             activeTab,
             searchParams,
             router,
             setSearchItemType,
             setSearchItemId,
         });
-    }, [idInURL, typeInURL]);
+    }, [destinationIdInUrl, destinationTypeInUrl]);
 
     return (
         <>
@@ -75,7 +75,7 @@ const AllTabContent = ({
             <div className="flex justify-center">
                 {pagination.hasMore && (
                     <Button
-                        onClick={() => loadMoreTours(idInURL, typeInURL, filters, sortBy, pricedBy)}
+                        onClick={() => loadMoreTours(destinationIdInUrl, destinationTypeInUrl, filters, sortBy, pricedBy)}
                         className="flex items-center"
                         loading={isLoadingMore}
                         disabled={isLoadingMore}

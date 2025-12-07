@@ -8,11 +8,11 @@ export const SearchResults = () => {
     const params = useParams();
     const searchParams = useSearchParams();
     const name = decodeURIComponent(params.name as string);
-    const idFromURL = Number(searchParams?.get("id")) || 0;
-    const typeFromURL = searchParams?.get("type") ?? "";
+    const destinationIdFromUrl = Number(searchParams?.get("id")) || 0;
+    const destinationTypeFromUrl = searchParams?.get("type") ?? "";
     // Search Item ID and Type State
-    const [searchItemId, setSearchItemId] = useState<number>(idFromURL);
-    const [searchItemType, setSearchItemType] = useState<string>(typeFromURL);
+    const [searchItemId, setSearchItemId] = useState<number>(destinationIdFromUrl);
+    const [searchItemType, setSearchItemType] = useState<string>(destinationTypeFromUrl);
 
     return (
         <div className='container mx-auto px-6 py-12'>

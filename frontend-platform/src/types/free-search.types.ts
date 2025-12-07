@@ -24,7 +24,8 @@ export interface ToursStateType {
         isLoadMore: boolean,
         filters: TourFiltersType,
         sortBy: SortToursType,
-        pricedBy: ToursPricedByType
+        pricedBy: ToursPricedByType,
+        experienceDestination?: ExperienceDestinationType
     ) => Promise<TourSearchResponse>;
 
     loadTours: (
@@ -32,7 +33,8 @@ export interface ToursStateType {
         typeParam: string,
         filters: TourFiltersType,
         sortBy: SortToursType,
-        pricedBy: ToursPricedByType
+        pricedBy: ToursPricedByType,
+        experienceDestination?: ExperienceDestinationType
     ) => Promise<void | TourSearchResponse>;
 
     loadMoreTours: (
@@ -40,7 +42,8 @@ export interface ToursStateType {
         typeParam: string,
         filters: TourFiltersType,
         sortBy: SortToursType,
-        pricedBy: ToursPricedByType
+        pricedBy: ToursPricedByType,
+        experienceDestination?: ExperienceDestinationType
     ) => Promise<void>;
 }
 
@@ -95,6 +98,17 @@ export interface LoadToursByParkParams {
     router: any;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
+}
+
+// Load Tours By Park Experience - Params Type (modern-search.utils.ts)
+export interface LoadToursByExperienceParams {
+    selectedExperience: ExperienceType;
+    activeTab: ActiveTabType;
+    searchParams: URLSearchParams;
+    router: any;
+    setSearchItemType: (type: string) => void;
+    setSearchItemId: (id: number) => void;
+    experienceDestination: ExperienceDestinationType;
 }
 
 // Load Initial Tours Handler - Params Type (modern-search.utils.ts)
@@ -179,11 +193,19 @@ export interface CountrySearchType {
     type: string;
 };
 
-export interface ParksCountriesType {
+// Experience Type
+export interface ExperienceType {
+    id: number;
+    name: string;
+}
+
+// Search Item Type (localStorage)
+export interface SearchItemType {
     parks: ParkSearchType[];
     countries: CountrySearchType[];
     popularParks: ParkSearchType[];
     trendingSearches: SuggestionType[];
+    experiences: ExperienceType[];
 }
 
 // Combined Search Suggestion Type
@@ -204,3 +226,8 @@ export interface TourSearchResponse {
     pagination: paginationType;
 }
 
+// Experience Destination Type (for loading tours by experience)(useTourStore.ts)
+export interface ExperienceDestinationType {
+    destinationId: number;
+    destinationType: string;
+}

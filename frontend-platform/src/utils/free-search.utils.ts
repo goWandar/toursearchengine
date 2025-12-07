@@ -1,20 +1,20 @@
-import { getParksAndCountries, getParksByCountryName } from "@/lib/api/free-search.api";
+import { getSearchItems, getParksByCountryName, getExperiencesFromDB } from "@/lib/api/free-search.api";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { useToursStore } from "@/stores/useTourStore";
-import { FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByParkParams, ParksCountriesType, ParkSearchType, SortToursType, SuggestionType, TourFiltersType, ToursPricedByType } from "@/types/free-search.types";
+import { ExperienceType, FiltersFromUrlReturnType, LoadInitialToursParams, LoadToursByExperienceParams, LoadToursByParkParams, ParkSearchType, SearchItemType, SortToursType, SuggestionType, TourFiltersType, ToursPricedByType } from "@/types/free-search.types";
 import { Price } from "@/types/types";
 import Fuse from "fuse.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-// GET Parks and Countries Search Suggestions from DB
-const fetchParksCountries = async (
+// GET Search Items from DB
+const fetchSearchItems = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
     setPopularParks: (parks: ParkSearchType[]) => void,
     setTrendingSearches: (searches: SuggestionType[]) => void,
 ) => {
     try {
-        const parksCountries = await getParksAndCountries();
+        const parksCountries = await getSearchItems();
 
         const combined: SuggestionType[] = [
             ...parksCountries.parks,
@@ -35,7 +35,7 @@ const fetchParksCountries = async (
     }
 };
 
-// GET Parks and Countries Search Suggestions (modern-search.tsx)
+// GET Search Items (Suggestions & Experiences) (modern-search.tsx)
 export const getSearchSuggestions = async (
     setSuggestionsList: (suggestions: SuggestionType[]) => void,
     setPopularParks: (parks: ParkSearchType[]) => void,
@@ -44,7 +44,7 @@ export const getSearchSuggestions = async (
 ) => {
     try {
         setIsLoading(true);
-        const cachedSuggestions = localStorage.getItem("parksAndCountries");
+        const cachedSuggestions = localStorage.getItem("searchItems");
 
         // First Check in Local Storage
         if (cachedSuggestions) {
@@ -65,7 +65,7 @@ export const getSearchSuggestions = async (
         }
 
         // Fetch from DB
-        const parksCountries = await fetchParksCountries(
+        const parksCountries = await fetchSearchItems(
             setSuggestionsList,
             setPopularParks,
             setTrendingSearches
@@ -73,7 +73,7 @@ export const getSearchSuggestions = async (
 
         // Set parks and countries in localStorage if just fetched from DB
         if (parksCountries) {
-            localStorage.setItem("parksAndCountries", JSON.stringify(parksCountries));
+            localStorage.setItem("searchItems", JSON.stringify(parksCountries));
         }
     } catch (error) {
         // Send toast notification to user
@@ -283,15 +283,17 @@ export const tourSearchUrlHandler = {
         router.replace(`?${params.toString()}`);
     },
 
-    // Set active tab and optionally the park param in URL
+    // Set active tab and optionally the park/experience id in URL
     setActiveTab({
         activeTab,
         parkId,
+        experienceId,
         searchParams,
         router,
     }: {
         activeTab: "all" | "parks" | "experiences";
         parkId?: number; // optional, only set when needed
+        experienceId?: number; // optional, only set when needed
         searchParams: URLSearchParams;
         router: AppRouterInstance;
     }) {
@@ -303,11 +305,16 @@ export const tourSearchUrlHandler = {
         } else {
             params.delete("tab");
             params.delete("park"); // also delete park when resetting tab
+            params.delete("experience");
         }
 
         // Handle park param if provided
         if (parkId !== undefined) {
             params.set("park", String(parkId));
+        }
+
+        if (experienceId !== undefined) {
+            params.set("experience", String(experienceId));
         }
 
         router.replace(`?${params.toString()}`);
@@ -342,20 +349,20 @@ export const tourSearchUrlHandler = {
 // Get Parks by Country Name (parks-tab-content.tsx)
 export async function getParksByCountry(country: string) {
     // Retrieve data from localStorage
-    const parksAndCountries = localStorage.getItem("parksAndCountries");
+    const searchItems = localStorage.getItem("searchItems");
 
     try {
-        if (!parksAndCountries) {
+        if (!searchItems) {
             // Load parks directly from the Database if not in localStorage
             const parks = await getParksByCountryName(country);
 
             return parks;
         }
 
-        const parsedData: ParksCountriesType = JSON.parse(parksAndCountries);
+        const parsedData: SearchItemType = JSON.parse(searchItems);
         const parks: ParkSearchType[] = parsedData.parks;
 
-        // Normalize both sides to handle extra spaces or case differences
+        // Filter parks by country name (normalize both sides)
         const matchingParks = parks.filter(
             (park) => park.country.trim().toLowerCase() === country.trim().toLowerCase()
         );
@@ -364,6 +371,30 @@ export async function getParksByCountry(country: string) {
 
     } catch (error) {
         throw Error(`Error Loading Parks By Country Name`);
+    }
+};
+
+// Get Experiences (experiences-tab-content.tsx)
+export async function getExperiences() {
+    // Retrieve data from localStorage
+    const searchItems = localStorage.getItem("searchItems");
+
+    try {
+        if (!searchItems) {
+            // Load experiences directly from the Database if not in localStorage
+            const experiences = await getExperiencesFromDB();
+
+            return experiences;
+        }
+
+        const parsedData: SearchItemType = JSON.parse(searchItems);
+        const experiences: ExperienceType[] = parsedData.experiences;
+
+        // Normalize both sides to handle extra spaces or case differences
+        return experiences;
+
+    } catch (error) {
+        throw Error(`Error Loading Experiences`);
     }
 };
 
@@ -484,5 +515,67 @@ export const loadInitialTours = async ({
         const { setResultsState } = useToursStore.getState();
         setResultsState("error");
         console.error("Error loading initial tours");
+    }
+};
+
+// Load Tours for Selected Experience (experiences-tab-content.tsx)
+export const loadToursForSelectedExperience = async ({
+    selectedExperience,
+    activeTab,
+    searchParams,
+    router,
+    setSearchItemType,
+    setSearchItemId,
+    experienceDestination
+}: LoadToursByExperienceParams) => {
+    try {
+        // Get States and Actions from Tours Store
+        const { setResultsState, loadTours, resetPagination } = useToursStore.getState();
+
+        // Get States and Actions from Filters Store
+        const { setAppliedFilters, setFilters, setSortBy, setPricedBy } = useFiltersStore.getState();
+
+        setResultsState("loading");
+        if (!selectedExperience && !experienceDestination) return;
+
+        // Set selected active tab and park in URL
+        tourSearchUrlHandler.setActiveTab({
+            activeTab,
+            experienceId: selectedExperience.id,
+            searchParams,
+            router,
+        });
+
+        // Set search item in parent component (for filtering handlers)
+        setSearchItemType("experience");
+        setSearchItemId(selectedExperience.id);
+
+        // Fetch initial filters and sorting from URL
+        const { filtersFromURL, sortingFromURL, pricedByFromURL } =
+            tourSearchUrlHandler.getFiltersFromUrl(searchParams, setAppliedFilters);
+
+
+        // Set filters from url into state
+        setFilters(filtersFromURL);
+        setSortBy(sortingFromURL);
+        setPricedBy(pricedByFromURL);
+
+        resetPagination();
+
+        // Load tours based on selected park
+        const tourResults = await loadTours(selectedExperience.id, "experience", filtersFromURL, sortingFromURL, pricedByFromURL, experienceDestination);
+
+        if (tourResults) {
+            if (tourResults.tours.length < 1) {
+                setResultsState("void");
+            } else {
+                setResultsState("returned");
+            }
+        }
+
+    } catch (error) {
+        const { setResultsState } = useToursStore.getState();
+        setResultsState("error");
+        console.error("Error loading tours");
     }
 };

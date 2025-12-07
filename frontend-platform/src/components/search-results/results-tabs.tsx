@@ -10,6 +10,7 @@ import { useToursStore } from "@/stores/useTourStore";
 import { TabsListSkeleton } from "./tabs-list-skeleton";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { ActiveTabType } from "@/types/free-search.types";
+import ExperiencesTabContent from "./experiences-tab-content";
 
 interface ResultsTabsProps {
     searchItemName: string;
@@ -27,12 +28,15 @@ export default function ResultsTabs({
     const [activeTab, setActiveTab] = useState<ActiveTabType | null>(null);
     const tabFromUrl = searchParams.get("tab");
 
-    // Get type and id from URL (for all results tab)
-    const typeInURL = searchParams?.get("type") ?? "";
-    const idInURL = Number(searchParams?.get("id")) || 0;
+    // Get destination type and id from URL (for all results tab)
+    const destinationTypeInUrl = searchParams?.get("type") ?? "";
+    const destinationIdInUrl = Number(searchParams?.get("id")) || 0;
 
     // Get Park from URL (for parks tab)
-    const parkIdFromURL = Number(searchParams?.get("park")) || 0;
+    const parkIdInUrl = Number(searchParams?.get("park")) || 0;
+
+    // Get Experience from URL (for experiences tab)
+    const experienceIdInUrl = Number(searchParams?.get("experience")) || 0;
 
     // Tours Store States
     const pagination = useToursStore((state) => state.pagination);
@@ -41,7 +45,7 @@ export default function ResultsTabs({
     // Check set results tab based on URL "tab" param
     useEffect(() => {
         // Set Tab to Parks
-        if (tabFromUrl === "parks" && typeInURL === "country") {
+        if (tabFromUrl === "parks" && destinationTypeInUrl === "country") {
             setActiveTab("parks");
         }
         // Set Tab to Experiences 
@@ -52,7 +56,7 @@ export default function ResultsTabs({
         else {
             setActiveTab("all");
         }
-    }, [tabFromUrl, typeInURL]);
+    }, [tabFromUrl, destinationTypeInUrl]);
 
     return (
         <>
@@ -86,7 +90,7 @@ export default function ResultsTabs({
                         </TabsTrigger>
 
                         {/* Parks tab */}
-                        {typeInURL === "country" && (
+                        {destinationTypeInUrl === "country" && (
                             <TabsTrigger value="parks" className="rounded-xl text-xs sm:text-sm font-medium relative" disabled={resultsState === "loading"}>
                                 Parks <span className="hidden sm:block">{(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}</span>
                                 {activeTab === "parks" && (
@@ -116,16 +120,24 @@ export default function ResultsTabs({
                     <TabsContent value="all" className="space-y-12">
                         <AllTabContent searchParams={searchParams}
                             setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
-                            typeInURL={typeInURL} idInURL={idInURL} activeTab={activeTab}
+                            destinationTypeInUrl={destinationTypeInUrl} destinationIdInUrl={destinationIdInUrl} activeTab={activeTab}
                         />
                     </TabsContent>
 
                     {/* Parks Tab Content */}
                     <TabsContent value="parks" className="space-y-12">
-                        {/* Parks */}
                         <ParksTabContent searchParams={searchParams} countryName={searchItemName}
                             tabFromUrl={activeTab} setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
-                            parkIdFromURL={parkIdFromURL} activeTab={activeTab}
+                            parkIdInUrl={parkIdInUrl} activeTab={activeTab}
+                        />
+                    </TabsContent>
+
+                    {/* Experience Tab Content */}
+                    <TabsContent value="experiences" className="space-y-12">
+                        <ExperiencesTabContent
+                            searchParams={searchParams} tabFromUrl={activeTab} setSearchItemId={setSearchItemId}
+                            setSearchItemType={setSearchItemType} destinationIdInUrl={destinationIdInUrl}
+                            destinationTypeInUrl={destinationTypeInUrl} activeTab={activeTab} experienceIdInUrl={experienceIdInUrl}
                         />
                     </TabsContent>
                 </Tabs>

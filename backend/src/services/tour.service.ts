@@ -124,8 +124,79 @@ export const TourService = {
     }
   },
 
+  // Get tours by experience ID (Search Results)
+  async getToursByExperienceId(req: Request, res: Response): Promise<Response> {
+    try {
+      const experienceId = parseInt(req.params.experienceId);
+
+      // Get Filters & Pagination params
+      const {
+        page,
+        limit,
+        skip,
+        accommodation,
+        duration,
+        budget,
+        sortBy,
+        persons
+      } = parseTourQueryParams(req.query);
+
+      // Parse experience-specific params
+      const destinationId = req.query.destinationId
+        ? parseInt(req.query.destinationId as string)
+        : 1;
+
+      const destinationType = req.query.destinationType
+        ? String(req.query.destinationType)
+        : "country";
+
+      // Build where clause
+      const where = buildWhereClause.byExperienceId({
+        experienceId,
+        accommodation,
+        destinationId,
+        destinationType,
+        duration,
+        budget,
+        persons
+      });
+
+      // Fetch tours and total count
+      const { tours, total } = await fetchTours({
+        prisma,
+        where,
+        sortBy,
+        skip,
+        limit,
+      })
+
+
+      return setResponse.success({
+        res,
+        message: "Tours fetched successfully",
+        data: {
+          tours,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            hasMore: page * limit < total,
+          },
+        }
+      });
+
+    } catch (error) {
+      return setResponse.serverError({
+        res,
+        message: "Failed to fetch tours by experience ID",
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+    }
+  },
+
   // Get parks and tours suggestions (Input Suggestions)
-  async getAllParksAndCountries(req: Request, res: Response): Promise<Response> {
+  async getSearchItems(req: Request, res: Response): Promise<Response> {
     try {
       // Fetch parks
       const parks = await prisma.park.findMany({
@@ -166,6 +237,22 @@ export const TourService = {
         type: 'country',
       }));
 
+      // Fetch Experiences
+      const experiences = await prisma.experience.findMany({
+        where: {
+          tourExperiences: {
+            some: {}, // At least one related row in _TourExperiences
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
       // Popular Parks hardcoded data(temporary)
       const popularParks = [
         { country: "Kenya", id: 66, keyword: "masai mara", name: "Masai Mara National Reserve", type: "park" },
@@ -191,6 +278,7 @@ export const TourService = {
           countries: countriesWithType,
           popularParks,
           trendingSearches,
+          experiences,
         }
       });
     } catch (error) {
@@ -239,6 +327,42 @@ export const TourService = {
         message: `Parks in ${countryName} fetched successfully`,
         data: {
           parks: parksWithType,
+        }
+      });
+
+    } catch (error) {
+      return setResponse.serverError({
+        res,
+        message: "Failed to fetch parks by country name",
+        error: error instanceof Error ? error : new Error(String(error))
+      });
+    }
+  },
+
+  // Get experiences (Search Results)
+  async getExperiences(req: Request, res: Response): Promise<Response> {
+    try {
+
+      const experiences = await prisma.experience.findMany({
+        where: {
+          tourExperiences: {
+            some: {}, // At least one related row in _TourExperiences
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      return setResponse.success({
+        res,
+        message: `Fetched experiences successfully`,
+        data: {
+          experiences,
         }
       });
 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { ToursStateType } from "@/types/free-search.types";
 import { DEFAULT_PAGINATION } from "@/utils/constants.utils";
-import { getToursByCountryId, getToursByParkId } from "@/lib/api/free-search.api";
+import { getToursByCountryId, getToursByExperienceId, getToursByParkId } from "@/lib/api/free-search.api";
 import { useToastStore } from "./useToastStore";
 
 export const useToursStore = create<ToursStateType>((set, get) => ({
@@ -25,7 +25,8 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
         isLoadMore,
         filters,
         sortBy,
-        pricedBy
+        pricedBy,
+        experienceDestination?
     ) => {
         try {
             const pageToFetch = isLoadMore ? paginationMeta.page + 1 : paginationMeta.page;
@@ -49,6 +50,15 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
                     sortBy,
                     pricedBy
                 );
+            } else if (type === "experience" && experienceDestination) {
+                fetchedTours = await getToursByExperienceId(
+                    id,
+                    updatedPaginationMeta,
+                    filters,
+                    sortBy,
+                    pricedBy,
+                    experienceDestination
+                );
             } else {
                 throw new Error(`Unknown type: ${type}`);
             }
@@ -68,7 +78,7 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
     },
 
     // Load Tours(for initial load and filters/sort change) (free-search.utils.ts)
-    loadTours: async (idParam, typeParam, filters, sortBy, pricedBy) => {
+    loadTours: async (idParam, typeParam, filters, sortBy, pricedBy, experienceDestination) => {
         if (!idParam || !typeParam) return;
 
         try {
@@ -93,7 +103,8 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
                 false,
                 filters,
                 sortBy,
-                pricedBy
+                pricedBy,
+                experienceDestination
             );
         } catch (err) {
             throw err;
@@ -101,7 +112,7 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
     },
 
     // Load Tours (For Load More)
-    loadMoreTours: async (idParam, typeParam, filters, sortBy, pricedBy) => {
+    loadMoreTours: async (idParam, typeParam, filters, sortBy, pricedBy, experienceDestination) => {
         if (!idParam || !typeParam) return;
 
         const { pagination } = get();
@@ -128,7 +139,8 @@ export const useToursStore = create<ToursStateType>((set, get) => ({
                 true,
                 filters,
                 sortBy,
-                pricedBy
+                pricedBy,
+                experienceDestination
             );
         }
         catch {

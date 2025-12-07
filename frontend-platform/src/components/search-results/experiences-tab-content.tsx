@@ -1,32 +1,33 @@
 import { useEffect, useState } from "react";
 import { useFiltersStore } from "@/stores/useFiltersStore";
 import { Badge } from "@/recipes/badge/badge";
-import { getParksByCountry, loadToursForSelectedPark } from "@/utils/free-search.utils";
+import { getExperiences, loadToursForSelectedExperience } from "@/utils/free-search.utils";
 import ModernSafariCard from "./modern-safari-card";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import { Button } from "@/recipes/button/button";
 import { ChevronDown } from "lucide-react";
 import { useToursStore } from "@/stores/useTourStore";
 import { useRouter } from "next/navigation";
-import { ActiveTabType, ParkSearchType } from "@/types/free-search.types";
+import { ActiveTabType, ExperienceType } from "@/types/free-search.types";
 
 
-interface ParksTabContentProps {
+interface ExperiencesTabContentProps {
     searchParams: URLSearchParams;
-    countryName: string;
     setSearchItemType: (type: string) => void;
     setSearchItemId: (id: number) => void;
     tabFromUrl: string | null;
-    parkIdInUrl: number;
+    destinationTypeInUrl: string;
+    destinationIdInUrl: number;
+    experienceIdInUrl: number;
     activeTab: ActiveTabType;
 }
 
-const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemType, setSearchItemId,
-    parkIdInUrl
-}: ParksTabContentProps) => {
+const ExperiencesTabContent = ({ activeTab, searchParams, setSearchItemType, setSearchItemId,
+    destinationTypeInUrl, destinationIdInUrl, experienceIdInUrl
+}: ExperiencesTabContentProps) => {
     const router = useRouter();
-    const [parks, setParks] = useState<ParkSearchType[]>([]);
-    const [selectedPark, setSelectedPark] = useState<ParkSearchType | null>(null);
+    const [experiences, setExperiences] = useState<ExperienceType[]>([]);
+    const [selectedExperience, setSelectedExperience] = useState<ExperienceType | null>(null);
 
     // Tours Store state and actions
     const tours = useToursStore((state) => state.tours);
@@ -42,47 +43,47 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
     const pricedBy = useFiltersStore((state) => state.pricedBy);
 
     useEffect(() => {
-        if (!countryName) return;
-
-        const fetchParks = async () => {
+        const fetchExperiences = async () => {
             setResultsState("loading");
 
             try {
-                const parks = await getParksByCountry(countryName);
-                setParks(parks);
+                const experiences = await getExperiences();
+                setExperiences(experiences);
 
-                // Set selected park immediately
-                const parkFromURL = parks.find(park => park.id === parkIdInUrl);
-                setSelectedPark(parkFromURL || parks[0]);
+                // Set selected experience immediately
+                const experienceFromUrl = experiences.find(experience => experience.id === experienceIdInUrl);
+                setSelectedExperience(experienceFromUrl || experiences[0]);
 
             } catch (error) {
                 setResultsState("error")
-                console.error("Error loading parks");
+                console.error("Error loading experiences");
             }
         };
 
-        fetchParks();
-    }, [countryName]);
+        fetchExperiences();
+    }, []);
 
-    // Load tours on mount or whenever selected park changes
+    // Load tours on mount or whenever selected experience changes
     useEffect(() => {
-        loadToursForSelectedPark({
-            selectedPark, activeTab, searchParams,
+        if (!selectedExperience || !destinationIdInUrl || !destinationTypeInUrl) return;
+        loadToursForSelectedExperience({
+            selectedExperience, activeTab, searchParams,
             router, setSearchItemType, setSearchItemId,
+            experienceDestination: { destinationId: destinationIdInUrl, destinationType: destinationTypeInUrl }
         });
-    }, [selectedPark]);
+    }, [selectedExperience, destinationIdInUrl, destinationTypeInUrl]);
 
     return (
         <>
             <div className="bg-white rounded-2xl p-6 shadow-sm border">
                 <div className="flex flex-wrap gap-3">
-                    {parks.map((park, idx) => {
-                        const isSelected = selectedPark?.id === park.id;
+                    {experiences.map((experience, idx) => {
+                        const isSelected = selectedExperience?.id === experience.id;
 
                         return (
                             <Badge
                                 key={idx}
-                                onClick={() => setSelectedPark(park)}
+                                onClick={() => setSelectedExperience(experience)}
                                 variant="secondary"
                                 className={`
                   cursor-pointer transition-colors rounded-full md:px-4 md:py-2
@@ -92,7 +93,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                                     }
                 `}
                             >
-                                {park.name}
+                                {experience.name}
                             </Badge>
                         );
                     })}
@@ -115,7 +116,7 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
                 {pagination.hasMore && (
                     <Button
                         onClick={() =>
-                            loadMoreTours(selectedPark?.id ?? 0, selectedPark?.type ?? "", filters, sortBy, pricedBy)
+                            loadMoreTours(selectedExperience?.id ?? 0, "experience", filters, sortBy, pricedBy)
                         }
                         className="flex items-center"
                         loading={isLoadingMore}
@@ -130,4 +131,4 @@ const ParksTabContent = ({ activeTab, searchParams, countryName, setSearchItemTy
     );
 };
 
-export default ParksTabContent;
+export default ExperiencesTabContent;

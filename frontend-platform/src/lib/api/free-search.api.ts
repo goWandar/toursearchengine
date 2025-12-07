@@ -1,10 +1,10 @@
-import { paginationType, ParksCountriesType, ParkSearchType, SortToursType, TourFiltersType, TourSearchResponse, ToursPricedByType } from '@/types/free-search.types';
+import { ExperienceDestinationType, ExperienceType, paginationType, ParkSearchType, SearchItemType, SortToursType, TourFiltersType, TourSearchResponse, ToursPricedByType } from '@/types/free-search.types';
 import axiosClient from './axios-retry-client';
 
-// Get All Parks and Countries Suggestions(free-search.utils.ts)
-export const getParksAndCountries = async (): Promise<ParksCountriesType> => {
+// Get Search Suggestions & Experiences(free-search.utils.ts)
+export const getSearchItems = async (): Promise<SearchItemType> => {
     try {
-        const response = await axiosClient.get(`/api/tours/country-park/suggestions`);
+        const response = await axiosClient.get(`/api/tours/search-items`);
 
         return response.data.data;
     } catch (error) {
@@ -72,6 +72,39 @@ export const getToursByParkId = async (
     }
 }
 
+// Get Tours by Experience ID(useTourStore.ts)
+export const getToursByExperienceId = async (
+    experienceId: number,
+    paginationMeta: paginationType,
+    filters: TourFiltersType,
+    sortBy: SortToursType,
+    pricedBy: ToursPricedByType,
+    experienceDestination: ExperienceDestinationType
+): Promise<TourSearchResponse> => {
+    try {
+        const response = await axiosClient.get<{ data: TourSearchResponse }>(
+            `/api/tours/experience/${experienceId}`,
+            {
+                params: {
+                    page: paginationMeta.page,
+                    limit: paginationMeta.limit,
+                    duration: filters.duration,
+                    accommodation: filters.accommodation,
+                    budget: filters.budget,
+                    sortBy: sortBy,
+                    persons: pricedBy.persons,
+                    destinationId: experienceDestination.destinationId,
+                    destinationType: experienceDestination.destinationType
+                }
+            }
+        );
+
+        return response.data.data;
+    } catch (error) {
+        throw new Error('Failed to fetch tours by experience id');
+    }
+}
+
 // Get Parks By CountryName(free-search.utils.ts)
 export const getParksByCountryName = async (
     countryName: string
@@ -84,5 +117,18 @@ export const getParksByCountryName = async (
         return response.data.data.parks;
     } catch (error) {
         throw new Error('Failed to fetch parks by country name');
+    }
+}
+
+// Get Experiences(free-search.utils.ts)
+export const getExperiencesFromDB = async (): Promise<ExperienceType[]> => {
+    try {
+        const response = await axiosClient.get<{ data: { experiences: ExperienceType[] } }>(
+            `/api/experiences`
+        );
+
+        return response.data.data.experiences;
+    } catch (error) {
+        throw new Error('Failed to fetch experiences from DB');
     }
 }

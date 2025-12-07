@@ -70,7 +70,7 @@ export function parseTourQueryParams(query: any) {
     };
 }
 
-// Get Tours by Park ID or Country ID - Where Clause
+// Get Tours - Where Clause
 export const buildWhereClause = {
     // Common filters shared by both methods
     baseFilters({
@@ -149,6 +149,26 @@ export const buildWhereClause = {
     }) {
         return {
             tourParks: { some: { parkId } },
+            ...this.baseFilters({ accommodation, duration, budget, persons }),
+        };
+    },
+
+    // By Experience ID
+    byExperienceId({
+        experienceId,
+        accommodation,
+        duration,
+        budget,
+        persons,
+    }: {
+        experienceId: number;
+        accommodation: string[];
+        duration: [number, number];
+        budget?: [number, number];
+        persons: number;
+    }) {
+        return {
+            tourExperiences: { some: { experienceId } },
             ...this.baseFilters({ accommodation, duration, budget, persons }),
         };
     },
