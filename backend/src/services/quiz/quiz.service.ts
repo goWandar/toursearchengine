@@ -1,10 +1,13 @@
+import { handlePrismaRequestError } from '../../utils/errorHandler.js';
 import { logger } from '../../utils/logger.js';
+
 import type { QuizStage } from '@prisma/client';
 import type { QuizSubmissionRequest, QuizResults } from '../../types/quiz.types.js';
 import { ServiceResponse } from '../../types/shared.types.js';
+
 import { prisma } from '../../db/prisma.js';
-import { handlePrismaRequestError } from '../../utils/errorHandler.js';
-import { generateQuizResults } from './helpers/quiz.helpers.js'; // Add this import
+
+import { generateQuizResults } from './helpers/quiz.helpers.js';
 
 export const QuizService = {
   initQuiz: () => {
@@ -47,8 +50,8 @@ export const QuizService = {
     );
 
     try {
-      // ✅ Generate quiz results with persona and recommendations
-      const { results, personaId } = await generateQuizResults(submission);
+      // Generate quiz results with persona and recommendations
+      const { quizResults, personaId } = await generateQuizResults(submission);
 
       // Save quiz response
       const response = await prisma.quizResponse.create({
@@ -58,7 +61,7 @@ export const QuizService = {
           stageId: submission.stageId,
           confidenceLevel: submission.confidence || null,
           quizSelections: JSON.parse(JSON.stringify(submission.answers)),
-          resultsJson: JSON.parse(JSON.stringify(results)), // Save full results
+          resultsJson: JSON.parse(JSON.stringify(quizResults)), // Save full results
           personaId: personaId, // Save matched persona
         },
       });
@@ -80,7 +83,7 @@ export const QuizService = {
         success: true,
         data: {
           responseId: response.id,
-          results: results, // ✅ Return full results, not just answers
+          results: quizResults, // Return full results, not just answers
         },
       };
     } catch (error) {

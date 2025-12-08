@@ -9,7 +9,7 @@ import { findMatchingTours } from './matching.helpers.js';
 // Generate complete quiz results
 export async function generateQuizResults(
   submission: QuizSubmissionRequest,
-): Promise<{ results: QuizResults; personaId: number | null }> {
+): Promise<{ quizResults: QuizResults; personaId: number | null }> {
   logger.info('[QuizHelpers] Generating quiz results');
 
   try {
@@ -31,7 +31,7 @@ export async function generateQuizResults(
     logger.success('[QuizHelpers] Quiz results generated successfully');
 
     return {
-      results: {
+      quizResults: {
         userProfile,
         recommendations,
         nextSteps,
