@@ -40,19 +40,19 @@ const FiltersBadge = ({
                         <FilterIcon className="text-green-800 h-4 w-4" />
 
                         {hasBudget && (
-                            <Badge variant="secondary">
+                            <Badge variant="secondary" className='bg-green-50 text-green-800'>
                                 Budget: {appliedFilters.budget[0]} - {appliedFilters.budget[1]} USD
                             </Badge>
                         )}
 
                         {hasDuration && (
-                            <Badge variant="secondary">
+                            <Badge variant="secondary" className='bg-green-50 text-green-800'>
                                 Duration: {appliedFilters.duration[0]} - {appliedFilters.duration[1]} days
                             </Badge>
                         )}
 
                         {hasAccommodation && (
-                            <Badge variant="secondary">
+                            <Badge variant="secondary" className='bg-green-50 text-green-800'>
                                 Accommodation: {appliedFilters.accommodation.join(", ")}
                             </Badge>
                         )}
@@ -64,9 +64,9 @@ const FiltersBadge = ({
             {hasSorting && (
                 <div className="flex flex-row py-2 gap-2">
                     <div className="flex flex-row items-center gap-2">
-                        <SortDescIcon className="text-green-800 h-4 w-4" />
+                        <SortDescIcon className="text-orange-700 h-4 w-4" />
 
-                        <Badge variant="secondary">
+                        <Badge variant="secondary" className='bg-orange-50 text-orange-700'>
                             {sortBy === "budget_low_high" && "Budget (Low to High)"}
                             {sortBy === "budget_high_low" && "Budget (High to Low)"}
                             {sortBy === "duration_short_long" && "Duration (Short to Long)"}
