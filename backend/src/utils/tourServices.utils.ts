@@ -156,22 +156,43 @@ export const buildWhereClause = {
     // By Experience ID
     byExperienceId({
         experienceId,
+        destinationId,
+        destinationType,
         accommodation,
         duration,
         budget,
         persons,
     }: {
         experienceId: number;
+        destinationId: number;
+        destinationType: string;
         accommodation: string[];
         duration: [number, number];
         budget?: [number, number];
         persons: number;
     }) {
-        return {
+        const base = this.baseFilters({ accommodation, duration, budget, persons });
+
+        // Start with experience filter
+        const where: any = {
             tourExperiences: { some: { experienceId } },
-            ...this.baseFilters({ accommodation, duration, budget, persons }),
+            ...base,
         };
-    },
+
+        // Apply destination filter
+        if (destinationType === "country") {
+            // Country filter: tour.countryId must match
+            where.countryId = destinationId;
+        }
+
+        if (destinationType === "park") {
+            // Park filter: tour must have a linked TourPark with this parkId
+            where.tourParks = { some: { parkId: destinationId } };
+        }
+
+        return where;
+    }
+
 };
 
 // Get Tours by Park ID or Country ID - OrderBy Clause

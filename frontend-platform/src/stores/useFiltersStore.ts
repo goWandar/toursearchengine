@@ -16,7 +16,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
     setPricedBy: (pricedBy) => set({ pricedBy }),
 
     // Reset Filters Handler
-    resetFilters: async ({ idParam, typeParam, searchParams, router }) => {
+    resetFilters: async ({ idParam, typeParam, searchParams, router, destinationData }) => {
         try {
             // Get States and Actions from Tours Store
             const {
@@ -43,7 +43,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
             resetPagination();
 
             // Fetch tours without filters
-            const tourResults = await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy, pricedBy);
+            const tourResults = await loadTours(idParam, typeParam, DEFAULT_FILTERS, sortBy, pricedBy, destinationData);
 
 
             if (tourResults) {
@@ -63,7 +63,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
     },
 
     // Apply filters handler
-    applyFilters: async ({ idParam, typeParam, searchParams, router }) => {
+    applyFilters: async ({ idParam, typeParam, searchParams, router, destinationData }) => {
         try {
             // Get States and Actions from Tours Store
             const {
@@ -87,7 +87,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
             tourSearchUrlHandler.setFilters({ filters, searchParams, router });
 
             // Load Tours
-            const tourResults = await loadTours(idParam, typeParam, filters, sortBy, pricedBy);
+            const tourResults = await loadTours(idParam, typeParam, filters, sortBy, pricedBy, destinationData);
 
             if (tourResults) {
                 if (tourResults.tours.length < 1) {
@@ -107,7 +107,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
     },
 
     // Sort tours handler
-    sortTours: async ({ idParam, typeParam, searchParams, router, sortBy }) => {
+    sortTours: async ({ idParam, typeParam, searchParams, router, sortBy, destinationData }) => {
         try {
             // Get States and Actions from Tours Store
             const {
@@ -131,7 +131,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
             resetPagination();
 
             // Load Tours
-            const tourResults = await loadTours(idParam, typeParam, filters, sortBy, pricedBy);
+            const tourResults = await loadTours(idParam, typeParam, filters, sortBy, pricedBy, destinationData);
 
             if (tourResults) {
                 if (tourResults.tours.length < 1) {
@@ -150,7 +150,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
         }
     },
 
-    setNumberOfPersons: async ({ idParam, typeParam, searchParams, router, priceBy }) => {
+    setNumberOfPersons: async ({ idParam, typeParam, searchParams, router, priceBy, destinationData }) => {
         try {
             // Get States and Actions from Tours Store
             const {
@@ -174,7 +174,7 @@ export const useFiltersStore = create<FiltersState>((set, get) => ({
             resetPagination();
 
             // Load Tours
-            const tourResults = await loadTours(idParam, typeParam, filters, sortBy, priceBy);
+            const tourResults = await loadTours(idParam, typeParam, filters, sortBy, priceBy, destinationData);
 
             if (tourResults) {
                 if (tourResults.tours.length < 1) {

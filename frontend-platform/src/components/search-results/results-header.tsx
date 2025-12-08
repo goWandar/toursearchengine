@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import SortSelect from "./sort-select";
 import FiltersBadge from "./filters-badge";
 import { DEFAULT_FILTERS } from "@/utils/constants.utils";
-import { SortToursType } from "@/types/free-search.types";
+import { ExperienceDestinationType, SortToursType } from "@/types/free-search.types";
 import DynamicPricing from "./dynamic-pricing";
 
 interface ResultsHeaderProps {
@@ -15,9 +15,10 @@ interface ResultsHeaderProps {
     name?: string;
     searchItemId: number;
     searchItemType: string;
+    destinationData: ExperienceDestinationType | undefined;
 }
 
-const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: ResultsHeaderProps) => {
+const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType, destinationData }: ResultsHeaderProps) => {
     const router = useRouter();
 
     // Tours Store State
@@ -38,6 +39,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
         typeParam: searchItemType,
         searchParams,
         router,
+        destinationData: searchItemType === "experience" ? destinationData : undefined,
     });
 
     const handleResetFilters = () => resetFilters({
@@ -45,6 +47,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
         typeParam: searchItemType,
         searchParams,
         router,
+        destinationData: searchItemType === "experience" ? destinationData : undefined,
     });
 
     const handleSortTours = (sort: SortToursType) => sortTours({
@@ -53,6 +56,7 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
         sortBy: sort,
         searchParams,
         router,
+        destinationData: searchItemType === "experience" ? destinationData : undefined,
     });
 
 
@@ -100,10 +104,11 @@ const ResultsHeader = ({ name, searchParams, searchItemId, searchItemType }: Res
                 </div>
                 {/* Pricing By Number of People Slider */}
                 <DynamicPricing
-                    typeParam={searchItemType}
-                    idParam={searchItemId}
+                    searchItemType={searchItemType}
+                    searchItemId={searchItemId}
                     searchParams={searchParams}
                     isLoading={resultsState === "loading"}
+                    destinationData={destinationData}
                 />
             </div>
         </div>

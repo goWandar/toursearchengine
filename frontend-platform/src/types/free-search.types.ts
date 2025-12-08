@@ -64,6 +64,7 @@ export interface FiltersState {
         typeParam: string;
         searchParams: any;
         router: any;
+        destinationData?: ExperienceDestinationType;
     }) => Promise<void>;
 
     applyFilters: (deps: {
@@ -71,6 +72,7 @@ export interface FiltersState {
         typeParam: string;
         searchParams: any;
         router: any;
+        destinationData?: ExperienceDestinationType;
     }) => Promise<void>;
 
     sortTours: (deps: {
@@ -79,6 +81,7 @@ export interface FiltersState {
         searchParams: any;
         router: any;
         sortBy: SortToursType;
+        destinationData?: ExperienceDestinationType;
     }) => Promise<void>;
 
     setNumberOfPersons: (deps: {
@@ -87,6 +90,7 @@ export interface FiltersState {
         searchParams: any;
         router: any;
         priceBy: ToursPricedByType;
+        destinationData?: ExperienceDestinationType;
     }) => Promise<void>;
 }
 

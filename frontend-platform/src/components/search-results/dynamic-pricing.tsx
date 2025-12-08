@@ -3,15 +3,17 @@ import { GroupSizeSelector } from './group-size-selector'
 import { useFiltersStore } from '@/stores/useFiltersStore'
 import { useRouter } from 'next/navigation';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import { ExperienceDestinationType } from '@/types/free-search.types';
 
 interface DynamicPricingProps {
-    idParam: number;
-    typeParam: string;
+    searchItemId: number;
+    searchItemType: string;
     searchParams: any;
     isLoading: boolean;
+    destinationData: ExperienceDestinationType | undefined;
 }
 
-const DynamicPricing = ({ idParam, typeParam, searchParams, isLoading }: DynamicPricingProps) => {
+const DynamicPricing = ({ searchItemId, searchItemType, searchParams, isLoading, destinationData }: DynamicPricingProps) => {
     const router = useRouter();
     const setNumberOfPersons = useFiltersStore((state) => state.setNumberOfPersons);
     const pricedBy = useFiltersStore((state) => state.pricedBy);
@@ -27,11 +29,12 @@ const DynamicPricing = ({ idParam, typeParam, searchParams, isLoading }: Dynamic
     // Debounced store / fetch update
     const debouncedHandleGroupSizeChange = useDebouncedCallback((value: number) => {
         setNumberOfPersons({
-            idParam,
-            typeParam,
+            idParam: searchItemId,
+            typeParam: searchItemType,
             searchParams,
             router,
             priceBy: { persons: value },
+            destinationData: searchItemType === "experience" ? destinationData : undefined,
         });
     }, 800);
 

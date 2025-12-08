@@ -28,6 +28,8 @@ const ExperiencesTabContent = ({ activeTab, searchParams, setSearchItemType, set
     const router = useRouter();
     const [experiences, setExperiences] = useState<ExperienceType[]>([]);
     const [selectedExperience, setSelectedExperience] = useState<ExperienceType | null>(null);
+    const experienceDestination = { destinationId: destinationIdInUrl, destinationType: destinationTypeInUrl };
+
 
     // Tours Store state and actions
     const tours = useToursStore((state) => state.tours);
@@ -116,7 +118,9 @@ const ExperiencesTabContent = ({ activeTab, searchParams, setSearchItemType, set
                 {pagination.hasMore && (
                     <Button
                         onClick={() =>
-                            loadMoreTours(selectedExperience?.id ?? 0, "experience", filters, sortBy, pricedBy)
+                            loadMoreTours(selectedExperience?.id ?? 0, "experience", filters, sortBy,
+                                pricedBy, experienceDestination
+                            )
                         }
                         className="flex items-center"
                         loading={isLoadingMore}

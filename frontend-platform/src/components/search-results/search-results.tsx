@@ -19,6 +19,8 @@ export const SearchResults = () => {
             {/* Search Results' Filters & Title Header */}
             <ResultsHeader name={name} searchParams={searchParams}
                 searchItemId={searchItemId} searchItemType={searchItemType}
+                // Destination Data(For Experiences Tab)
+                destinationData={{ "destinationId": destinationIdFromUrl, "destinationType": destinationTypeFromUrl }}
             />
 
             {/* Search Results Content */}
