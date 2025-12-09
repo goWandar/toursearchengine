@@ -1,9 +1,95 @@
 import { prisma } from '../../../db/prisma.js';
 import { logger } from '../../../utils/logger.js';
 
+import type { Prisma } from '@prisma/client';
 import type { TourRecommendation } from '../../../types/quiz.types.js';
 
-// Calculate match percentage between user tags and tour tags
+// ================================
+// PRISMA PAYLOAD TYPES
+// ================================
+export type TourWithCategories = Prisma.TourGetPayload<{
+  include: {
+    tourCategories: {
+      include: {
+        category: {
+          include: { tags: true };
+        };
+      };
+    };
+  };
+}>;
+
+// ================================
+// PERSONA TAG FILTERING LOGIC
+// ================================
+const PERSONA_PREFIX = 'persona:';
+
+const PERSONA_RULES = {
+  couple: ['honeymoon', 'couple', 'romantic'],
+  solo: ['solo'],
+  family: ['family', 'children', 'kids'],
+  friends: ['friends', 'group'],
+};
+
+const PERSONA_TAGS = {
+  couple: 'persona:couple',
+  solo: 'persona:solo',
+  family: 'persona:family',
+  friends: 'persona:friends',
+} as const;
+
+function normalize(value: string | null | undefined): string {
+  return (value ?? '').toLowerCase();
+}
+
+function inferPersonaTagsFromContent(content: string): string[] {
+  const tags: string[] = [];
+
+  const hasCouple = PERSONA_RULES.couple.some((kw) => content.includes(kw));
+  const hasSolo = PERSONA_RULES.solo.some((kw) => content.includes(kw));
+  const hasFamily = PERSONA_RULES.family.some((kw) => content.includes(kw));
+  const hasFriends = PERSONA_RULES.friends.some((kw) => content.includes(kw));
+
+  // Couple dominates over solo
+  if (hasCouple) tags.push(PERSONA_TAGS.couple);
+  if (hasSolo && !hasCouple) tags.push(PERSONA_TAGS.solo);
+  if (hasFamily) tags.push(PERSONA_TAGS.family);
+  if (hasFriends) tags.push(PERSONA_TAGS.friends);
+
+  return [...new Set(tags)];
+}
+
+// -----------------------------------------------------------------------------------
+// MAIN FUNCTION: Extract relevant tags (persona tags filtered by title/description)
+// -----------------------------------------------------------------------------------
+export function getRelevantTourTags(tour: TourWithCategories): string[] {
+  const allTags = tour.tourCategories.flatMap((tc) => tc.category.tags.map((tag) => tag.key));
+
+  const personaTags = allTags.filter((key) => key.startsWith(PERSONA_PREFIX));
+  const nonPersonaTags = allTags.filter((key) => !key.startsWith(PERSONA_PREFIX));
+
+  // No persona category → return everything
+  if (personaTags.length === 0) {
+    return [...new Set(allTags)];
+  }
+
+  const content = normalize(`${tour.title} ${tour.description ?? ''}`);
+
+  // Infer persona tags from content
+  const inferred = inferPersonaTagsFromContent(content);
+
+  // If no persona keywords → remove persona tags entirely
+  if (inferred.length === 0) {
+    return [...new Set(nonPersonaTags)];
+  }
+
+  // Merge non-persona tags with inferred persona tags
+  return [...new Set([...nonPersonaTags, ...inferred])];
+}
+
+// ================================
+// MATCHING ALGORITHM
+// ================================
 function calculateTourMatch(
   userTags: Array<{ tagKey: string; importance: number }>,
   tourTags: string[],
@@ -19,72 +105,75 @@ function calculateTourMatch(
     }
   }
 
-  const matchPercentage = totalPossibleScore > 0 ? (matchedScore / totalPossibleScore) * 100 : 0;
+  const score = totalPossibleScore > 0 ? (matchedScore / totalPossibleScore) * 100 : 0;
 
-  return Math.round(matchPercentage);
+  return Math.round(score);
 }
 
-// Find matching tours based on user tags
+// ================================
+// FIND MATCHING TOURS
+// ================================
 export async function findMatchingTours(
-  userTags: Array<{
-    tagId: number;
-    tagKey: string;
-    importance: number;
-  }>,
+  userTags: Array<{ tagId: number; tagKey: string; importance: number }>,
 ): Promise<TourRecommendation[]> {
   logger.info('[MatchingHelpers] Finding matching tours');
 
   try {
-    // Get all active tours with their categories and tags
     const tours = await prisma.tour.findMany({
-      where: {
-        archived: false,
-      },
+      where: { archived: false },
       include: {
         tourCategories: {
           include: {
-            category: {
-              include: {
-                tags: true,
-              },
-            },
+            category: { include: { tags: true } },
           },
         },
         operator: true,
         country: true,
       },
-      take: 100, // Limit for performance
+      take: 100,
     });
 
     logger.info(`[MatchingHelpers] Found ${tours.length} tours to match against`);
 
-    // Calculate match for each tour
     const scoredTours = tours
       .map((tour) => {
-        // Extract all tag keys from tour's categories
-        const tourTags = tour.tourCategories
-          .flatMap((tc) => tc.category.tags)
-          .map((tag) => tag.key);
+        const tourWithCategories = tour as TourWithCategories;
 
-        // Calculate match percentage
+        const tourTags = getRelevantTourTags(tourWithCategories);
+
+        // ==========================
+        // 🚫 Persona exclusion rule
+        // ==========================
+        const userPersona = userTags.find((t) => t.tagKey.startsWith('persona:'))?.tagKey || null;
+
+        const tourPersonaTags = tourTags.filter((t) => t.startsWith('persona:'));
+
+        // Exclude strict honeymoon-only tours for solo travelers
+        if (userPersona === 'persona:solo') {
+          const isStrictHoneymoon =
+            tourPersonaTags.length === 1 && tourPersonaTags[0] === 'persona:couple';
+
+          if (isStrictHoneymoon) {
+            return null; // exclude this tour
+          }
+        }
+
         const matchPercentage = calculateTourMatch(
-          userTags.map((ut) => ({ tagKey: ut.tagKey, importance: ut.importance })),
+          userTags.map((ut) => ({
+            tagKey: ut.tagKey,
+            importance: ut.importance,
+          })),
           tourTags,
         );
 
-        return {
-          tour,
-          matchPercentage,
-          tourTags,
-        };
+        return { tour, matchPercentage, tourTags };
       })
-      .filter(({ matchPercentage }) => matchPercentage >= 30) // Minimum 30% match
-      .sort((a, b) => b.matchPercentage - a.matchPercentage)
-      .slice(0, 5); // Top 5
+      .filter((t): t is { tour: any; matchPercentage: number; tourTags: string[] } => t !== null) // TS-safe narrowing
+      .filter((t) => t.matchPercentage >= 30);
 
     logger.info(`[MatchingHelpers] Found ${scoredTours.length} tours with >30% match`);
 
-    // Format as recommendations
+    // Output formatting
     const recommendations: TourRecommendation[] = scoredTours.map(
       ({ tour, matchPercentage, tourTags }) => ({
         tourId: tour.id,
@@ -108,7 +197,9 @@ export async function findMatchingTours(
   }
 }
 
-// Generate "why it fits" reasons
+// ================================
+// WHY IT FITS
+// ================================
 function generateMatchReasons(
   userTags: Array<{ tagKey: string; importance: number }>,
   tourTags: string[],
@@ -117,15 +208,17 @@ function generateMatchReasons(
 
   for (const userTag of userTags) {
     if (userTag.importance >= 4 && tourTags.includes(userTag.tagKey)) {
-      const [category, value] = userTag.tagKey.split(':');
+      const [, value] = userTag.tagKey.split(':');
       reasons.push(`Matches your ${value?.replace(/-/g, ' ')} preference`);
     }
   }
 
-  return reasons.slice(0, 3); // Top 3 reasons
+  return reasons.slice(0, 3);
 }
 
-// Extract tour highlights
+// ================================
+// HIGHLIGHTS
+// ================================
 function extractHighlights(tour: any): string[] {
   const highlights: string[] = [];
 
