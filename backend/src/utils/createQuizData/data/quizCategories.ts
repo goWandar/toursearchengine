@@ -25,7 +25,11 @@ export const CATEGORIES: Category[] = [
   { name: 'Large Groups', description: '9+ people', conflictGroupName: 'Group Size' },
 
   // Tag categories for quiz system
-  { name: 'persona', description: 'Travel companion type' },
+  {
+    name: 'persona',
+    description: 'Travel companion type',
+    conflictGroupName: 'Persona Exclusivity',
+  },
   { name: 'style', description: 'Safari style preference' },
   { name: 'experience-level', description: 'Safari experience level' },
   { name: 'budget', description: 'Budget range' },

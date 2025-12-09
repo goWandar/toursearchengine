@@ -19,8 +19,10 @@ type TagKey =
   | 'wildlife:migration'
   | 'style:adventurous'
   | 'style:relaxed'
-  | 'persona:family'
+  | 'persona:solo'
   | 'persona:couple'
+  | 'persona:family'
+  | 'persona:friends'
   | 'activity:walking-safari'
   | 'activity:game-drives'
   | 'activity:cultural-visit'
@@ -51,6 +53,8 @@ interface DurationRule {
   tag: TagKey;
 }
 
+// TODO:
+// Adjust duration rules as needed
 const DURATION_RULES: DurationRule[] = [
   { maxDays: 5, tag: 'duration:short' },
   { maxDays: 8, tag: 'duration:standard' },
@@ -92,8 +96,10 @@ const KEYWORD_RULES: KeywordRule[] = [
   { tag: 'wildlife:migration', keywordsAny: ['migration', 'wildebeest'] },
   { tag: 'style:adventurous', keywordsAny: ['adventure', 'walking', 'hiking', 'active'] },
   { tag: 'style:relaxed', keywordsAny: ['relax', 'leisure', 'peaceful'] },
-  { tag: 'persona:family', keywordsAny: ['family', 'children', 'kids'] },
+  { tag: 'persona:solo', keywordsAny: ['solo'] },
   { tag: 'persona:couple', keywordsAny: ['couple', 'romantic', 'honeymoon'] },
+  { tag: 'persona:family', keywordsAny: ['family', 'children', 'kids'] },
+  { tag: 'persona:friends', keywordsAny: ['friends', 'group'] },
   { tag: 'activity:walking-safari', keywordsAny: ['walking safari', 'bush walk'] },
   { tag: 'activity:game-drives', keywordsAny: ['game drive'] },
   { tag: 'activity:cultural-visit', keywordsAny: ['culture', 'village', 'maasai', 'local'] },
@@ -152,11 +158,11 @@ function getDurationTag(tour: TourWithRelations): TagKey {
 }
 
 function getAccommodationTags(tour: TourWithRelations): TagKey[] {
-  const accom = normalizeText(tour.accommodationType);
-  if (!accom) return [];
+  const accommodation = normalizeText(tour.accommodationType);
+  if (!accommodation) return [];
 
   for (const rule of ACCOMMODATION_RULES) {
-    if (rule.patterns.some((p) => accom.includes(p))) {
+    if (rule.patterns.some((p) => accommodation.includes(p))) {
       return [rule.tag];
     }
   }
@@ -228,7 +234,31 @@ function getAllTagsForTour(tour: TourWithRelations): TagKey[] {
   return Array.from(tags);
 }
 
-// ---------- CATEGORY CACHE (FIXED FOR YOUR SCHEMA) ----------
+// Resolve conflicts in persona tags
+function resolvePersonaConflicts(tagKeys: TagKey[]): TagKey[] {
+  const personaTags = tagKeys.filter((t) => t.startsWith('persona:'));
+  const otherTags = tagKeys.filter((t) => !t.startsWith('persona:'));
+
+  const hasSolo = personaTags.includes('persona:solo');
+  const hasCouple = personaTags.includes('persona:couple');
+
+  // Conflict detected: Solo + Couple
+  if (hasSolo && hasCouple) {
+    console.warn(
+      '[AutoTag] Conflict: Both solo and couple tags detected. ' +
+        'Removing solo (couple has priority for honeymoon tours).',
+    );
+
+    // Remove solo, keep couple
+    const resolvedPersonaTags = personaTags.filter((t) => t !== 'persona:solo');
+    return [...otherTags, ...resolvedPersonaTags];
+  }
+
+  // No conflict, return all tags unchanged
+  return tagKeys;
+}
+
+// ---------- CATEGORY CACHE  ----------
 
 class CategoryCache {
   private map = new Map<TagKey, number>();
@@ -236,7 +266,6 @@ class CategoryCache {
   constructor(private readonly prismaClient: PrismaClient) {}
 
   async warm(): Promise<void> {
-    // ✅ FIXED: Query Tags table, not Category table
     const tags = await this.prismaClient.tag.findMany({
       where: {
         key: { in: ALL_TAG_KEYS },
@@ -290,9 +319,10 @@ export async function autoTagTours(): Promise<void> {
 
   for (const tour of tours) {
     const tagKeys = getAllTagsForTour(tour);
+    const resolvedTagKeys = resolvePersonaConflicts(tagKeys);
 
     const categoryIds: number[] = [];
-    for (const key of tagKeys) {
+    for (const key of resolvedTagKeys) {
       const categoryId = categoryCache.getIdOrNull(key);
       if (!categoryId) {
         console.warn(`[AutoTag] Tour ${tour.id}: skipped tag "${key}" – category not found`);
@@ -311,6 +341,17 @@ export async function autoTagTours(): Promise<void> {
     toursWithTags += 1;
 
     for (const categoryId of uniqueCategoryIds) {
+      // TODO: [TECH-DEBT] Refactor to use direct tour-tag relationships
+      // Current: Stores categoryId, which links tour to ALL tags in that category
+      // Problem: Honeymoon tours get ALL persona tags (solo, couple, family, friends)
+      // Desired: Store specific tagId to link tour to exact tags only
+      //
+      // Short-term workaround: Matching logic filters persona tags by keywords
+      // Long-term fix: Add tour_tags table and store tagId instead of categoryId
+      //
+      // Related:
+      // - matching.helpers.ts has workaround filtering logic
+      // - See GitHub issue #178 for migration plan
       assignments.push({
         tourId: tour.id,
         tourUniqueId: tour.uniqueId,
@@ -320,7 +361,7 @@ export async function autoTagTours(): Promise<void> {
     }
 
     console.log(
-      `[AutoTag] ✓ Tour ${tour.id} "${tour.title}": ${tagKeys.join(', ')} (${uniqueCategoryIds.length} categories)`,
+      `[AutoTag] ✓ Tour ${tour.id} "${tour.title}": ${resolvedTagKeys.join(', ')} (${uniqueCategoryIds.length} categories)`,
     );
   }
 
