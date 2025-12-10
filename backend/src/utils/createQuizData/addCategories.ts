@@ -50,7 +50,7 @@ async function main(): Promise<void> {
     });
   }
 
-  console.log(`${CATEGORIES.length} categories upserted`);
+  console.log(`${CATEGORIES.length} categories upsert`);
 }
 
 /**

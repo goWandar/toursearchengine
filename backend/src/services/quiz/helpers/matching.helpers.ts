@@ -42,6 +42,14 @@ function normalize(value: string | null | undefined): string {
   return (value ?? '').toLowerCase();
 }
 
+/**
+ * Infer persona tags from title/description content.
+ *
+ * Rules:
+ * - If "honeymoon" appears → treat as honeymoon-only: persona:couple ONLY.
+ * - "couple"/"romantic" can mix with other personas.
+ * - solo/family/friends can mix freely (unless overridden by honeymoon).
+ */
 function inferPersonaTagsFromContent(content: string): string[] {
   const tags: string[] = [];
 
@@ -51,15 +59,17 @@ function inferPersonaTagsFromContent(content: string): string[] {
   const hasFamily = PERSONA_RULES.family.some((kw) => content.includes(kw));
   const hasFriends = PERSONA_RULES.friends.some((kw) => content.includes(kw));
 
-  // RULE 1: Honeymoon overrides everything
+  // RULE 1: Honeymoon overrides everything → strict couple-only
   if (hasHoneymoon) {
     return [PERSONA_TAGS.couple];
   }
 
-  // RULE 2: Couple can mix with others
-  if (hasCouple) tags.push(PERSONA_TAGS.couple);
+  // RULE 2: Couple is "soft" – can mix with others
+  if (hasCouple) {
+    tags.push(PERSONA_TAGS.couple);
+  }
 
-  // RULE 3: Others only if not honeymoon
+  // RULE 3: Others mix normally
   if (hasSolo) tags.push(PERSONA_TAGS.solo);
   if (hasFamily) tags.push(PERSONA_TAGS.family);
   if (hasFriends) tags.push(PERSONA_TAGS.friends);
@@ -70,17 +80,11 @@ function inferPersonaTagsFromContent(content: string): string[] {
 // -----------------------------------------------------------------------------------
 // MAIN FUNCTION: Extract relevant tags (persona tags filtered by title/description)
 // -----------------------------------------------------------------------------------
-
 export function getRelevantTourTags(tour: TourWithCategories): string[] {
   const allTags = tour.tourCategories.flatMap((tc) => tc.category.tags.map((tag) => tag.key));
 
   const personaTags = allTags.filter((key) => key.startsWith(PERSONA_PREFIX));
   const nonPersonaTags = allTags.filter((key) => !key.startsWith(PERSONA_PREFIX));
-
-  //Log for honeymoon tours
-  if (tour.title.toLowerCase().includes('honeymoon')) {
-    console.log(`  [Filter] All persona tags from DB:`, personaTags);
-  }
 
   // No persona category → return everything
   if (personaTags.length === 0) {
@@ -89,16 +93,7 @@ export function getRelevantTourTags(tour: TourWithCategories): string[] {
 
   const content = normalize(`${tour.title} ${tour.description ?? ''}`);
 
-  if (tour.title.toLowerCase().includes('honeymoon')) {
-    console.log(`  [Filter] Content:`, content.substring(0, 80));
-  }
-
-  // Infer persona tags from content
   const inferred = inferPersonaTagsFromContent(content);
-
-  if (tour.title.toLowerCase().includes('honeymoon')) {
-    console.log(`  [Filter] Inferred personas:`, inferred);
-  }
 
   // If no persona keywords → remove persona tags entirely
   if (inferred.length === 0) {
@@ -110,7 +105,55 @@ export function getRelevantTourTags(tour: TourWithCategories): string[] {
 }
 
 // ================================
-// MATCHING ALGORITHM
+// CATEGORY WEIGHTING FOR SCORING (B + D)
+// ================================
+function getCategoryPrefix(tagKey: string): string {
+  const [prefix] = tagKey.split(':');
+  return prefix ?? '';
+}
+
+/**
+ * Category-level weights:
+ * - persona: strongest signal
+ * - style: strong
+ * - interest/activity: medium-strong
+ * - duration/budget/pace/region: medium
+ * - everything else: neutral
+ *
+ * High-importance tags (importance >= 4) are boosted slightly.
+ */
+function getWeightedImportance(tagKey: string, importance: number): number {
+  const prefix = getCategoryPrefix(tagKey);
+
+  let baseFactor = 1.0;
+  switch (prefix) {
+    case 'persona':
+      baseFactor = 1.6;
+      break;
+    case 'style':
+      baseFactor = 1.4;
+      break;
+    case 'interest':
+    case 'activity':
+      baseFactor = 1.3;
+      break;
+    case 'duration':
+    case 'budget':
+    case 'pace':
+    case 'region':
+      baseFactor = 1.15;
+      break;
+    default:
+      baseFactor = 1.0;
+  }
+
+  const importanceBoost = importance >= 4 ? 1.15 : 1.0; // extra weight for "important" tags
+
+  return importance * baseFactor * importanceBoost;
+}
+
+// ================================
+// MATCHING ALGORITHM (B + D)
 // ================================
 function calculateTourMatch(
   userTags: Array<{ tagKey: string; importance: number }>,
@@ -120,10 +163,11 @@ function calculateTourMatch(
   let totalPossibleScore = 0;
 
   for (const userTag of userTags) {
-    totalPossibleScore += userTag.importance;
+    const weighted = getWeightedImportance(userTag.tagKey, userTag.importance);
+    totalPossibleScore += weighted;
 
     if (tourTags.includes(userTag.tagKey)) {
-      matchedScore += userTag.importance;
+      matchedScore += weighted;
     }
   }
 
@@ -176,7 +220,7 @@ export async function findMatchingTours(
             tourPersonaTags.length === 1 && tourPersonaTags[0] === 'persona:couple';
 
           if (isStrictHoneymoon) {
-            return null; // exclude this tour
+            return null;
           }
         }
 
@@ -188,14 +232,22 @@ export async function findMatchingTours(
           tourTags,
         );
 
+        if (matchPercentage >= 30) {
+          logger.info(
+            `[MatchingHelpers] Scored tour "${tour.title}" – match ${matchPercentage}%, persona tags: ${
+              tourPersonaTags.join(', ') || '(none)'
+            }`,
+          );
+        }
+
         return { tour, matchPercentage, tourTags };
       })
-      .filter((t): t is { tour: any; matchPercentage: number; tourTags: string[] } => t !== null) // TS-safe narrowing
-      .filter((t) => t.matchPercentage >= 30);
+      .filter((t): t is { tour: any; matchPercentage: number; tourTags: string[] } => t !== null)
+      .filter((t) => t.matchPercentage >= 30)
+      .sort((a, b) => b.matchPercentage - a.matchPercentage);
 
     logger.info(`[MatchingHelpers] Found ${scoredTours.length} tours with >30% match`);
 
-    // Output formatting
     const recommendations: TourRecommendation[] = scoredTours
       .slice(0, 5)
       .map(({ tour, matchPercentage, tourTags }) => ({
@@ -203,7 +255,13 @@ export async function findMatchingTours(
         tourName: tour.title,
         operator: tour.operator?.name || 'Unknown Operator',
         matchPercentage,
-        whyItFits: generateMatchReasons(userTags, tourTags),
+        whyItFits: generateMatchReasons(
+          userTags.map((ut) => ({
+            tagKey: ut.tagKey,
+            importance: ut.importance,
+          })),
+          tourTags,
+        ),
         highlights: extractHighlights(tour),
         practicalDetails: {
           duration: `${tour.durationInDays} days`,
@@ -223,19 +281,17 @@ export async function findMatchingTours(
 // WHY IT FITS
 // ================================
 function generateMatchReasons(
-  userTags: Array<{ tagKey: string; importance: number }>,
+  userTags: { tagKey: string; importance: number }[],
   tourTags: string[],
 ): string[] {
-  const reasons: string[] = [];
-
-  for (const userTag of userTags) {
-    if (userTag.importance >= 4 && tourTags.includes(userTag.tagKey)) {
-      const [, value] = userTag.tagKey.split(':');
-      reasons.push(`Matches your ${value?.replace(/-/g, ' ')} preference`);
-    }
-  }
-
-  return reasons.slice(0, 3);
+  return userTags
+    .filter((t) => t.importance >= 4 && tourTags.includes(t.tagKey))
+    .map((t) => {
+      const [, value] = t.tagKey.split(':');
+      return `Matches your ${value.replace(/-/g, ' ')} preference`;
+    })
+    .filter((reason, idx, arr) => arr.indexOf(reason) === idx) // dedupe
+    .slice(0, 3);
 }
 
 // ================================
