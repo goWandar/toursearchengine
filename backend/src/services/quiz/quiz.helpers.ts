@@ -1,10 +1,10 @@
-import { prisma } from '../../../db/prisma.js';
-import { logger } from '../../../utils/logger.js';
+import { prisma } from '../../db/prisma.js';
+import { logger } from '../../utils/logger.js';
 
-import type { QuizSubmissionRequest, QuizResults, UserProfile } from '../../../types/quiz.types.js';
+import type { QuizSubmissionRequest, QuizResults, UserProfile } from '../../types/quiz.types.js';
 
-import { determinePersona } from './persona.helpers.js';
-import { findMatchingTours } from './matching.helpers.js';
+import { determinePersona } from './helpers/persona.helpers.js';
+import { findMatchingTours } from './helpers/matching.helpers.js';
 
 // Generate complete quiz results
 export async function generateQuizResults(

@@ -7,7 +7,7 @@ import { ServiceResponse } from '../../types/shared.types.js';
 
 import { prisma } from '../../db/prisma.js';
 
-import { generateQuizResults } from './helpers/quiz.helpers.js';
+import { generateQuizResults } from './quiz.helpers.js';
 
 export const QuizService = {
   initQuiz: () => {
