@@ -42,35 +42,6 @@ function normalize(value: string | null | undefined): string {
   return (value ?? '').toLowerCase();
 }
 
-// function inferPersonaTagsFromContent(content: string): string[] {
-//   const tags: string[] = [];
-
-//   const hasHoneymoon = PERSONA_RULES.couple.some(
-//     (kw) => content.includes(kw) && kw === 'honeymoon',
-//   );
-//   const hasCouple = PERSONA_RULES.couple.some((kw) => content.includes(kw));
-//   const hasSolo = PERSONA_RULES.solo.some((kw) => content.includes(kw));
-//   const hasFamily = PERSONA_RULES.family.some((kw) => content.includes(kw));
-//   const hasFriends = PERSONA_RULES.friends.some((kw) => content.includes(kw));
-
-//   //  RULE 1: Honeymoon overrides everything
-//   if (hasHoneymoon) {
-//     return [PERSONA_TAGS.couple];
-//   }
-
-//   //  RULE 2: Couple is soft — can mix with others
-//   if (hasCouple) {
-//     tags.push(PERSONA_TAGS.couple);
-//   }
-
-//   //  RULE 3: The rest can mix normally
-//   if (hasSolo) tags.push(PERSONA_TAGS.solo);
-//   if (hasFamily) tags.push(PERSONA_TAGS.family);
-//   if (hasFriends) tags.push(PERSONA_TAGS.friends);
-
-//   return [...new Set(tags)];
-// }
-
 function inferPersonaTagsFromContent(content: string): string[] {
   const tags: string[] = [];
 
@@ -199,36 +170,14 @@ export async function findMatchingTours(
 
         const tourPersonaTags = tourTags.filter((t) => t.startsWith('persona:'));
 
-        // TODO: remove log after testing:
-        if (tour.title.includes('Honeymoon')) {
-          console.log('\n[EXCLUSION CHECK]');
-          console.log('  Tour:', tour.title);
-          console.log('  User persona:', userPersona);
-          console.log('  Tour persona tags:', tourPersonaTags);
-          console.log(
-            '  Is strict honeymoon?',
-            tourPersonaTags.length === 1 && tourPersonaTags[0] === 'persona:couple',
-          );
-        }
-
         // Exclude strict honeymoon-only tours for solo travelers
         if (userPersona === 'persona:solo') {
           const isStrictHoneymoon =
             tourPersonaTags.length === 1 && tourPersonaTags[0] === 'persona:couple';
 
           if (isStrictHoneymoon) {
-            //TODO: remove log after testing:
-            if (tour.title.includes('Honeymoon')) {
-              console.log('EXCLUDED!\n');
-            }
-
             return null; // exclude this tour
           }
-        }
-
-        //TODO: remove log after testing:
-        if (tour.title.includes('Honeymoon')) {
-          console.log('NOT EXCLUDED\n');
         }
 
         const matchPercentage = calculateTourMatch(
