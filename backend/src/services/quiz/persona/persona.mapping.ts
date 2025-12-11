@@ -19,6 +19,63 @@ interface UserTagWithMetadata {
   importance: number;
 }
 
+//  Determine persona from user tags
+export async function determinePersona(
+  userTags: Array<{ tagKey: string }>,
+): Promise<PersonaMatch | null> {
+  logger.info('[PersonaHelpers] Matching persona from database');
+
+  try {
+    const personas = await prisma.quizPersona.findMany();
+
+    if (personas.length === 0) {
+      logger.warn('[PersonaHelpers] No personas found in database');
+      return null;
+    }
+
+    const tagKeys = userTags.map((t) => t.tagKey);
+    let bestMatch: PersonaMatch | null = null;
+
+    for (const persona of personas) {
+      // Separate persona tags from other tags
+      const personaTagMatches = persona.tagMapping.filter(
+        (tag) => tag.startsWith('persona:') && tagKeys.includes(tag),
+      ).length;
+
+      const otherTagMatches = persona.tagMapping.filter(
+        (tag) => !tag.startsWith('persona:') && tagKeys.includes(tag),
+      ).length;
+
+      // Weighted score: persona tags worth 3x more
+      const weightedScore = otherTagMatches + personaTagMatches * 3;
+
+      if (!bestMatch || weightedScore > bestMatch.matchScore) {
+        bestMatch = {
+          id: persona.id,
+          name: persona.name,
+          description: persona.description,
+          keyTraits: persona.keyTraits,
+          imageUrl: persona.imageUrl,
+          matchScore: weightedScore,
+        };
+      }
+    }
+
+    if (bestMatch && bestMatch.matchScore >= 3) {
+      logger.success(
+        `[PersonaHelpers] Matched persona: ${bestMatch.name} (${bestMatch.matchScore} tags matched)`,
+      );
+      return bestMatch;
+    }
+
+    logger.warn('[PersonaHelpers] No strong persona match found');
+    return null;
+  } catch (error) {
+    logger.error('[PersonaHelpers] Error matching persona:', error);
+    return null;
+  }
+}
+
 // Generate user profile
 export function generateUserProfile(
   userTags: UserTagWithMetadata[],
@@ -59,51 +116,4 @@ export function generateDynamicPersonaName(userTags: UserTagWithMetadata[]): str
   }
 
   return 'The Safari Explorer';
-}
-
-//  Determine persona from user tags
-export async function determinePersona(
-  userTags: Array<{ tagKey: string }>,
-): Promise<PersonaMatch | null> {
-  logger.info('[PersonaHelpers] Matching persona from database');
-
-  try {
-    const personas = await prisma.quizPersona.findMany();
-
-    if (personas.length === 0) {
-      logger.warn('[PersonaHelpers] No personas found in database');
-      return null;
-    }
-
-    const tagKeys = userTags.map((t) => t.tagKey);
-    let bestMatch: PersonaMatch | null = null;
-
-    for (const persona of personas) {
-      const overlap = persona.tagMapping.filter((tag) => tagKeys.includes(tag)).length;
-
-      if (!bestMatch || overlap > bestMatch.matchScore) {
-        bestMatch = {
-          id: persona.id,
-          name: persona.name,
-          description: persona.description,
-          keyTraits: persona.keyTraits,
-          imageUrl: persona.imageUrl,
-          matchScore: overlap,
-        };
-      }
-    }
-
-    if (bestMatch && bestMatch.matchScore >= 2) {
-      logger.success(
-        `[PersonaHelpers] Matched persona: ${bestMatch.name} (${bestMatch.matchScore} tags matched)`,
-      );
-      return bestMatch;
-    }
-
-    logger.warn('[PersonaHelpers] No strong persona match found');
-    return null;
-  } catch (error) {
-    logger.error('[PersonaHelpers] Error matching persona:', error);
-    return null;
-  }
 }

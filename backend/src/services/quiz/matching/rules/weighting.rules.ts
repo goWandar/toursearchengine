@@ -33,7 +33,7 @@ export const NEGATIVE_WEIGHTS = {
 };
 
 // ================================
-// CATEGORY WEIGHTING FOR SCORING (B + D)
+// CATEGORY WEIGHTING FOR SCORING
 // ================================
 
 /**

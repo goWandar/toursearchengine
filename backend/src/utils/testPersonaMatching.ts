@@ -1,7 +1,7 @@
 import { prisma } from '../db/prisma.js';
 import { logger } from '../utils/logger.js';
 
-import { determinePersona } from '../services/quiz/helpers/persona.helpers.js';
+import { determinePersona } from '../services/quiz/persona/persona.mapping.js';
 
 async function testPersonaMatch() {
   logger.info('Testing persona matching logic...');

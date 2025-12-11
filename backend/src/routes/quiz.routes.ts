@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
 
-import { QuizService } from '../../services/quiz/quiz.service.js';
-import { responseHandler } from '../../utils/responseHandler.js';
+import { QuizService } from '../services/quiz/quiz.service.js';
+import { responseHandler } from '../utils/responseHandler.js';
 
-import { logger } from '../../utils/logger.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 

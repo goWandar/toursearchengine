@@ -1,7 +1,7 @@
 import { getWeightedImportance } from './rules/weighting.rules.js';
 
 // ================================
-// MATCHING ALGORITHM (B + D)
+// MATCHING ALGORITHM
 // ================================
 export function calculateTourMatch(
   userTags: Array<{ tagKey: string; importance: number }>,
