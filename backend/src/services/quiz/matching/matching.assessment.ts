@@ -1,4 +1,4 @@
-import { getWeightedImportance } from '../matching/rules/weighting.rules.js';
+import { getWeightedImportance } from './rules/weighting.rules.js';
 
 // ================================
 // MATCHING ALGORITHM (B + D)
