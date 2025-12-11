@@ -6,7 +6,7 @@ import {
   calculateTourMatch,
   generateMatchReasons,
   extractHighlights,
-} from '../matching/matching.scoring.js';
+} from './matching.assessment.js';
 
 import type { TourRecommendation, TourWithCategories } from '../../../types/quiz.types.js';
 
