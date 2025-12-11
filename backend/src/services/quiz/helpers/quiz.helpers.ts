@@ -1,10 +1,10 @@
-import { prisma } from '../../db/prisma.js';
-import { logger } from '../../utils/logger.js';
+import { prisma } from '../../../db/prisma.js';
+import { logger } from '../../../utils/logger.js';
 
-import type { QuizSubmissionRequest, QuizResults, UserProfile } from '../../types/quiz.types.js';
+import type { QuizSubmissionRequest, QuizResults, UserProfile } from '../../../types/quiz.types.js';
 
-import { determinePersona } from './helpers/persona.helpers.js';
-import { findMatchingTours } from './helpers/matching.helpers.js';
+import { generateUserProfile, determinePersona } from '../persona/persona.mapping.js';
+import { findMatchingTours } from '../matching/matching.engine.js';
 
 // Generate complete quiz results
 export async function generateQuizResults(
@@ -65,45 +65,6 @@ async function getUserTags(submission: QuizSubmissionRequest) {
       importance: answer.importance,
     };
   });
-}
-
-// Generate user profile
-function generateUserProfile(userTags: any[], matchedPersona: any): UserProfile {
-  const keyTraits = userTags
-    .filter((tag) => tag.importance >= 4)
-    .map((tag) => tag.tagLabel)
-    .slice(0, 5);
-
-  const personaName = matchedPersona?.name || generateDynamicPersonaName(userTags);
-  const personaDescription =
-    matchedPersona?.description ||
-    `You're a traveler who values ${keyTraits.slice(0, 3).join(', ').toLowerCase()}. Your ideal safari combines these elements for an unforgettable experience.`;
-
-  return {
-    personaName,
-    personaDescription,
-    keyTraits: matchedPersona?.keyTraits || keyTraits,
-    selectedTags: userTags.map((tag) => ({
-      category: tag.categoryName,
-      tagKey: tag.tagKey,
-      tagLabel: tag.tagLabel,
-      importance: tag.importance,
-    })),
-  };
-}
-
-// Generate dynamic persona name
-function generateDynamicPersonaName(userTags: any[]): string {
-  const personaTag = userTags.find((t) => t.categoryName === 'persona');
-  const styleTag = userTags.find((t) => t.categoryName === 'style');
-
-  if (personaTag && styleTag) {
-    return `The ${styleTag.tagLabel} ${personaTag.tagLabel}`;
-  } else if (styleTag) {
-    return `The ${styleTag.tagLabel} Traveler`;
-  }
-
-  return 'The Safari Explorer';
 }
 
 // Generate next steps
