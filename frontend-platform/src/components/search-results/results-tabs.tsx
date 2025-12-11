@@ -6,10 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/recipes/tabs/tabs";
 import { Button } from "@/recipes/button/button";
 import SafariCardSkeleton from "./safari-card-skeleton";
 import ModernSafariCard from "./modern-safari-card";
+import { Tour } from "@/types/types";
 
 interface ResultsTabsProps {
     paginationMeta: { total: number };
-    tourResults: any[];
+    tourResults: Tour[];
     isLoading: boolean;
 }
 

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 
 // Create an axios instance
@@ -15,7 +15,7 @@ axiosRetry(axiosClient, {
     onRetry: (retryCount: number, error: Error) => {
         console.log(`Retrying request...`);
     },
-    retryCondition: (error: any) => {
+    retryCondition: (error: AxiosError) => {
         // Retry on network errors or idempotent request errors (5xx)
         return axiosRetry.isNetworkOrIdempotentRequestError(error);
     },
