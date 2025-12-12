@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { logger } from '../utils/logger.js';
 
-import type { AuthenticatedUser } from '../types/types.js';
+import type { AuthenticatedUser } from '../types/shared.types.js';
 
 const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET as string;
 

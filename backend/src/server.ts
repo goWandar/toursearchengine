@@ -16,6 +16,7 @@ import parkRoutes from './routes/park.routes.js';
 import subscribersRoutes from './routes/subscribers.routes.js';
 import tourRoutes from './routes/tour.routes.js';
 import userRoutes from './routes/user.routes.js';
+import quizRoutes from './routes/quiz.routes.js';
 
 //  Utils
 import { logger } from './utils/logger.js';
@@ -43,7 +44,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Hello, world!');
 });
 
@@ -53,6 +54,7 @@ app.use('/api', subscribersRoutes);
 app.use('/api', tourRoutes);
 app.use('/api', countryRoutes);
 app.use('/api', parkRoutes);
+app.use('/api', quizRoutes);
 
 // openApi docs:
 const docsPath = path.join(process.cwd(), 'openapi');

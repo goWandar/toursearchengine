@@ -7,7 +7,7 @@ import {
 
 import { prisma } from '../db/prisma.js';
 
-import { Tour } from '../types/types.js';
+import { Tour } from '../types/shared.types.js';
 
 type GetToursResponse = {
   tours: Tour[];
