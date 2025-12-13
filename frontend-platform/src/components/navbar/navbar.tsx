@@ -8,8 +8,6 @@ import { ModernSearch } from '@/components/modern-search';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/recipes/sheet/sheet';
 
 export function Navbar() {
-
-
   return (
     <header className="bg-white border-b sticky top-0 z-50 backdrop-blur-sm ">
       <div className="container mx-auto px-4 sm:px-6 py-4">
@@ -28,9 +26,7 @@ export function Navbar() {
 
           {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8 lg:mx-12">
-            <ModernSearch
-              placeholder="Search destinations and parks"
-            />
+            <ModernSearch placeholder="Search destinations and parks" />
           </div>
 
           {/* Right Navigation */}
@@ -63,9 +59,7 @@ export function Navbar() {
                 <div className="flex flex-col space-y-4 mt-6">
                   {/* Mobile Search */}
                   <div className="md:hidden">
-                    <ModernSearch
-                      placeholder="Search destinations and parks"
-                    />
+                    <ModernSearch placeholder="Search destinations and parks" />
                   </div>
 
                   {/* Navigation Links */}
