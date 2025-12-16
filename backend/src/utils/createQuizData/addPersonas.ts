@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma.js';
 import { personas } from './data/quizPersonas.js';
-
-const prisma = new PrismaClient();
 
 async function main() {
   console.log('[SeedPersonas] Starting persona seeding');

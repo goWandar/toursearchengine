@@ -1,6 +1,5 @@
-import { PrismaClient, Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../db/prisma.js';
+import type { Prisma, PrismaClient } from '@prisma/client';
 
 type TagKey =
   | 'duration:short'
