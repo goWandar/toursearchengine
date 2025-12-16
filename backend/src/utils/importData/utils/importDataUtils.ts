@@ -1,9 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../../db/prisma.js';
 import Papa from 'papaparse';
 import { readFileSync } from 'fs';
-
-// Shared utilities for CSV import scripts
-export const prisma = new PrismaClient();
 
 // Tour CSV Data Types
 export interface TourCSV {
@@ -118,8 +115,11 @@ export function logProgress(csvType: string, importedResults: Number, csvDataLen
 }
 
 // Log final summary of all imports
-export function logSummary(tourResults: ImportResult,
-  imageResults: ImportResult, priceResults: ImportResult) {
+export function logSummary(
+  tourResults: ImportResult,
+  imageResults: ImportResult,
+  priceResults: ImportResult,
+) {
   console.log('\n'.repeat(2));
   console.log('='.repeat(80));
   console.log('                          FINAL IMPORT SUMMARY');
@@ -131,23 +131,22 @@ export function logSummary(tourResults: ImportResult,
   console.log(`    Failed to import: ${tourResults.failed.length}`);
 
   if (tourResults.failed.length > 0) {
-    const existsCount = tourResults.failed.filter(f => f.reason === 'Exists').length;
-    const invalidCount = tourResults.failed.filter(f => f.reason === 'Invalid').length;
-    const unexpectedCount = tourResults.failed.filter(f => f.reason === 'Unexpected').length;
+    const existsCount = tourResults.failed.filter((f) => f.reason === 'Exists').length;
+    const invalidCount = tourResults.failed.filter((f) => f.reason === 'Invalid').length;
+    const unexpectedCount = tourResults.failed.filter((f) => f.reason === 'Unexpected').length;
 
     console.log(`       Already exists: ${existsCount}`);
     console.log(`       Invalid data: ${invalidCount}`);
     console.log(`       Unexpected error: ${unexpectedCount}`);
 
-
     if (tourResults.failed.length <= 10) {
       console.log('   Failed Tour IDs:');
-      tourResults.failed.forEach(failed => {
+      tourResults.failed.forEach((failed) => {
         console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
       });
     } else {
       console.log(`   (${tourResults.failed.length} failed tours - showing first 10)`);
-      tourResults.failed.slice(0, 10).forEach(failed => {
+      tourResults.failed.slice(0, 10).forEach((failed) => {
         console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
       });
     }
@@ -159,9 +158,9 @@ export function logSummary(tourResults: ImportResult,
   console.log(`    Failed to import: ${imageResults.failed.length}`);
 
   if (imageResults.failed.length > 0) {
-    const tourFailedCount = imageResults.failed.filter(f => f.reason === 'TourFailed').length;
-    const invalidCount = imageResults.failed.filter(f => f.reason === 'Invalid').length;
-    const unexpectedCount = tourResults.failed.filter(f => f.reason === 'Unexpected').length;
+    const tourFailedCount = imageResults.failed.filter((f) => f.reason === 'TourFailed').length;
+    const invalidCount = imageResults.failed.filter((f) => f.reason === 'Invalid').length;
+    const unexpectedCount = tourResults.failed.filter((f) => f.reason === 'Unexpected').length;
 
     console.log(`       Parent tour failed: ${tourFailedCount}`);
     console.log(`       Invalid data: ${invalidCount}`);
@@ -169,12 +168,12 @@ export function logSummary(tourResults: ImportResult,
 
     if (imageResults.failed.length <= 10) {
       console.log('   Failed Image IDs:');
-      imageResults.failed.forEach(failed => {
+      imageResults.failed.forEach((failed) => {
         console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
       });
     } else {
       console.log(`   (${imageResults.failed.length} failed images - showing first 10)`);
-      imageResults.failed.slice(0, 10).forEach(failed => {
+      imageResults.failed.slice(0, 10).forEach((failed) => {
         console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
       });
     }
@@ -186,9 +185,9 @@ export function logSummary(tourResults: ImportResult,
   console.log(`    Failed to import: ${priceResults.failed.length}`);
 
   if (priceResults.failed.length > 0) {
-    const tourFailedCount = priceResults.failed.filter(f => f.reason === 'TourFailed').length;
-    const invalidCount = priceResults.failed.filter(f => f.reason === 'Invalid').length;
-    const unexpectedCount = tourResults.failed.filter(f => f.reason === 'Unexpected').length;
+    const tourFailedCount = priceResults.failed.filter((f) => f.reason === 'TourFailed').length;
+    const invalidCount = priceResults.failed.filter((f) => f.reason === 'Invalid').length;
+    const unexpectedCount = tourResults.failed.filter((f) => f.reason === 'Unexpected').length;
 
     console.log(`       Parent tour failed: ${tourFailedCount}`);
     console.log(`       Invalid data: ${invalidCount}`);
@@ -196,12 +195,12 @@ export function logSummary(tourResults: ImportResult,
 
     if (priceResults.failed.length <= 10) {
       console.log('   Failed Price IDs:');
-      priceResults.failed.forEach(failed => {
+      priceResults.failed.forEach((failed) => {
         console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
       });
     } else {
       console.log(`   (${priceResults.failed.length} failed prices - showing first 10)`);
-      priceResults.failed.slice(0, 10).forEach(failed => {
+      priceResults.failed.slice(0, 10).forEach((failed) => {
         console.log(`      - ID ${failed.id}: ${failed.reason} (${failed.details})`);
       });
     }
@@ -210,7 +209,8 @@ export function logSummary(tourResults: ImportResult,
   // Overall Summary
   const totalRecords = tourResults.total + imageResults.total + priceResults.total;
   const totalImported = tourResults.imported + imageResults.imported + priceResults.imported;
-  const totalFailed = tourResults.failed.length + imageResults.failed.length + priceResults.failed.length;
+  const totalFailed =
+    tourResults.failed.length + imageResults.failed.length + priceResults.failed.length;
   const successRate = ((totalImported / totalRecords) * 100).toFixed(1);
 
   console.log('\n OVERALL STATISTICS:');
@@ -236,4 +236,3 @@ export function logSummary(tourResults: ImportResult,
 export async function cleanup() {
   await prisma.$disconnect();
 }
-

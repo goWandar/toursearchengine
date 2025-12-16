@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma.js';
 import { CATEGORIES } from './data/quizCategories.js';
-
-const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
   console.log('Adding/Updating Mock Categories & Conflict Groups...');
