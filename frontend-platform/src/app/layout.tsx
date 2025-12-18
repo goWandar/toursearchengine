@@ -4,7 +4,6 @@ import './globals.css';
 import { ReactNode } from 'react';
 import { ToastProvider, ToastViewport } from '@/recipes/toast/toast';
 import { Toaster } from '@/components/global/toaster';
-import { Navbar } from '@/components/navbar/navbar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,7 +29,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ToastProvider>
-          <Navbar />
           {children}
           <Toaster />
           <ToastViewport />
