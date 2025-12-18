@@ -4,13 +4,6 @@ import { prisma } from '../db/prisma.js';
 import { buildWhereClause, fetchTours, parseTourQueryParams } from '../utils/tourServices.utils.js';
 import { setResponse } from '../utils/genericResponseHandler.js';
 
-import { Tour } from '../types/shared.types.js';
-
-type GetToursResponse = {
-  tours: Tour[];
-  cursor: number | null;
-};
-
 export const TourService = {
 
   // Get tours by country ID (Search Results)
