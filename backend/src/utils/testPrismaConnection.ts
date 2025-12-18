@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../db/prisma.js';
 
 async function main() {
   const tables = await prisma.$queryRawUnsafe<Array<{ table_name: string }>>(

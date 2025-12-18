@@ -16,7 +16,7 @@ import parkRoutes from './routes/park.routes.js';
 import subscribersRoutes from './routes/subscribers.routes.js';
 import tourRoutes from './routes/tour.routes.js';
 import userRoutes from './routes/user.routes.js';
-import quizRoutes from './routes/quiz/quiz.routes.js';
+import quizRoutes from './routes/quiz.routes.js';
 
 //  Utils
 import { logger } from './utils/logger.js';

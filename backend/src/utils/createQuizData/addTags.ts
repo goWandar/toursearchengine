@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma.js';
 import { tags } from './data/quizTags.js';
-
-const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
   console.log('Seeding all quiz and tour tags...');

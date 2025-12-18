@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 export interface QuizAnswer {
   questionId: number;
   optionId: number;
@@ -42,3 +43,15 @@ export interface QuizResults {
   recommendations: TourRecommendation[];
   nextSteps: string[];
 }
+
+export type TourWithCategories = Prisma.TourGetPayload<{
+  include: {
+    tourCategories: {
+      include: {
+        category: {
+          include: { tags: true };
+        };
+      };
+    };
+  };
+}>;

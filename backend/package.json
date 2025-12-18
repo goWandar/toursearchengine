@@ -1,7 +1,12 @@
 {
+  "name": "backend",
   "version": "1.0.0",
   "description": "Wandar backend",
   "main": "src/server.ts",
+  "type": "module",
+  "engines": {
+    "node": "24.12.0"
+  },
   "directories": {
     "doc": "docs"
   },
@@ -17,7 +22,8 @@
   "contributors": [],
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.12.0",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
     "@supabase/supabase-js": "^2.50.2",
     "@types/morgan": "^1.9.9",
     "chalk": "^5.4.1",
@@ -41,11 +47,9 @@
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
-    "prisma": "^6.12.0",
+    "prisma": "^7.1.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
     "typescript": "^5.7.3"
-  },
-  "name": "backend",
-  "type": "module"
+  }
 }

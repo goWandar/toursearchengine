@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma.js';
 import { questions, QuestionOption } from './data/quizQuestions.js';
-
-const prisma = new PrismaClient();
 
 interface StageData {
   name: string;
