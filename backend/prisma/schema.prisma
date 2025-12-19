@@ -129,6 +129,10 @@ model TourPrice {
   pricePerPerson Float     @default(0)
   seasonName     String?
   seasonPeriod   String?
+  imvGroup         String?
+  medianPrice      Float?
+  priceVsIMV_pct   Float?
+  priceVsIMV_badge String?
   dateCreated    DateTime  @default(now())
   dateModified   DateTime? @updatedAt
   tourId         Int
