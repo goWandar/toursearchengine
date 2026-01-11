@@ -1,3 +1,12 @@
+// Toast Store Type 
+export interface ToastState {
+    showToast: boolean;
+    toastMessage: string;
+
+    setShowToast: (value: boolean) => void;
+    setToastMessage: (value: string) => void;
+}
+
 // Tour Related Types
 export interface Tour {
     id: number;
@@ -75,41 +84,4 @@ export interface Operator {
     dateCreated: Date;
     dateModified: Date | null;
     tours: Tour[]
-}
-
-// Mordern Search Related Types
-export interface ParkSearchType {
-    id: number;
-    name: string;
-    country: string;
-    keyword: string;
-    type: string;
-};
-
-export interface CountrySearchType {
-    id: number;
-    name: string;
-    type: string;
-};
-
-export interface ParksCountriesType {
-    parks: ParkSearchType[];
-    countries: CountrySearchType[];
-    popularParks: ParkSearchType[];
-    trendingSearches: SuggestionType[];
-}
-
-export type SuggestionType = ParkSearchType | CountrySearchType;
-
-export interface paginationType {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-};
-
-export interface TourSearchResponse {
-    tours: Tour[];
-    pagination: paginationType;
 }

@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/recipes/input/input';
-import { getSearchSuggestions, handleSearch } from '@/utils/mordern-search.utils';
-import { ParkSearchType, SuggestionType } from '@/types/types';
+import { getSearchSuggestions, handleSearch } from '@/utils/free-search.utils';
 import { useRouter } from 'next/navigation'
 import { SearchSuggestions } from './search-suggestions';
+import { ParkSearchType, SuggestionType } from '@/types/free-search.types';
 
 // TODO: Add logic to track popular destinations from user interactions
 // TODO: Add logic to track trending destinations based on search patterns
@@ -32,6 +32,7 @@ export function ModernSearch({
   const [trendingSearches, setTrendingSearches] = useState<SuggestionType[]>([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState<SuggestionType[]>([]);
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleClose = () => {
     setIsAnimating(true);
@@ -60,7 +61,20 @@ export function ModernSearch({
 
   // Fetch Countries and Parks suggestions on mount
   useEffect(() => {
-    getSearchSuggestions(setSuggestionsList, setPopularParks, setTrendingSearches, setIsLoading);
+    const fetchData = async () => {
+      try {
+        await getSearchSuggestions(
+          setSuggestionsList,
+          setPopularParks,
+          setTrendingSearches,
+          setIsLoading
+        );
+      } catch (err) {
+        setErrorMessage('Failed to load search suggestions. Please try to refresh page.');
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Handle Suggestions Search
@@ -68,11 +82,12 @@ export function ModernSearch({
     handleSearch(searchValue, suggestionsList, setFilteredSuggestions)
   }, [searchValue]);
 
+  // Handle Destination Selection by redirecting to search results page
   const handleDestinationSelect = (type: string, id: number, name: string) => {
     handleClose();
     setFilteredSuggestions([]);
 
-    // Redirect using id and type in URL params
+    // Redirect with suggesion details as query params
     router.push(`/search/${name}/?id=${id}&type=${type}`);
   };
 
@@ -104,6 +119,7 @@ export function ModernSearch({
             popularParks={popularParks}
             trendingSearches={trendingSearches}
             handleDestinationSelect={handleDestinationSelect}
+            errorMessage={errorMessage}
           />
         </div>
       )}

@@ -1,68 +1,32 @@
 // utils/genericResponseHandler.ts
-import type { Response } from 'express';
 
-export const success = (
-  res: Response,
-  message: string = 'Success',
-  data: any = null
-) => {
-  return res.status(200).json({
-    success: true,
-    message,
-    data,
-  });
-};
+import { RequestResponseType } from "../types/types.js";
 
-export const created = (
-  res: Response,
-  message: string = 'Resource created',
-  data: any = null
-) => {
-  return res.status(201).json({
-    success: true,
-    message,
-    data,
-  });
-};
+export const setResponse = {
+  success: <T = any>({ res, message = 'Success', data = null, code = 'SUCCESS' }: RequestResponseType<T>) => {
+    return res.status(200).json({ success: true, message, data, code });
+  },
 
-export const badRequest = (
-  res: Response,
-  message: string = 'Bad request'
-) => {
-  return res.status(400).json({
-    success: false,
-    message,
-  });
-};
+  created: <T = any>({ res, message = 'Resource created', data = null, code = 'CREATED' }: RequestResponseType<T>) => {
+    return res.status(201).json({ success: true, message, data, code });
+  },
 
-export const unauthorized = (
-  res: Response,
-  message: string = 'Unauthorized'
-) => {
-  return res.status(401).json({
-    success: false,
-    message,
-  });
-};
+  badRequest: ({ res, message = 'Bad request', code = 'BAD_REQUEST' }: RequestResponseType) => {
+    return res.status(400).json({ success: false, message, code });
+  },
 
-export const notFound = (
-  res: Response,
-  message: string = 'Not found'
-) => {
-  return res.status(404).json({
-    success: false,
-    message,
-  });
-};
+  unauthorized: ({ res, message = 'Unauthorized', code = 'UNAUTHORIZED' }: RequestResponseType) => {
+    return res.status(401).json({ success: false, message, code });
+  },
 
-export const serverError = (
-  res: Response,
-  message: string = 'Internal server error',
-  error: Error | string = 'An unexpected error occurred'
-) => {
+  notFound: ({ res, message = 'Not found', code = 'NOT_FOUND' }: RequestResponseType) => {
+    return res.status(404).json({ success: false, message, code });
+  },
+
+  serverError: ({ res, message = 'Internal server error', error = 'An unexpected error occurred', code = 'SERVER_ERROR' }: RequestResponseType) => {
     console.error('[SERVER ERROR]', error);
-  return res.status(500).json({
-    success: false,
-    message,
-  });
+    return res.status(500).json({ success: false, message, code });
+  },
 };
+
+

@@ -35,7 +35,8 @@
     "morgan": "^1.10.0",
     "papaparse": "^5.5.3",
     "pg": "^8.13.1",
-    "whatwg-url": "^14.2.0"
+    "whatwg-url": "^14.2.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

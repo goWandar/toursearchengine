@@ -1,0 +1,160 @@
+import { create } from "zustand";
+import { ToursStateType } from "@/types/free-search.types";
+import { DEFAULT_PAGINATION } from "@/utils/constants.utils";
+import { getToursByCountryId, getToursByExperienceId, getToursByParkId } from "@/lib/api/free-search.api";
+import { useToastStore } from "./useToastStore";
+
+export const useToursStore = create<ToursStateType>((set, get) => ({
+    tours: [],
+    pagination: DEFAULT_PAGINATION,
+
+    resultsState: "loading",
+    isLoadingMore: false,
+
+    setPagination: (pagination) => set({ pagination }),
+    setResultsState: (value) => set({ resultsState: value }),
+    resetPagination: () => set({ pagination: DEFAULT_PAGINATION }),
+
+    // Internal Fetch Tours Method
+    internalFetchTours: async (
+        id,
+        type,
+        paginationMeta,
+        setTourResults,
+        setPaginationMeta,
+        isLoadMore,
+        filters,
+        sortBy,
+        pricedBy,
+        experienceDestination?
+    ) => {
+        try {
+            const pageToFetch = isLoadMore ? paginationMeta.page + 1 : paginationMeta.page;
+            const updatedPaginationMeta = { ...paginationMeta, page: pageToFetch };
+
+            let fetchedTours;
+
+            if (type === "park") {
+                fetchedTours = await getToursByParkId(
+                    id,
+                    updatedPaginationMeta,
+                    filters,
+                    sortBy,
+                    pricedBy
+                );
+            } else if (type === "country") {
+                fetchedTours = await getToursByCountryId(
+                    id,
+                    updatedPaginationMeta,
+                    filters,
+                    sortBy,
+                    pricedBy
+                );
+            } else if (type === "experience" && experienceDestination) {
+                fetchedTours = await getToursByExperienceId(
+                    id,
+                    updatedPaginationMeta,
+                    filters,
+                    sortBy,
+                    pricedBy,
+                    experienceDestination
+                );
+            } else {
+                throw new Error(`Unknown type: ${type}`);
+            }
+
+            // Append for load more or replace replace for initial load/filters change
+            setTourResults((prev) =>
+                isLoadMore ? [...prev, ...fetchedTours.tours] : fetchedTours.tours
+            );
+
+            // Update pagination meta
+            setPaginationMeta(fetchedTours.pagination);
+
+            return fetchedTours;
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    // Load Tours(for initial load and filters/sort change) (free-search.utils.ts)
+    loadTours: async (idParam, typeParam, filters, sortBy, pricedBy, experienceDestination) => {
+        if (!idParam || !typeParam) return;
+
+        try {
+            return await get().internalFetchTours(
+                idParam,
+                typeParam,
+                DEFAULT_PAGINATION,
+                (updateFn) =>
+                    set((state) => ({
+                        tours:
+                            typeof updateFn === "function"
+                                ? updateFn(state.tours)
+                                : updateFn,
+                    })),
+                (updateFn) =>
+                    set((state) => ({
+                        pagination:
+                            typeof updateFn === "function"
+                                ? updateFn(state.pagination)
+                                : updateFn,
+                    })),
+                false,
+                filters,
+                sortBy,
+                pricedBy,
+                experienceDestination
+            );
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    // Load Tours (For Load More)
+    loadMoreTours: async (idParam, typeParam, filters, sortBy, pricedBy, experienceDestination) => {
+        if (!idParam || !typeParam) return;
+
+        const { pagination } = get();
+        set({ isLoadingMore: true });
+        try {
+            await get().internalFetchTours(
+                idParam,
+                typeParam,
+                pagination,
+                (updateFn) =>
+                    set((state) => ({
+                        tours:
+                            typeof updateFn === "function"
+                                ? updateFn(state.tours)
+                                : updateFn,
+                    })),
+                (updateFn) =>
+                    set((state) => ({
+                        pagination:
+                            typeof updateFn === "function"
+                                ? updateFn(state.pagination)
+                                : updateFn,
+                    })),
+                true,
+                filters,
+                sortBy,
+                pricedBy,
+                experienceDestination
+            );
+        }
+        catch {
+            console.error("Error loading more tours");
+            const { triggerToast } = useToastStore.getState();
+
+            triggerToast({
+                title: "Error",
+                description: "Unable to load more tours. Please try again.",
+                variant: "destructive",
+            });
+        }
+        finally {
+            set({ isLoadingMore: false });
+        }
+    },
+}));

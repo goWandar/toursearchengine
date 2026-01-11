@@ -1,83 +1,32 @@
 "use client";
-import { paginationType, Tour } from "@/types/types";
-import { fetchTours } from "@/utils/mordern-search.utils";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button } from '@/recipes/button/button';
-import { ChevronDown } from 'lucide-react';
-import ResultsFilters from './results-filters';
 import ResultsTabs from './results-tabs';
+import { useState } from "react";
+import ResultsHeader from "./results-header";
 
 export const SearchResults = () => {
     const params = useParams();
     const searchParams = useSearchParams();
-    const [tourResults, setTourResults] = useState<Tour[]>([]);
     const name = decodeURIComponent(params.name as string);
-    const id = Number(searchParams?.get("id"));
-    const type = (searchParams?.get("type")) ?? "";
-    const [paginationMeta, setPaginationMeta] = useState<paginationType>({
-        page: 1,
-        limit: 12,
-        total: 0,
-        totalPages: 0,
-        hasMore: false,
-    });
-    const [isLoading, setIsLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("all")
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const destinationIdFromUrl = Number(searchParams?.get("id")) || 0;
+    const destinationTypeFromUrl = searchParams?.get("type") ?? "";
+    // Search Item ID and Type State
+    const [searchItemId, setSearchItemId] = useState<number>(destinationIdFromUrl);
+    const [searchItemType, setSearchItemType] = useState<string>(destinationTypeFromUrl);
 
-    // Fetch tours on component mount or when id/type changes
-    useEffect(() => {
-        const tourFetcher = async () => {
-            try {
-                if (id && type) {
-                    setIsLoading(true);
-                    await fetchTours(
-                        id, type, paginationMeta,
-                        setTourResults, setPaginationMeta, false
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching tours:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        tourFetcher();
-    }, [id, type]);
-
-    // Load more tours
-    const loadMore = async () => {
-        if (!paginationMeta.hasMore) return;
-
-        setIsLoadingMore(true);
-        await fetchTours(id, type, paginationMeta, setTourResults, setPaginationMeta, true);
-        setIsLoadingMore(false);
-    };
     return (
         <div className='container mx-auto px-6 py-12'>
-            {/* Search Results Header */}
-            <ResultsFilters name={name} isLoading={isLoading} totalResults={paginationMeta.total} />
+            {/* Search Results' Filters & Title Header */}
+            <ResultsHeader name={name} searchParams={searchParams}
+                searchItemId={searchItemId} searchItemType={searchItemType}
+                // Destination Data(For Experiences Tab)
+                destinationData={{ "destinationId": destinationIdFromUrl, "destinationType": destinationTypeFromUrl }}
+            />
 
-            {/* Main Content */}
-            <ResultsTabs paginationMeta={paginationMeta} tourResults={tourResults} isLoading={isLoading} />
-
-            {/* Load More Button */}
-            <div className="flex justify-center">
-                {paginationMeta.hasMore && (
-                    <Button
-                        onClick={loadMore}
-                        className="flex items-center"
-                        loading={isLoadingMore}
-                        disabled={isLoadingMore}
-                    >
-                        {!isLoadingMore && <ChevronDown className="mr-2" />}
-                        {isLoadingMore ? "Loading..." : "Load More"}
-                    </Button>
-                )}
-            </div>
+            {/* Search Results Content */}
+            <ResultsTabs searchItemName={name} searchParams={searchParams}
+                setSearchItemType={setSearchItemType} setSearchItemId={setSearchItemId}
+            />
         </div >
-
-
     )
 };

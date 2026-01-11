@@ -5,7 +5,7 @@ const SearchPage = () => {
 
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
+            <Navbar/>
             <SearchResults />
         </div>
     )

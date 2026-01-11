@@ -1,113 +1,147 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lightbulb } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/recipes/tabs/tabs";
 import { Button } from "@/recipes/button/button";
+import ParksTabContent from "./parks-tab-content";
+import AllTabContent from "./all-tab-content";
+import { useToursStore } from "@/stores/useTourStore";
+import { TabsListSkeleton } from "./tabs-list-skeleton";
 import SafariCardSkeleton from "./safari-card-skeleton";
-import ModernSafariCard from "./modern-safari-card";
-import { Tour } from "@/types/types";
+import { ActiveTabType } from "@/types/free-search.types";
+import ExperiencesTabContent from "./experiences-tab-content";
 
 interface ResultsTabsProps {
-    paginationMeta: { total: number };
-    tourResults: Tour[];
-    isLoading: boolean;
+    searchItemName: string;
+    searchParams: URLSearchParams;
+    setSearchItemType: (type: string) => void;
+    setSearchItemId: (id: number) => void;
 }
 
 export default function ResultsTabs({
-    paginationMeta,
-    tourResults,
-    isLoading
+    searchItemName,
+    searchParams,
+    setSearchItemId,
+    setSearchItemType,
 }: ResultsTabsProps) {
-    const [activeTab, setActiveTab] = useState("all");
+    const [activeTab, setActiveTab] = useState<ActiveTabType | null>(null);
+    const tabFromUrl = searchParams.get("tab");
+
+    // Get destination type and id from URL (for all results tab)
+    const destinationTypeInUrl = searchParams?.get("type") ?? "";
+    const destinationIdInUrl = Number(searchParams?.get("id")) || 0;
+
+    // Get Park from URL (for parks tab)
+    const parkIdInUrl = Number(searchParams?.get("park")) || 0;
+
+    // Get Experience from URL (for experiences tab)
+    const experienceIdInUrl = Number(searchParams?.get("experience")) || 0;
+
+    // Tours Store States
+    const pagination = useToursStore((state) => state.pagination);
+    const resultsState = useToursStore((state) => state.resultsState);
+
+    // Check set results tab based on URL "tab" param
+    useEffect(() => {
+        // Set Tab to Parks
+        if (tabFromUrl === "parks" && destinationTypeInUrl === "country") {
+            setActiveTab("parks");
+        }
+        // Set Tab to Experiences 
+        else if (tabFromUrl === "experiences") {
+            setActiveTab("experiences");
+        }
+        // Set Tab to "all" Results
+        else {
+            setActiveTab("all");
+        }
+    }, [tabFromUrl, destinationTypeInUrl]);
 
     return (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-10 bg-white p-2 rounded-2xl shadow-sm border relative">
-                <TabsTrigger value="all" asChild>
-                    <div className="rounded-xl font-medium relative">
-                        All Results ({paginationMeta.total})
-                        {activeTab === "all" && (
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-full shadow-sm"
-                                title="View helpful insights"
-                            >
-                                <Lightbulb className="h-4 w-4" />
-                            </Button>
-                        )}
+        <>
+            {!activeTab ?
+                <>
+                    <TabsListSkeleton />
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {
+                            Array.from({ length: 12 }).map((_, i) => <SafariCardSkeleton key={i} />)
+                        }
                     </div>
-                </TabsTrigger>
+                </> :
 
-                {/* Repeat for other tabs */}
-                <TabsTrigger value="someTab" asChild>
-                    <div className="rounded-xl font-medium relative">Some Tab</div>
-                </TabsTrigger>
+                <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "parks" | "experiences")} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 mb-10 bg-white p-2 rounded-2xl shadow-sm border relative">
+                        {/* All Results tab */}
+                        <TabsTrigger value="all" asChild disabled={resultsState === "loading"}>
+                            <div className="rounded-xl text-xs sm:text-sm font-medium relative">
+                                All Results <span className="hidden md:block">{(activeTab === "all" && pagination.total > 0) && `(${pagination.total})`}</span>
+                                {activeTab === "all" && (
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-full shadow-sm"
+                                        title="View helpful insights"
+                                    >
+                                        <Lightbulb className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
+                        </TabsTrigger>
 
-                {/* <TabsTrigger value="parks" className="rounded-xl font-medium relative">
-            Parks ({getTabResults("parks").length})
-            {activeTab === "parks" && (
-                <Button
-                    onClick={scrollToInsights}
-                    size="sm"
-                    variant="ghost"
-                    className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-full shadow-sm"
-                    title="View park insights"
-                >
-                    <Lightbulb className="h-4 w-4" />
-                </Button>
-            )}
-        </TabsTrigger> */}
+                        {/* Parks tab */}
+                        {destinationTypeInUrl === "country" && (
+                            <TabsTrigger value="parks" className="rounded-xl text-xs sm:text-sm font-medium relative" disabled={resultsState === "loading"}>
+                                Parks <span className="hidden sm:block">{(activeTab === "parks" && pagination.total > 0) && `(${pagination.total})`}</span>
+                                {activeTab === "parks" && (
+                                    <Button size="sm" variant="ghost"
+                                        className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-full shadow-sm"
+                                        title="View park insights">
+                                        <Lightbulb className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </TabsTrigger>
+                        )}
 
-                {/* <TabsTrigger value="experiences" className="rounded-xl font-medium relative">
-            Experiences ({getTabResults("experiences").length})
-            {activeTab === "experiences" && (
-                <Button
-                    onClick={scrollToInsights}
-                    size="sm"
-                    variant="ghost"
-                    className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-full shadow-sm"
-                    title="View experience insights"
-                >
-                    <Lightbulb className="h-4 w-4" />
-                </Button>
-            )}
-        </TabsTrigger> */}
-            </TabsList>
+                        {/* Experiences tab */}
+                        <TabsTrigger value="experiences" className="rounded-xl text-xs sm:text-sm font-medium relative" disabled={resultsState === "loading"}>
+                            Experiences <span className="hidden sm:block">{(activeTab === "experiences" && pagination.total > 0) && `(${pagination.total})`}</span>
+                            {activeTab === "experiences" && (
+                                <Button size="sm" variant="ghost"
+                                    className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-full shadow-sm"
+                                    title="View experience insights">
+                                    <Lightbulb className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </TabsTrigger>
+                    </TabsList>
 
-            <TabsContent value="all" className="space-y-12">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {isLoading
-                        ? Array.from({ length: 12 }).map((_, i) => (
-                            <SafariCardSkeleton key={i} />
-                        ))
-                        : tourResults.map((tour) => (
-                            <ModernSafariCard key={tour.id} data={tour} showCarousel={true} />
-                        ))}
-                </div>
-                <div id="insights-section">
-                    {/* <InsightsSection type="parks" subType="general" /> */}
-                </div>
-            </TabsContent>
+                    {/* All Tours Tab Content */}
+                    <TabsContent value="all" className="space-y-12">
+                        <AllTabContent searchParams={searchParams}
+                            setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
+                            destinationTypeInUrl={destinationTypeInUrl} destinationIdInUrl={destinationIdInUrl} activeTab={activeTab}
+                        />
+                    </TabsContent>
 
-            {/* <TabsContent value="parks" className="space-y-12">
-          {searchedCountry && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border">
-                  <div className="flex flex-wrap gap-2">
-                      {parksByCountry[searchedCountry as keyof typeof parksByCountry]?.map((park) => (
-                          <Badge
-                              key={park}
-                              variant="secondary"
-                              className="cursor-pointer hover:bg-teal-100 hover:text-teal-700 transition-colors bg-gray-100 text-gray-700 rounded-full px-4 py-2"
-                          >
-                              {park}
-                          </Badge>
-                      ))}
-                  </div>
-              </div>
-          )} 
-      </TabsContent> */}
-        </Tabs>
+                    {/* Parks Tab Content */}
+                    <TabsContent value="parks" className="space-y-12">
+                        <ParksTabContent searchParams={searchParams} countryName={searchItemName}
+                            tabFromUrl={activeTab} setSearchItemId={setSearchItemId} setSearchItemType={setSearchItemType}
+                            parkIdInUrl={parkIdInUrl} activeTab={activeTab}
+                        />
+                    </TabsContent>
+
+                    {/* Experience Tab Content */}
+                    <TabsContent value="experiences" className="space-y-12">
+                        <ExperiencesTabContent
+                            searchParams={searchParams} tabFromUrl={activeTab} setSearchItemId={setSearchItemId}
+                            setSearchItemType={setSearchItemType} destinationIdInUrl={destinationIdInUrl}
+                            destinationTypeInUrl={destinationTypeInUrl} activeTab={activeTab} experienceIdInUrl={experienceIdInUrl}
+                        />
+                    </TabsContent>
+                </Tabs>
+            }
+        </>
     );
 }
