@@ -9,7 +9,7 @@ export const TourService = {
   // Get tours by country ID (Search Results)
   async getToursByCountryId(req: Request, res: Response): Promise<Response> {
     try {
-      const countryId = parseInt(req.params.countryId);
+      const countryId = Number(req.params.countryId);
 
       // Parse tour query params
       const { page, limit, skip,
@@ -60,7 +60,7 @@ export const TourService = {
   // Get tours by park ID (Search Results)
   async getToursByParkId(req: Request, res: Response): Promise<Response> {
     try {
-      const parkId = parseInt(req.params.parkId);
+      const parkId = Number(req.params.parkId);
 
       // Get Filters & Pagination params
       const {
@@ -120,7 +120,7 @@ export const TourService = {
   // Get tours by experience ID (Search Results)
   async getToursByExperienceId(req: Request, res: Response): Promise<Response> {
     try {
-      const experienceId = parseInt(req.params.experienceId);
+      const experienceId =Number(req.params.experienceId);
 
       // Get Filters & Pagination params
       const {
@@ -192,7 +192,7 @@ export const TourService = {
   async getSearchItems(req: Request, res: Response): Promise<Response> {
     try {
       // Fetch parks
-      const parks = await prisma.park.findMany({
+      const parks: {id: number, name: string, countrey: string, keyword: string}[] = await prisma.park.findMany({
         where: {
           tourParks: {
             some: {}, // At least one related TourPark record exists
@@ -215,7 +215,7 @@ export const TourService = {
       }));
 
       // Fetch countries
-      const countries = await prisma.country.findMany({
+      const countries: {id: number, name: string}[] = await prisma.country.findMany({
         select: {
           id: true,
           name: true,
@@ -288,7 +288,7 @@ export const TourService = {
     try {
       const { countryName } = req.params;
 
-      const parks = await prisma.park.findMany({
+      const parks: {id: number, name: string, keyword: string}[] = await prisma.park.findMany({
         where: {
           country: {
             equals: countryName,
